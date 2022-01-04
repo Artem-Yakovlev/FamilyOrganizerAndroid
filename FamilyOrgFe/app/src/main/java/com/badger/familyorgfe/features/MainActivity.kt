@@ -4,8 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
+import com.badger.familyorgfe.features.scanner.ScannerScreen
 import com.badger.familyorgfe.ui.theme.FamilyOrgFeTheme
 
 class MainActivity : ComponentActivity() {
@@ -14,8 +13,7 @@ class MainActivity : ComponentActivity() {
         ProcessCameraProvider.getInstance(this)
         setContent {
             FamilyOrgFeTheme {
-                Surface(color = MaterialTheme.colors.background) {
-                }
+                ScannerScreen()
             }
         }
     }

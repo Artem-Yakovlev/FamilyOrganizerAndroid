@@ -64,16 +64,13 @@ dependencies {
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
 
-    implementation "androidx.camera:camera-core:$camerax_version"
     implementation "androidx.camera:camera-camera2:$camerax_version"
     implementation "androidx.camera:camera-lifecycle:$camerax_version"
-    implementation "androidx.camera:camera-video:1.1.0-alpha12"
     implementation "androidx.camera:camera-view:1.0.0-alpha32"
-    implementation "androidx.camera:camera-extensions:1.0.0-alpha32"
+    implementation "com.google.zxing:core:3.3.3"
 
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.0"
-    annotationProcessor "android.arch.lifecycle:common-java8:1.1.1"
 
     implementation "io.insert-koin:koin-android:3.1.2"
     implementation "io.insert-koin:koin-androidx-compose:3.1.2"
