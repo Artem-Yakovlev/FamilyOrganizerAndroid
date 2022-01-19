@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.camera.lifecycle.ProcessCameraProvider
+import com.badger.familyorgfe.features.auth.AuthScreen
 import com.badger.familyorgfe.features.scanner.ScannerScreen
 import com.badger.familyorgfe.ui.theme.FamilyOrgFeTheme
 
@@ -13,7 +14,7 @@ class MainActivity : ComponentActivity() {
         ProcessCameraProvider.getInstance(this)
         setContent {
             FamilyOrgFeTheme {
-                ScannerScreen()
+                AuthScreen()
             }
         }
     }

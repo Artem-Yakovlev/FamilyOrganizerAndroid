@@ -1,47 +1,79 @@
 package com.badger.familyorgfe.ui.theme
 
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.darkColors
-import androidx.compose.material.lightColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 
-private val DarkColorPalette = darkColors(
-    primary = Purple200,
-    primaryVariant = Purple700,
-    secondary = Teal200
+private val blueColorBrightPalette = FamilyOrganizerColoredPalette(
+    text = DarkBlue,
+    primary = PrimaryBlue,
+    background = LightBlue,
+    disabled = DisabledBlue
 )
 
-private val LightColorPalette = lightColors(
-    primary = Purple500,
-    primaryVariant = Purple700,
-    secondary = Teal200
+private val orangeColorBrightPalette = FamilyOrganizerColoredPalette(
+    text = DarkOrange,
+    primary = PrimaryOrange,
+    background = LightOrange,
+    disabled = DisabledOrange
+)
 
-    /* Other default colors to override
-    background = Color.White,
-    surface = Color.White,
-    onPrimary = Color.White,
-    onSecondary = Color.Black,
-    onBackground = Color.Black,
-    onSurface = Color.Black,
-    */
+private val greenColorBrightPalette = FamilyOrganizerColoredPalette(
+    text = DarkGreen,
+    primary = PrimaryGreen,
+    background = LightGreen,
+    disabled = DisabledGreen
+)
+
+private val lightFamilyOrganizerColors = FamilyOrganizerColors(
+    text = BlackPrimary,
+    disabled = Disabled,
+    background = WhitePrimary,
+    backgroundOpposite = BlackPrimary,
+
+    lightBorder = LightBorder,
+    selectedWaterBar = WaterBar,
+    backgroundWaterBar = BackgroundWaterBar,
+
+    bluePalette = blueColorBrightPalette,
+    orangePalette = orangeColorBrightPalette,
+    greenPalette = greenColorBrightPalette
+)
+
+private val darkFamilyOrganizerColors = FamilyOrganizerColors(
+    text = WhitePrimary,
+    disabled = Disabled,
+    background = BlackPrimary,
+    backgroundOpposite = WhitePrimary,
+
+    lightBorder = LightBorder,
+    selectedWaterBar = WaterBar,
+    backgroundWaterBar = BackgroundWaterBar,
+
+    bluePalette = blueColorBrightPalette,
+    orangePalette = orangeColorBrightPalette,
+    greenPalette = greenColorBrightPalette
 )
 
 @Composable
 fun FamilyOrgFeTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable() () -> Unit
+    content: @Composable () -> Unit
 ) {
-    val colors = if (darkTheme) {
-        DarkColorPalette
-    } else {
-        LightColorPalette
-    }
 
-    MaterialTheme(
-        colors = colors,
-        typography = Typography,
-        shapes = Shapes,
-        content = content
+    val colors = if (darkTheme) {
+        lightFamilyOrganizerColors
+    } else {
+        darkFamilyOrganizerColors
+    }
+    val textStyle = familyOrganizerTextStyle
+
+    CompositionLocalProvider(
+        // shapes
+        LocalFamilyOrganizerColors provides colors,
+        LocalFamilyOrganizerTextStyle provides textStyle,
+        content = {
+            content()
+        }
     )
 }
