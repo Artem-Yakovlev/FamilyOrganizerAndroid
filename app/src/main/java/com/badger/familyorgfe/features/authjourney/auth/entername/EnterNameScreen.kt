@@ -41,14 +41,14 @@ fun EnterNameScreen() {
 
         Text(
             text = stringResource(R.string.enter_name_title),
-            style = FamilyOrganizerTheme.textStyle.boldHeading,
+            style = FamilyOrganizerTheme.textStyle.headline2,
             lineHeight = 26.sp,
             modifier = Modifier.padding(top = 50.dp)
         )
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
-            textStyle = FamilyOrganizerTheme.textStyle.primaryTitle,
+            textStyle = FamilyOrganizerTheme.textStyle.input,
             colors = outlinedTextFieldColors(),
             placeholder = { Text(text = stringResource(R.string.enter_name_hint)) },
             modifier = Modifier
@@ -67,7 +67,7 @@ fun EnterNameScreen() {
             Text(
                 text = stringResource(R.string.next_text).uppercase(),
                 color = FamilyOrganizerTheme.colors.whitePrimary,
-                style = FamilyOrganizerTheme.textStyle.boldBody,
+                style = FamilyOrganizerTheme.textStyle.button,
                 modifier = Modifier.padding(vertical = 10.dp)
             )
         }
@@ -81,7 +81,7 @@ fun EnterNameScreen() {
             Text(
                 text = stringResource(R.string.enter_name_skip).uppercase(),
                 color = FamilyOrganizerTheme.colors.primary,
-                style = FamilyOrganizerTheme.textStyle.boldBody,
+                style = FamilyOrganizerTheme.textStyle.button,
                 modifier = Modifier.padding(vertical = 10.dp)
             )
         }

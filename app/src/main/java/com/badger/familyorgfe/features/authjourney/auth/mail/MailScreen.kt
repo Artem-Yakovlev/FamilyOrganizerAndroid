@@ -38,19 +38,22 @@ fun MailScreen() {
 
         Text(
             text = stringResource(R.string.enter_mail_title),
-            style = FamilyOrganizerTheme.textStyle.boldHeading,
+            style = FamilyOrganizerTheme.textStyle.headline2,
             lineHeight = 26.sp,
             modifier = Modifier.padding(top = 64.dp)
         )
         Text(
             text = stringResource(R.string.enter_mail_subtitle),
-            style = FamilyOrganizerTheme.textStyle.secondaryBody,
+            style = FamilyOrganizerTheme.textStyle.subtitle2.copy(
+                fontSize = 14.sp,
+                color = FamilyOrganizerTheme.colors.darkClay
+            ),
             modifier = Modifier.padding(top = 8.dp)
         )
         OutlinedTextField(
             value = mail,
             onValueChange = { mail = it },
-            textStyle = FamilyOrganizerTheme.textStyle.primaryTitle,
+            textStyle = FamilyOrganizerTheme.textStyle.input,
             colors = outlinedTextFieldColors(),
             modifier = Modifier
                 .fillMaxWidth()
@@ -68,7 +71,7 @@ fun MailScreen() {
             Text(
                 text = stringResource(R.string.continue_text).uppercase(),
                 color = FamilyOrganizerTheme.colors.whitePrimary,
-                style = FamilyOrganizerTheme.textStyle.boldBody,
+                style = FamilyOrganizerTheme.textStyle.button,
                 modifier = Modifier.padding(vertical = 10.dp)
             )
         }
