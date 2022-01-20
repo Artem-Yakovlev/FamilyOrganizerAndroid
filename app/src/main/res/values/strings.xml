@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">FamilyOrgFe</string>
+
+    <string name="profile_toolbar_title">Профиль</string>
 </resources>

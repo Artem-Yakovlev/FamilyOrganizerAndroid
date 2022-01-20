@@ -1,7 +1,12 @@
 package com.badger.familyorgfe.features.authjourney.auth
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.*
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.Button
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,12 +28,12 @@ fun AuthScreen() {
         Text(
             text = "Введите вашу почту",
             modifier = Modifier.padding(top = 64.dp),
-            style = FamilyOrganizerTheme.textStyle.boldHeading
+            style = FamilyOrganizerTheme.textStyle.headline2
         )
         Text(
             text = "Если Вы еще не аккаунта, то мы его создадим",
             modifier = Modifier.padding(top = 8.dp),
-            style = FamilyOrganizerTheme.textStyle.secondaryBody
+            style = FamilyOrganizerTheme.textStyle.headline2
         )
         TextField(
             value = mail,

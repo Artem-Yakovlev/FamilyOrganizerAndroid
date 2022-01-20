@@ -6,15 +6,15 @@ import androidx.compose.ui.unit.sp
 
 
 val familyOrganizerTextStyle = FamilyOrganizerTextStyle(
-    boldHeading = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold),
-    boldTitle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Bold),
-    boldBody = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Bold),
+    headline1 = TextStyle(fontSize = 26.sp, fontWeight = FontWeight.Bold),
+    headline2 = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Bold),
+    headline3 = TextStyle(fontSize = 22.sp, fontWeight = FontWeight.Bold),
 
-    primaryHeading = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Normal),
-    primaryTitle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Normal),
-    primaryBody = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Normal),
+    subtitle1 = TextStyle(fontSize = 20.sp, fontWeight = FontWeight.Light),
+    subtitle2 = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Light),
 
-    secondaryHeading = TextStyle(fontSize = 24.sp, fontWeight = FontWeight.Normal, color = LightGray),
-    secondaryTitle = TextStyle(fontSize = 18.sp, fontWeight = FontWeight.Normal, color = LightGray),
-    secondaryBody = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Normal, color = LightGray),
+    button = TextStyle(fontSize = 16.sp, fontWeight = FontWeight.Bold),
+    input = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Normal),
+    body = TextStyle(fontSize = 14.sp, fontWeight = FontWeight.Normal),
+    label = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Normal)
 )
