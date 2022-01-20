@@ -9,7 +9,6 @@ import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -17,9 +16,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hierarchy
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.badger.familyorgfe.features.appjourney.adding.AddingScreen
 import com.badger.familyorgfe.features.appjourney.fridge.FridgeScreen
@@ -34,7 +37,6 @@ fun AppJourney(
 
     Column(modifier = modifier.background(FamilyOrganizerTheme.colors.whitePrimary)) {
 
-        val currentItem by viewModel.selectedBottomNavItem.collectAsState()
         val navController = rememberNavController()
 
         Content(
@@ -46,11 +48,7 @@ fun AppJourney(
 
         BottomNavigation(
             modifier = Modifier.wrapContentSize(),
-            currentItem = currentItem,
-            onClick = { item ->
-                val event = IAppJourneyViewModel.Event.OnBottomNavItemSelected(item)
-                viewModel.onEvent(event)
-            }
+            navController = navController
         )
     }
 }
@@ -59,6 +57,7 @@ fun AppJourney(
 @Composable
 private fun Content(modifier: Modifier, navController: NavHostController) {
     NavHost(
+        modifier = modifier,
         navController = navController,
         startDestination = BottomNavigationType.FRIDGE.route
     ) {
@@ -77,9 +76,12 @@ private fun Content(modifier: Modifier, navController: NavHostController) {
 @Composable
 private fun BottomNavigation(
     modifier: Modifier,
-    currentItem: BottomNavigationType,
-    onClick: (BottomNavigationType) -> Unit
+    navController: NavHostController
 ) {
+
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -100,24 +102,26 @@ private fun BottomNavigation(
                 modifier = Modifier.wrapContentSize(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
+
                 BottomNavigationItem(
                     type = BottomNavigationType.FRIDGE,
-                    selected = BottomNavigationType.FRIDGE == currentItem,
-                    onClick = onClick
+                    currentDestination = currentDestination,
+                    navController = navController
                 )
                 Spacer(modifier = Modifier.width(62.dp))
 
+
                 BottomNavigationItem(
                     type = BottomNavigationType.ADDING,
-                    selected = BottomNavigationType.ADDING == currentItem,
-                    onClick = onClick
+                    currentDestination = currentDestination,
+                    navController = navController
                 )
                 Spacer(modifier = Modifier.width(62.dp))
 
                 BottomNavigationItem(
                     type = BottomNavigationType.PROFILE,
-                    selected = BottomNavigationType.PROFILE == currentItem,
-                    onClick = onClick
+                    currentDestination = currentDestination,
+                    navController = navController
                 )
             }
         }
@@ -127,9 +131,14 @@ private fun BottomNavigation(
 @Composable
 private fun BottomNavigationItem(
     type: BottomNavigationType,
-    selected: Boolean,
-    onClick: (BottomNavigationType) -> Unit
+    currentDestination: NavDestination?,
+    navController: NavHostController
 ) {
+
+    val selected = currentDestination?.hierarchy?.any { dest ->
+        dest.route == type.route
+    } == true
+
     Icon(
         modifier = Modifier
             .size(36.dp)
@@ -139,7 +148,12 @@ private fun BottomNavigationItem(
                     bounded = false,
                     color = FamilyOrganizerTheme.colors.primary
                 )
-            ) { onClick(type) },
+            ) {
+                navController.navigate(type.route) {
+                    popUpTo(navController.graph.findStartDestination().id)
+                    launchSingleTop = true
+                }
+            },
         painter = painterResource(id = type.resourceId),
         contentDescription = null,
         tint = if (selected) {
