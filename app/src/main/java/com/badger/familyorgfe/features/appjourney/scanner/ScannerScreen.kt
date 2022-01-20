@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.features.scanner
+package com.badger.familyorgfe.features.appjourney.scanner
 
 import android.util.Size
 import androidx.camera.core.CameraSelector

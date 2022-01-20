@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.features.auth
+package com.badger.familyorgfe.features.authjourney.auth
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.*

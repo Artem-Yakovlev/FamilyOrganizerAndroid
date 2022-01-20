@@ -6,25 +6,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
 
 data class FamilyOrganizerColors(
-    val text: Color,
-    val disabled: Color,
-    val background: Color,
-    val backgroundOpposite: Color,
+    val whitePrimary : Color,
+    val blackPrimary : Color,
+    val disabled : Color,
 
-    val lightBorder: Color,
-    val selectedWaterBar: Color,
-    val backgroundWaterBar: Color,
+    val primary : Color,
+    val darkPrimary : Color,
+    val darkGray : Color,
+    val lightGray : Color,
 
-    val bluePalette: FamilyOrganizerColoredPalette,
-    val orangePalette: FamilyOrganizerColoredPalette,
-    val greenPalette: FamilyOrganizerColoredPalette
-)
-
-data class FamilyOrganizerColoredPalette(
-    val text: Color,
-    val primary: Color,
-    val background: Color,
-    val disabled: Color
+    val darkClay : Color,
+    val lightClay : Color,
 )
 
 data class FamilyOrganizerTextStyle(
@@ -40,7 +32,6 @@ data class FamilyOrganizerTextStyle(
     val secondaryTitle: TextStyle,
     val secondaryBody: TextStyle,
 )
-
 
 object FamilyOrganizerTheme {
     val colors: FamilyOrganizerColors

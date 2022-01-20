@@ -4,68 +4,28 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 
-private val blueColorBrightPalette = FamilyOrganizerColoredPalette(
-    text = DarkBlue,
-    primary = PrimaryBlue,
-    background = LightBlue,
-    disabled = DisabledBlue
-)
-
-private val orangeColorBrightPalette = FamilyOrganizerColoredPalette(
-    text = DarkOrange,
-    primary = PrimaryOrange,
-    background = LightOrange,
-    disabled = DisabledOrange
-)
-
-private val greenColorBrightPalette = FamilyOrganizerColoredPalette(
-    text = DarkGreen,
-    primary = PrimaryGreen,
-    background = LightGreen,
-    disabled = DisabledGreen
-)
-
 private val lightFamilyOrganizerColors = FamilyOrganizerColors(
-    text = BlackPrimary,
+    whitePrimary = WhitePrimary,
+    blackPrimary = BlackPrimary,
     disabled = Disabled,
-    background = WhitePrimary,
-    backgroundOpposite = BlackPrimary,
 
-    lightBorder = LightBorder,
-    selectedWaterBar = WaterBar,
-    backgroundWaterBar = BackgroundWaterBar,
+    primary = Primary,
+    darkPrimary = DarkPrimary,
 
-    bluePalette = blueColorBrightPalette,
-    orangePalette = orangeColorBrightPalette,
-    greenPalette = greenColorBrightPalette
-)
+    lightGray = LightGray,
+    darkGray = DarkGray,
 
-private val darkFamilyOrganizerColors = FamilyOrganizerColors(
-    text = WhitePrimary,
-    disabled = Disabled,
-    background = BlackPrimary,
-    backgroundOpposite = WhitePrimary,
-
-    lightBorder = LightBorder,
-    selectedWaterBar = WaterBar,
-    backgroundWaterBar = BackgroundWaterBar,
-
-    bluePalette = blueColorBrightPalette,
-    orangePalette = orangeColorBrightPalette,
-    greenPalette = greenColorBrightPalette
+    lightClay = LightClay,
+    darkClay = DarkClay
 )
 
 @Composable
-fun FamilyOrgFeTheme(
+fun FamilyOrganizerTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
 
-    val colors = if (darkTheme) {
-        lightFamilyOrganizerColors
-    } else {
-        darkFamilyOrganizerColors
-    }
+    val colors = lightFamilyOrganizerColors
     val textStyle = familyOrganizerTextStyle
 
     CompositionLocalProvider(

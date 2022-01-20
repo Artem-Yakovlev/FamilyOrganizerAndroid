@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.features.auth
+package com.badger.familyorgfe.features.authjourney.auth
 
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel

@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.features.scanner
+package com.badger.familyorgfe.features.appjourney.scanner
 
 import android.graphics.ImageFormat
 import androidx.camera.core.ImageAnalysis

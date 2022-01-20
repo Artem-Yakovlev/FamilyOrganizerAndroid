@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.features.auth
+package com.badger.familyorgfe.features.authjourney.auth
 
 import com.badger.familyorgfe.base.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
