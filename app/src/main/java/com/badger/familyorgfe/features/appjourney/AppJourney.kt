@@ -1,5 +1,6 @@
 package com.badger.familyorgfe.features.appjourney
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -51,7 +52,6 @@ fun AppJourney(
     }
 }
 
-
 @Composable
 private fun Content(modifier: Modifier, navController: NavHostController) {
     NavHost(
@@ -71,6 +71,8 @@ private fun Content(modifier: Modifier, navController: NavHostController) {
     }
 }
 
+private const val VISIBILITY_ANIMATION_MULTIPLIER = 0.7
+
 @Composable
 private fun BottomNavigation(
     modifier: Modifier,
@@ -79,44 +81,51 @@ private fun BottomNavigation(
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(all = 8.dp),
-        contentAlignment = Alignment.BottomCenter
+    AnimatedVisibility(
+        visible = currentDestination?.hierarchy
+            ?.all { dest -> dest.route != BottomNavigationType.ADDING.route } == true,
+        enter = slideInVertically { (VISIBILITY_ANIMATION_MULTIPLIER * it).toInt() } + fadeIn(),
+        exit = slideOutVertically { (VISIBILITY_ANIMATION_MULTIPLIER * it).toInt() } + fadeOut(),
     ) {
-        Card(
-            modifier = Modifier
+        Box(
+            modifier = modifier
                 .fillMaxWidth()
-                .height(60.dp)
-                .align(Alignment.Center),
-            shape = RoundedCornerShape(18.dp),
-            elevation = 3.dp
+                .padding(all = 8.dp),
+            contentAlignment = Alignment.BottomCenter
         ) {
-            Row(
-                modifier = Modifier.wrapContentSize(),
-                verticalAlignment = Alignment.CenterVertically
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .align(Alignment.Center),
+                shape = RoundedCornerShape(18.dp),
+                elevation = 3.dp
             ) {
+                Row(
+                    modifier = Modifier.wrapContentSize(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
 
-                BottomNavigationItem(
-                    type = BottomNavigationType.FRIDGE,
-                    currentDestination = currentDestination,
-                    navController = navController
-                )
-                Spacer(modifier = Modifier.width(62.dp))
+                    BottomNavigationItem(
+                        type = BottomNavigationType.FRIDGE,
+                        currentDestination = currentDestination,
+                        navController = navController
+                    )
+                    Spacer(modifier = Modifier.width(62.dp))
 
-                BottomNavigationItem(
-                    type = BottomNavigationType.ADDING,
-                    currentDestination = currentDestination,
-                    navController = navController
-                )
-                Spacer(modifier = Modifier.width(62.dp))
+                    BottomNavigationItem(
+                        type = BottomNavigationType.ADDING,
+                        currentDestination = currentDestination,
+                        navController = navController
+                    )
+                    Spacer(modifier = Modifier.width(62.dp))
 
-                BottomNavigationItem(
-                    type = BottomNavigationType.PROFILE,
-                    currentDestination = currentDestination,
-                    navController = navController
-                )
+                    BottomNavigationItem(
+                        type = BottomNavigationType.PROFILE,
+                        currentDestination = currentDestination,
+                        navController = navController
+                    )
+                }
             }
         }
     }

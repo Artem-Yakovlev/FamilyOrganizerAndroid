@@ -1,6 +1,15 @@
 <resources>
     <string name="app_name">FamilyOrgFe</string>
 
+    <!-- Auth    -->
+
+    <!-- Fridge  -->
+    <string name="fridge_toolbar_title">Ваши продукты</string>
+
+    <!-- Adding   -->
+    <string name="adding_toolbar_title">Добавить продукты</string>
+
+    <!-- Profile -->
     <string name="profile_toolbar_title">Профиль</string>
 
     <string name="profile_name_title">Имя</string>
