@@ -34,9 +34,7 @@ fun AppJourney(
     modifier: Modifier,
     viewModel: IAppJourneyViewModel = viewModel<AppJourneyViewModel>()
 ) {
-
     Column(modifier = modifier.background(FamilyOrganizerTheme.colors.whitePrimary)) {
-
         val navController = rememberNavController()
 
         Content(
@@ -78,7 +76,6 @@ private fun BottomNavigation(
     modifier: Modifier,
     navController: NavHostController
 ) {
-
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
@@ -88,7 +85,6 @@ private fun BottomNavigation(
             .padding(all = 8.dp),
         contentAlignment = Alignment.BottomCenter
     ) {
-
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -97,7 +93,6 @@ private fun BottomNavigation(
             shape = RoundedCornerShape(18.dp),
             elevation = 3.dp
         ) {
-
             Row(
                 modifier = Modifier.wrapContentSize(),
                 verticalAlignment = Alignment.CenterVertically
@@ -109,7 +104,6 @@ private fun BottomNavigation(
                     navController = navController
                 )
                 Spacer(modifier = Modifier.width(62.dp))
-
 
                 BottomNavigationItem(
                     type = BottomNavigationType.ADDING,
@@ -134,7 +128,6 @@ private fun BottomNavigationItem(
     currentDestination: NavDestination?,
     navController: NavHostController
 ) {
-
     val selected = currentDestination?.hierarchy?.any { dest ->
         dest.route == type.route
     } == true
