@@ -1,6 +1,9 @@
 package com.badger.familyorgfe.di
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import com.badger.familyorgfe.data.source.AppDatabase
 import com.badger.familyorgfe.data.source.ProductApi
@@ -14,6 +17,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
+
+private const val DATASTORE_NAME = "family-organizer-datastore"
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = DATASTORE_NAME)
+
 @Module
 @InstallIn(SingletonComponent::class)
 class SourceModule {
@@ -21,6 +28,16 @@ class SourceModule {
     companion object {
         private const val BASE_URL = "https://family-organizer.com/"
         private const val DATABASE_NAME = "family-organizer-db"
+    }
+
+    /**
+     * DataStore
+     * */
+
+    @Provides
+    @Singleton
+    fun provideDataStore(@ApplicationContext applicationContext: Context): DataStore<Preferences> {
+        return applicationContext.dataStore
     }
 
     /**

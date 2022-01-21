@@ -1,9 +1,6 @@
 package com.badger.familyorgfe.di
 
-import com.badger.familyorgfe.data.repository.IProductRepository
-import com.badger.familyorgfe.data.repository.IUserRepository
-import com.badger.familyorgfe.data.repository.ProductRepository
-import com.badger.familyorgfe.data.repository.UserRepository
+import com.badger.familyorgfe.data.repository.*
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -18,4 +15,7 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun provideProductRepository(repository: ProductRepository): IProductRepository
+
+    @Binds
+    abstract fun provideDataStore(dataStore: DataStoreRepository): IDataStoreRepository
 }
