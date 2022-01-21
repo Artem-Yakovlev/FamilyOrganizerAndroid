@@ -16,7 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -33,7 +33,7 @@ import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 @Composable
 fun AppJourney(
     modifier: Modifier,
-    viewModel: IAppJourneyViewModel = viewModel<AppJourneyViewModel>()
+    viewModel: IAppJourneyViewModel = hiltViewModel<AppJourneyViewModel>()
 ) {
     Column(modifier = modifier.background(FamilyOrganizerTheme.colors.whitePrimary)) {
         val navController = rememberNavController()

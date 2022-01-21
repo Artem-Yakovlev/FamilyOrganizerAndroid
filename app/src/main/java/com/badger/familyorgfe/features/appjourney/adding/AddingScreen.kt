@@ -12,7 +12,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.badger.familyorgfe.R
 import com.badger.familyorgfe.ui.elements.BaseToolbar
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
@@ -20,7 +20,7 @@ import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 @Composable
 fun AddingScreen(
     modifier: Modifier,
-    viewModel: IAddingViewModel = viewModel<AddingViewModel>()
+    viewModel: IAddingViewModel = hiltViewModel<AddingViewModel>()
 ) {
     Column(
         modifier = modifier

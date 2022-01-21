@@ -7,7 +7,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    getProfileUseCase: GetProfileUseCase
+    private val getProfileUseCase: GetProfileUseCase
 ) : BaseViewModel(), IProfileViewModel {
 
     override fun clearData() = Unit

@@ -5,7 +5,7 @@ import com.badger.familyorgfe.data.repository.IUserRepository
 import javax.inject.Inject
 
 class GetProfileUseCase @Inject constructor(
-    repository: IUserRepository
+    private val repository: IUserRepository
 ) : BaseUseCase<Unit, Boolean>() {
 
     override suspend fun invoke(arg: Unit): Boolean {
