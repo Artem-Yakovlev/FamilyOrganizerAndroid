@@ -2,6 +2,9 @@
     <string name="app_name">Family Organizer</string>
 
     <!-- Auth    -->
+    <string name="enter_mail_title">Введите\nвашу почту</string>
+    <string name="enter_mail_subtitle">Если Вы еще не аккаунта, то мы\nего создадим</string>
+    <string name="continue_text">Продолжить</string>
 
     <!-- Fridge  -->
     <string name="fridge_toolbar_title">Ваши продукты</string>

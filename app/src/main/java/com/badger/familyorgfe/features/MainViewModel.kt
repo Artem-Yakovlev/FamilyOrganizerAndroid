@@ -8,7 +8,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor() : BaseViewModel(), IMainViewModel {
 
-    override val isAuth = MutableStateFlow(value = true)
+    override val isAuth = MutableStateFlow(value = false)
 
     override fun clearData() = Unit
 }
