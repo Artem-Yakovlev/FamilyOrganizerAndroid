@@ -10,6 +10,6 @@ import com.badger.familyorgfe.features.authjourney.auth.welcome.WelcomeScreen
 @Composable
 fun AuthJourney(modifier: Modifier) {
 
-    WelcomeScreen()
+    EnterNameScreen(modifier)
 
 }

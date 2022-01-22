@@ -15,8 +15,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.badger.familyorgfe.R
-import com.badger.familyorgfe.features.appjourney.profile.IProfileViewModel
-import com.badger.familyorgfe.features.appjourney.profile.ProfileViewModel
+import com.badger.familyorgfe.features.authjourney.auth.mail.viewmodel.IMailViewModel
+import com.badger.familyorgfe.features.authjourney.auth.mail.viewmodel.IMailViewModel.Event
+import com.badger.familyorgfe.features.authjourney.auth.mail.viewmodel.MailViewModel
 import com.badger.familyorgfe.ui.style.buttonColors
 import com.badger.familyorgfe.ui.style.outlinedTextFieldColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
@@ -24,16 +25,12 @@ import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 @Composable
 fun MailScreen(
     modifier: Modifier,
-    viewModel: IMailViewModel = hiltViewModel<ProfileViewModel>()
+    viewModel: IMailViewModel = hiltViewModel<MailViewModel>()
 ) {
 
-    var mail by remember {
-        mutableStateOf("")
-    }
+    val mail by viewModel.mail.collectAsState()
 
-    var continueEnabled by remember {
-        mutableStateOf(false)
-    }
+    val continueEnabled by viewModel.continueEnabled.collectAsState()
 
     Column(
         modifier = Modifier
@@ -60,7 +57,7 @@ fun MailScreen(
 
         OutlinedTextField(
             value = mail,
-            onValueChange = { mail = it },
+            onValueChange = { viewModel.onEvent(Event.MailUpdate(it)) },
             textStyle = FamilyOrganizerTheme.textStyle.input,
             colors = outlinedTextFieldColors(),
             modifier = Modifier
@@ -69,7 +66,7 @@ fun MailScreen(
         )
 
         Button(
-            onClick = { println("MY_TAG btn clicked") },
+            onClick = { viewModel.onEvent(Event.ContinueClick) },
             enabled = continueEnabled,
             colors = buttonColors(),
             modifier = Modifier

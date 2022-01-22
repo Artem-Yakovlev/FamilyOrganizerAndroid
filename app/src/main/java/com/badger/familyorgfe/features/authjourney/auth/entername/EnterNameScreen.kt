@@ -16,21 +16,24 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.badger.familyorgfe.R
+import com.badger.familyorgfe.features.authjourney.auth.entername.viewmodel.EnterNameViewModel
+import com.badger.familyorgfe.features.authjourney.auth.entername.viewmodel.IEnterNameViewModel
+import com.badger.familyorgfe.features.authjourney.auth.entername.viewmodel.IEnterNameViewModel.Event
 import com.badger.familyorgfe.ui.style.buttonColors
 import com.badger.familyorgfe.ui.style.outlinedTextFieldColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 
 @Composable
-fun EnterNameScreen() {
+fun EnterNameScreen(
+    modifier: Modifier,
+    viewModel: IEnterNameViewModel = hiltViewModel<EnterNameViewModel>()
+) {
 
-    var name by remember {
-        mutableStateOf("")
-    }
+    val name by viewModel.name.collectAsState()
 
-    var continueEnabled by remember {
-        mutableStateOf(false)
-    }
+    val continueEnabled by viewModel.continueEnabled.collectAsState()
 
     Column(
         modifier = Modifier
@@ -48,7 +51,7 @@ fun EnterNameScreen() {
 
         OutlinedTextField(
             value = name,
-            onValueChange = { name = it },
+            onValueChange = { viewModel.onEvent(Event.NameUpdate(it)) },
             textStyle = FamilyOrganizerTheme.textStyle.input,
             colors = outlinedTextFieldColors(),
             placeholder = { Text(text = stringResource(R.string.enter_name_hint)) },
@@ -58,7 +61,7 @@ fun EnterNameScreen() {
         )
 
         Button(
-            onClick = { },
+            onClick = { viewModel.onEvent(Event.ContinueClick) },
             enabled = continueEnabled,
             colors = buttonColors(),
             modifier = Modifier
@@ -76,7 +79,7 @@ fun EnterNameScreen() {
         }
 
         TextButton(
-            onClick = { },
+            onClick = { viewModel.onEvent(Event.SkipClick) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp)
