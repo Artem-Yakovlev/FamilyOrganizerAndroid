@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import com.badger.familyorgfe.features.appjourney.AppJourney
 import com.badger.familyorgfe.features.authjourney.AuthJourney
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
+import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -22,6 +23,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AndroidThreeTen.init(application)
         ProcessCameraProvider.getInstance(this)
         setContent {
             FamilyOrganizerTheme {
