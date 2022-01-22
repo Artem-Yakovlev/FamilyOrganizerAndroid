@@ -45,6 +45,7 @@ fun EnterNameScreen() {
             lineHeight = 26.sp,
             modifier = Modifier.padding(top = 50.dp)
         )
+
         OutlinedTextField(
             value = name,
             onValueChange = { name = it },
@@ -55,8 +56,9 @@ fun EnterNameScreen() {
                 .fillMaxWidth()
                 .padding(top = 24.dp)
         )
+
         Button(
-            onClick = { println("MY_TAG btn clicked") },
+            onClick = { },
             enabled = continueEnabled,
             colors = buttonColors(),
             modifier = Modifier
@@ -64,6 +66,7 @@ fun EnterNameScreen() {
                 .padding(top = 16.dp)
                 .clip(RoundedCornerShape(8.dp))
         ) {
+
             Text(
                 text = stringResource(R.string.next_text).uppercase(),
                 color = FamilyOrganizerTheme.colors.whitePrimary,
@@ -71,13 +74,15 @@ fun EnterNameScreen() {
                 modifier = Modifier.padding(vertical = 10.dp)
             )
         }
+
         TextButton(
-            onClick = { println("MY_TAG btn clicked") },
+            onClick = { },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp)
                 .clip(RoundedCornerShape(8.dp))
         ) {
+
             Text(
                 text = stringResource(R.string.enter_name_skip).uppercase(),
                 color = FamilyOrganizerTheme.colors.primary,

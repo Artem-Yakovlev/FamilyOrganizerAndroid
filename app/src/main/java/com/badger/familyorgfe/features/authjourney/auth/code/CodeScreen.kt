@@ -34,10 +34,12 @@ fun CodeScreen() {
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.Start
     ) {
+
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
         ) {
+
             Icon(
                 painter = painterResource(R.drawable.ic_back),
                 tint = FamilyOrganizerTheme.colors.primary,
@@ -54,9 +56,10 @@ fun CodeScreen() {
                     }
                     .padding(18.dp)
             )
+
             Text(
                 text = "nikolay123@bk.ru",
-                style = FamilyOrganizerTheme.textStyle.body,
+                style = FamilyOrganizerTheme.textStyle.body.copy(fontSize = 16.sp),
                 modifier = Modifier
             )
         }
@@ -73,6 +76,7 @@ fun CodeScreen() {
                 lineHeight = 26.sp,
                 modifier = Modifier
             )
+
             Text(
                 text = stringResource(R.string.enter_code_subtitle),
                 style = FamilyOrganizerTheme.textStyle.subtitle2.copy(
@@ -81,6 +85,7 @@ fun CodeScreen() {
                 ),
                 modifier = Modifier.padding(top = 8.dp)
             )
+
             OutlinedTextField(
                 value = code,
                 onValueChange = { code = it },
@@ -91,8 +96,9 @@ fun CodeScreen() {
                     .fillMaxWidth()
                     .padding(top = 16.dp)
             )
+
             Button(
-                onClick = { println("MY_TAG btn clicked") },
+                onClick = { },
                 enabled = continueEnabled,
                 colors = buttonColors(),
                 modifier = Modifier
@@ -100,6 +106,7 @@ fun CodeScreen() {
                     .padding(top = 16.dp)
                     .clip(RoundedCornerShape(8.dp))
             ) {
+
                 Text(
                     text = stringResource(R.string.next_text).uppercase(),
                     color = FamilyOrganizerTheme.colors.whitePrimary,
@@ -107,13 +114,15 @@ fun CodeScreen() {
                     modifier = Modifier.padding(vertical = 10.dp)
                 )
             }
+
             TextButton(
-                onClick = { println("MY_TAG btn clicked") },
+                onClick = { },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp)
                     .clip(RoundedCornerShape(8.dp))
             ) {
+
                 Text(
                     text = stringResource(R.string.send_code_again).uppercase(),
                     color = FamilyOrganizerTheme.colors.primary,

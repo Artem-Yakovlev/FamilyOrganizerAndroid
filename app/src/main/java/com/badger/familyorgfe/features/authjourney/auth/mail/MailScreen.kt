@@ -13,13 +13,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.badger.familyorgfe.R
+import com.badger.familyorgfe.features.appjourney.profile.IProfileViewModel
+import com.badger.familyorgfe.features.appjourney.profile.ProfileViewModel
 import com.badger.familyorgfe.ui.style.buttonColors
 import com.badger.familyorgfe.ui.style.outlinedTextFieldColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 
 @Composable
-fun MailScreen() {
+fun MailScreen(
+    modifier: Modifier,
+    viewModel: IMailViewModel = hiltViewModel<ProfileViewModel>()
+) {
 
     var mail by remember {
         mutableStateOf("")
@@ -42,6 +48,7 @@ fun MailScreen() {
             lineHeight = 26.sp,
             modifier = Modifier.padding(top = 64.dp)
         )
+
         Text(
             text = stringResource(R.string.enter_mail_subtitle),
             style = FamilyOrganizerTheme.textStyle.subtitle2.copy(
@@ -50,6 +57,7 @@ fun MailScreen() {
             ),
             modifier = Modifier.padding(top = 8.dp)
         )
+
         OutlinedTextField(
             value = mail,
             onValueChange = { mail = it },
@@ -59,6 +67,7 @@ fun MailScreen() {
                 .fillMaxWidth()
                 .padding(top = 16.dp)
         )
+
         Button(
             onClick = { println("MY_TAG btn clicked") },
             enabled = continueEnabled,
@@ -68,6 +77,7 @@ fun MailScreen() {
                 .padding(top = 16.dp)
                 .clip(RoundedCornerShape(8.dp))
         ) {
+
             Text(
                 text = stringResource(R.string.continue_text).uppercase(),
                 color = FamilyOrganizerTheme.colors.whitePrimary,
