@@ -5,6 +5,14 @@
     <string name="enter_mail_title">Введите\nвашу почту</string>
     <string name="enter_mail_subtitle">Если Вы еще не аккаунта, то мы\nего создадим</string>
     <string name="continue_text">Продолжить</string>
+    <string name="enter_code_title">Введите код</string>
+    <string name="enter_code_subtitle">он отправлен Вам на почту</string>
+    <string name="enter_code_hint">Код из письма</string>
+    <string name="send_code_again">Отправить код еще раз</string>
+    <string name="enter_name_title">Мы еще не знакомы,\nкак мы можем к Вам\nобращаться?</string>
+    <string name="enter_name_skip">Пропустить</string>
+    <string name="enter_name_hint">Ваше имя</string>
+    <string name="next_text">Далее</string>
 
     <!-- Fridge  -->
     <string name="fridge_toolbar_title">Ваши продукты</string>
