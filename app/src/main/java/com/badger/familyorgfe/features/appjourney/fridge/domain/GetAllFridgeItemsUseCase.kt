@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class GetAllFridgeItems @Inject constructor(
+class GetAllFridgeItemsUseCase @Inject constructor(
     private val dataStoreRepository: IDataStoreRepository,
     private val productRepository: IProductRepository,
     private val userRepository: IUserRepository,
