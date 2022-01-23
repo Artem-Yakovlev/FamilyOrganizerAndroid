@@ -7,4 +7,8 @@ interface IDataStoreRepository {
     val token: Flow<String>
 
     suspend fun setToken(token: String)
+
+    val userId: Flow<String>
+
+    suspend fun setUserId(id: String)
 }

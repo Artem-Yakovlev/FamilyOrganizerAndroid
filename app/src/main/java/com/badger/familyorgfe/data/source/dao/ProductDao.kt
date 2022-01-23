@@ -14,10 +14,10 @@ interface ProductDao {
     fun getAll(): Flow<List<Product>>
 
     @Query("SELECT * FROM products WHERE id IN (:productIds)")
-    fun getByIds(productIds: IntArray): Flow<List<Product>>
+    fun getByIds(productIds: List<String>): Flow<List<Product>>
 
     @Query("SELECT * FROM products WHERE id = :id")
-    fun loadById(id: String): Flow<Product>
+    fun getById(id: String): Flow<Product>
 
     @Insert
     suspend fun insertAll(vararg products: Product)

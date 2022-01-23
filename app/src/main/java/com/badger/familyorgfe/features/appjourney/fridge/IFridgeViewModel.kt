@@ -6,11 +6,28 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface IFridgeViewModel : IBaseViewModel<IFridgeViewModel.Event> {
 
+    /**
+     * Search
+     * */
+
+    val isSearchActive: StateFlow<Boolean>
+
+    val searchQuery: StateFlow<String>
+
+    /**
+     * Items
+     * */
+
     val items: StateFlow<List<FridgeItem>>
 
     val expandedItemId: StateFlow<String?>
 
     sealed class Event {
+        data class OnSearchQueryChanged(val query: String) : Event()
+        object OpenSearch : Event()
+        object CloseSearch : Event()
+        object ClearSearchQuery : Event()
+
         data class OnItemExpanded(val id: String) : Event()
         object OnItemCollapsed : Event()
     }

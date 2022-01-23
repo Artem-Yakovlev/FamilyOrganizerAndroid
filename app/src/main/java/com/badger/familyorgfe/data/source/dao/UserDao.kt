@@ -5,19 +5,20 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.badger.familyorgfe.data.model.User
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
 
     @Query("SELECT * FROM users")
-    fun getAll(): List<User>
+    fun getAll(): Flow<List<User>>
 
     @Query("SELECT * FROM users WHERE id = :id")
-    fun loadById(id: String): User
+    fun getById(id: String): Flow<User>
 
     @Insert
-    fun insertAll(vararg users: User)
+    suspend fun insertAll(vararg users: User)
 
     @Delete
-    fun delete(user: User)
+    suspend fun delete(user: User)
 }

@@ -8,6 +8,8 @@ import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -39,14 +41,16 @@ fun ProfileScreen(
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
+            val user by viewModel.mainUser.collectAsState()
+
             ProfileItem(
                 title = stringResource(id = R.string.profile_name_title),
-                value = stringResource(id = R.string.profile_name_value)
+                value = user.name
             )
 
             ProfileItem(
                 title = stringResource(id = R.string.profile_login_title),
-                value = stringResource(id = R.string.profile_login_value)
+                value = user.email
             )
         }
     }

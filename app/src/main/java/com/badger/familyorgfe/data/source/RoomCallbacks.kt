@@ -1,11 +1,14 @@
 package com.badger.familyorgfe.data.source
 
 import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.badger.familyorgfe.data.model.Fridge
 import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.data.model.User
+import com.badger.familyorgfe.data.repository.DataStoreRepository
 import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
@@ -22,6 +25,8 @@ import org.threeten.bp.LocalDateTime
 interface RoomCallbackEntryPoint {
 
     fun getDatabase(): AppDatabase
+
+    fun getDataStore(): DataStore<Preferences>
 }
 
 @DelicateCoroutinesApi
@@ -33,6 +38,7 @@ class PrepopulateCallback(applicationContext: Context) : RoomDatabase.Callback()
         super.onCreate(db)
 
         val database = entryPoint.getDatabase()
+        val dataStore = DataStoreRepository(entryPoint.getDataStore())
 
         GlobalScope.launch(Dispatchers.IO) {
             val userId = "user"
@@ -41,6 +47,7 @@ class PrepopulateCallback(applicationContext: Context) : RoomDatabase.Callback()
             val user = User(
                 id = userId,
                 name = "Тони Роббинс",
+                email = "tony.robbing@email.com",
                 fridgeId = fridgeId,
                 createdAt = LocalDateTime.now(),
                 updateAt = LocalDateTime.now(),
@@ -59,6 +66,7 @@ class PrepopulateCallback(applicationContext: Context) : RoomDatabase.Callback()
             database.userDao().insertAll(user)
             database.fridgeDao().insertAll(fridge)
             database.productDao().insertAll(*products.toTypedArray())
+            dataStore.setUserId(userId)
         }
     }
 

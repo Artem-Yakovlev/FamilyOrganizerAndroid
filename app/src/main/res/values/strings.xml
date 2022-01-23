@@ -52,10 +52,6 @@
 
     <!-- Profile -->
     <string name="profile_toolbar_title">Профиль</string>
-
     <string name="profile_name_title">Имя</string>
-    <string name="profile_name_value">Николай</string>
-
     <string name="profile_login_title">Логин</string>
-    <string name="profile_login_value">nik.step.ryazyan@mail.ru</string>
 </resources>

@@ -5,19 +5,20 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.badger.familyorgfe.data.model.Fridge
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface FridgeDao {
 
     @Query("SELECT * FROM fridges")
-    fun getAll(): List<Fridge>
+    fun getAll(): Flow<List<Fridge>>
 
     @Query("SELECT * FROM fridges WHERE id = :id")
-    fun loadById(id: String): Fridge
+    fun getById(id: String): Flow<Fridge>
 
     @Insert
-    fun insertAll(vararg fridges: Fridge)
+    suspend fun insertAll(vararg fridges: Fridge)
 
     @Delete
-    fun delete(fridge: Fridge)
+    suspend fun delete(fridge: Fridge)
 }

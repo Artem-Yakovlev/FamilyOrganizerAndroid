@@ -14,6 +14,10 @@ class FridgeViewModel @Inject constructor(
     getAllFridgeItems: GetAllFridgeItems
 ) : BaseViewModel(), IFridgeViewModel {
 
+    override val isSearchActive = MutableStateFlow(false)
+
+    override val searchQuery = MutableStateFlow("")
+
     override val items = getAllFridgeItems(Unit).stateIn(
         scope = viewModelScope,
         started = SharingStarted.Lazily,
@@ -29,6 +33,19 @@ class FridgeViewModel @Inject constructor(
             }
             is IFridgeViewModel.Event.OnItemExpanded -> {
                 expandedItemId.value = event.id
+            }
+            is IFridgeViewModel.Event.ClearSearchQuery -> {
+                searchQuery.value = ""
+            }
+            is IFridgeViewModel.Event.CloseSearch -> {
+                isSearchActive.value = false
+                searchQuery.value = ""
+            }
+            is IFridgeViewModel.Event.OnSearchQueryChanged -> {
+                searchQuery.value = event.query.replaceFirstChar(Char::uppercaseChar)
+            }
+            is IFridgeViewModel.Event.OpenSearch -> {
+                isSearchActive.value = true
             }
         }
     }

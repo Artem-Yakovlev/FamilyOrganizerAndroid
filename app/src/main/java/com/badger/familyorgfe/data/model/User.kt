@@ -15,6 +15,9 @@ data class User(
     @ColumnInfo(name = "name")
     val name: String,
 
+    @ColumnInfo(name = "email")
+    val email: String,
+
     @ColumnInfo(name = "fridge_id")
     val fridgeId: String,
 
@@ -26,4 +29,17 @@ data class User(
 
     @ColumnInfo(name = "is_registered")
     val isRegistered: Boolean
-)
+) {
+
+    companion object {
+        fun createEmpty() = User(
+            id = "",
+            name = "",
+            email = "",
+            fridgeId = "",
+            createdAt = LocalDateTime.now(),
+            updateAt = LocalDateTime.now(),
+            isRegistered = true
+        )
+    }
+}

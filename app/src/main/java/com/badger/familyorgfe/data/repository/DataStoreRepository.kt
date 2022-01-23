@@ -15,11 +15,20 @@ class DataStoreRepository @Inject constructor(
     companion object {
         private const val tokenKeyName = "auth_token"
         private val tokenKey = stringPreferencesKey(tokenKeyName)
+
+        private const val userIdKeyName = "user_id"
+        private val userIdKey = stringPreferencesKey(userIdKeyName)
     }
 
     override val token: Flow<String> = dataStore.data.map { prefs -> prefs[tokenKey].orEmpty() }
 
     override suspend fun setToken(token: String) {
         dataStore.edit { prefs -> prefs[tokenKey] = token }
+    }
+
+    override val userId: Flow<String> = dataStore.data.map { prefs -> prefs[userIdKey].orEmpty() }
+
+    override suspend fun setUserId(id: String) {
+        dataStore.edit { prefs -> prefs[userIdKey] = id }
     }
 }
