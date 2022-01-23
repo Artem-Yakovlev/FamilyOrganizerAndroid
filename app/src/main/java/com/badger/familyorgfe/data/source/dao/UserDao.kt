@@ -13,7 +13,7 @@ interface UserDao {
     fun getAll(): List<User>
 
     @Query("SELECT * FROM users WHERE id = :id")
-    fun loadByIds(id: String): List<User>
+    fun loadById(id: String): User
 
     @Insert
     fun insertAll(vararg users: User)

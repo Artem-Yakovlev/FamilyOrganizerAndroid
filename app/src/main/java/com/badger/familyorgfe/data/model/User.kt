@@ -19,7 +19,7 @@ data class User(
     val fridgeId: String,
 
     @ColumnInfo(name = "created_at")
-    val createdAt: String,
+    val createdAt: LocalDateTime,
 
     @ColumnInfo(name = "update_at")
     val updateAt: LocalDateTime,

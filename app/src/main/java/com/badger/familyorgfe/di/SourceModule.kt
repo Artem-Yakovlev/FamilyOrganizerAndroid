@@ -8,11 +8,13 @@ import androidx.room.Room
 import com.badger.familyorgfe.data.source.AppDatabase
 import com.badger.familyorgfe.data.source.ProductApi
 import com.badger.familyorgfe.data.source.UserApi
+import com.badger.familyorgfe.data.source.getPrepopulateCallback
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.DelicateCoroutinesApi
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
@@ -23,6 +25,7 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = DAT
 
 @Module
 @InstallIn(SingletonComponent::class)
+@DelicateCoroutinesApi
 class SourceModule {
 
     companion object {
@@ -49,8 +52,11 @@ class SourceModule {
     fun provideAppDatabase(@ApplicationContext applicationContext: Context): AppDatabase {
         return Room.databaseBuilder(
             applicationContext,
-            AppDatabase::class.java, DATABASE_NAME
-        ).build()
+            AppDatabase::class.java,
+            DATABASE_NAME
+        )
+            .addCallback(getPrepopulateCallback(applicationContext))
+            .build()
     }
 
     /**

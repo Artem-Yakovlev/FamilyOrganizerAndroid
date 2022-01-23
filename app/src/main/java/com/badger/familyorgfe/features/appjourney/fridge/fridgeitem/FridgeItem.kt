@@ -1,0 +1,31 @@
+package com.badger.familyorgfe.features.appjourney.fridge.fridgeitem
+
+import com.badger.familyorgfe.data.model.Product
+
+
+data class FridgeItem(
+    val id: String,
+    val name: String,
+    val quantity: Double?,
+    val measure: Product.Measure?,
+    val category: Product.Category,
+    val expDaysLeft: Int?,
+    val expStatus: Product.ExpirationStatus?
+) {
+    val hasMeasureAndQuantity get() = measure != null && quantity != null
+
+    val hasExpiration get() = expStatus != null && expDaysLeft != null
+
+    companion object {
+
+        fun mock(id: String) = FridgeItem(
+            id = id,
+            name = "Шоколадный батончик",
+            quantity = 1.0,
+            measure = Product.Measure.THINGS,
+            category = Product.Category.HEALTHY,
+            expDaysLeft = 5,
+            expStatus = Product.ExpirationStatus.BAD_SOON
+        )
+    }
+}

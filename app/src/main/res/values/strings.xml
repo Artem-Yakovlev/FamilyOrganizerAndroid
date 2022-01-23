@@ -6,6 +6,47 @@
     <!-- Fridge  -->
     <string name="fridge_toolbar_title">Ваши продукты</string>
 
+    <plurals name="fridge_measure_liter_plurals">
+        <item quantity="one">Литр</item>
+        <item quantity="other">Литра</item>
+    </plurals>
+
+    <plurals name="fridge_measure_kilogram_plurals">
+        <item quantity="one">Килограмм</item>
+        <item quantity="other">Килограмма</item>
+    </plurals>
+
+    <plurals name="fridge_measure_gram_plurals">
+        <item quantity="one">Грамм</item>
+        <item quantity="other">Грамма</item>
+    </plurals>
+
+    <plurals name="fridge_measure_things_plurals">
+        <item quantity="other">Шт.</item>
+    </plurals>
+    
+    <string name="fridge_quantity_unknown">Неизвестно</string>
+
+    <plurals name="fridge_expiration_day_plurals">
+        <item quantity="one">День</item>
+        <item quantity="few">Дня</item>
+        <item quantity="many">Дней</item>
+        <item quantity="other">Дней</item>
+    </plurals>
+
+    <plurals name="fridge_expiration_month_plurals">
+        <item quantity="one">Месяц</item>
+        <item quantity="few">Месяца</item>
+        <item quantity="many">Месяцев</item>
+        <item quantity="other">Месяцев</item>
+    </plurals>
+
+    <plurals name="fridge_expiration_year_plurals">
+        <item quantity="one">Год</item>
+        <item quantity="few">Года</item>
+        <item quantity="other">Лет</item>
+    </plurals>
+
     <!-- Adding   -->
     <string name="adding_toolbar_title">Добавить продукты</string>
 
