@@ -8,10 +8,10 @@ import kotlinx.coroutines.launch
 
 fun String.isValidMail() = Patterns.EMAIL_ADDRESS.matcher(this).matches()
 
-fun String.isValidName() = isNotBlank()
+fun String.isValidName() = isNotBlank() && length >= 2
 
 fun ViewModel.longRunning(block: suspend () -> Any?) {
-    viewModelScope.launch(Dispatchers.IO) {
+    viewModelScope.launch(Dispatchers.Default) {
         block()
     }
 }

@@ -13,23 +13,30 @@ class CodeViewModel @Inject constructor(
 //    private val setMailUseCase: SetCodeUseCase
 ) : BaseViewModel(), ICodeViewModel {
 
-    override val mail = MutableStateFlow("")
+    override val code = MutableStateFlow("")
 
     override val continueEnabled = MutableStateFlow(false)
 
+    override val resendCodeEnabled = MutableStateFlow(false)
+
     override fun onEvent(event: Event) {
         when (event) {
-            is Event.MailUpdate -> handleMailUpdate(event.mail)
-            is Event.ContinueClick -> longRunning { handleContinueClick() }
+            is Event.CodeUpdate -> handleCodeUpdate(event.query)
+            is Event.ContinueClicked -> longRunning { handleContinueClick() }
+            is Event.ResendCodeClicked -> longRunning { handleResendCodeClick() }
         }
     }
 
-    private fun handleMailUpdate(query: String) {
-        mail.value = query
+    private fun handleCodeUpdate(query: String) {
+        code.value = query
         continueEnabled.value = query.isValidMail()
     }
 
     private suspend fun handleContinueClick() {
+        // TODO: navigate to code screen
+    }
+
+    private suspend fun handleResendCodeClick() {
         // TODO: navigate to code screen
     }
 

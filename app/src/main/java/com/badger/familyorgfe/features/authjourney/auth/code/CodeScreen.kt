@@ -6,7 +6,10 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -14,21 +17,26 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.badger.familyorgfe.R
+import com.badger.familyorgfe.features.authjourney.auth.code.viewmodel.CodeViewModel
+import com.badger.familyorgfe.features.authjourney.auth.code.viewmodel.ICodeViewModel
+import com.badger.familyorgfe.features.authjourney.auth.code.viewmodel.ICodeViewModel.Event
 import com.badger.familyorgfe.ui.style.buttonColors
 import com.badger.familyorgfe.ui.style.outlinedTextFieldColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 
 @Composable
-fun CodeScreen() {
+fun CodeScreen(
+    modifier: Modifier,
+    viewModel: ICodeViewModel = hiltViewModel<CodeViewModel>()
+) {
 
-    var code by remember {
-        mutableStateOf("")
-    }
+    val code by viewModel.code.collectAsState()
 
-    var continueEnabled by remember {
-        mutableStateOf(false)
-    }
+    val continueEnabled by viewModel.continueEnabled.collectAsState()
+
+    val resendCodeEnabled by viewModel.resendCodeEnabled.collectAsState()
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -88,7 +96,7 @@ fun CodeScreen() {
 
             OutlinedTextField(
                 value = code,
-                onValueChange = { code = it },
+                onValueChange = { viewModel.onEvent(Event.CodeUpdate(it)) },
                 textStyle = FamilyOrganizerTheme.textStyle.input,
                 colors = outlinedTextFieldColors(),
                 placeholder = { Text(text = stringResource(R.string.enter_code_hint)) },
@@ -98,7 +106,7 @@ fun CodeScreen() {
             )
 
             Button(
-                onClick = { },
+                onClick = { viewModel.onEvent(Event.ContinueClicked) },
                 enabled = continueEnabled,
                 colors = buttonColors(),
                 modifier = Modifier
@@ -116,7 +124,8 @@ fun CodeScreen() {
             }
 
             TextButton(
-                onClick = { },
+                onClick = { viewModel.onEvent(Event.ResendCodeClicked) },
+                enabled = resendCodeEnabled,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 16.dp)

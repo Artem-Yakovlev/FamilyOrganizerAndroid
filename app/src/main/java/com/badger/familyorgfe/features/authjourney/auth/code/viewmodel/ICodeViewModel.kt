@@ -5,12 +5,15 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface ICodeViewModel : IBaseViewModel<ICodeViewModel.Event> {
 
-    val mail: StateFlow<String>
+    val code: StateFlow<String>
 
     val continueEnabled: StateFlow<Boolean>
 
+    val resendCodeEnabled: StateFlow<Boolean>
+
     sealed class Event {
-        data class MailUpdate(val mail: String) : Event()
-        object ContinueClick : Event()
+        data class CodeUpdate(val query: String) : Event()
+        object ContinueClicked : Event()
+        object ResendCodeClicked : Event()
     }
 }
