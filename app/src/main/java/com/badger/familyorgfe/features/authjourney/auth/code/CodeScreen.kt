@@ -19,9 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.badger.familyorgfe.R
-import com.badger.familyorgfe.features.authjourney.auth.code.viewmodel.CodeViewModel
-import com.badger.familyorgfe.features.authjourney.auth.code.viewmodel.ICodeViewModel
-import com.badger.familyorgfe.features.authjourney.auth.code.viewmodel.ICodeViewModel.Event
+import com.badger.familyorgfe.features.authjourney.auth.code.ICodeViewModel.Event
 import com.badger.familyorgfe.ui.style.buttonColors
 import com.badger.familyorgfe.ui.style.outlinedTextFieldColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme

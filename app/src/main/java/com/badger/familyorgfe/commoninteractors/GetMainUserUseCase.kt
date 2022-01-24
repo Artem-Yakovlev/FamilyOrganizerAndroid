@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.domain
+package com.badger.familyorgfe.commoninteractors
 
 import com.badger.familyorgfe.base.FlowUseCase
 import com.badger.familyorgfe.data.model.User

@@ -1,9 +1,9 @@
-package com.badger.familyorgfe.features.authjourney.auth.code.viewmodel
+package com.badger.familyorgfe.features.authjourney.auth.code
 
 import com.badger.familyorgfe.base.BaseViewModel
-import com.badger.familyorgfe.features.authjourney.auth.code.viewmodel.ICodeViewModel.Event
-import com.badger.familyorgfe.features.isValidMail
-import com.badger.familyorgfe.features.longRunning
+import com.badger.familyorgfe.features.authjourney.auth.code.ICodeViewModel.Event
+import com.badger.familyorgfe.ext.isValidMail
+import com.badger.familyorgfe.ext.longRunning
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject

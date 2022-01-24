@@ -1,4 +1,4 @@
-package com.tydeya.justbalance.base
+package com.badger.familyorgfe.base
 
 abstract class SyncUseCase<I, O> {
 

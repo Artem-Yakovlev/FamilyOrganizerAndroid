@@ -1,10 +1,11 @@
 package com.badger.familyorgfe.features.appjourney.fridge
 
-import androidx.lifecycle.viewModelScope
 import com.badger.familyorgfe.base.BaseViewModel
+import com.badger.familyorgfe.ext.viewModelScope
 import com.badger.familyorgfe.features.appjourney.fridge.domain.GetAllFridgeItemsUseCase
 import com.badger.familyorgfe.features.appjourney.fridge.domain.SearchInFridgeItemsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -28,7 +29,7 @@ class FridgeViewModel @Inject constructor(
         flow2 = searchQuery,
         transform = { items, query -> searchInFridgeItemsUseCase(items to query) }
     ).stateIn(
-        scope = viewModelScope,
+        scope = viewModelScope(Dispatchers.Default),
         started = SharingStarted.Lazily,
         initialValue = emptyList()
     )

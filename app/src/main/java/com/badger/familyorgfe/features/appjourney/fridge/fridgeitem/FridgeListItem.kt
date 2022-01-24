@@ -48,7 +48,6 @@ fun FridgeListItem(
             .wrapContentHeight()
             .fillMaxWidth()
     ) {
-
         ActionIconsLayout(
             onEdit = onEdit,
             onDelete = onDelete
@@ -85,7 +84,6 @@ private fun ActionIconsLayout(
 
         Spacer(modifier = Modifier.width(8.dp))
         ActionIcon(onClick = onDelete, size = 32.dp, iconResourceId = R.drawable.ic_close)
-
     }
 }
 

@@ -22,7 +22,8 @@
 
     <plurals name="fridge_measure_liter_plurals">
         <item quantity="one">Литр</item>
-        <item quantity="other">Литра</item>
+        <item quantity="few">Литра</item>
+        <item quantity="other">Литров</item>
     </plurals>
 
     <plurals name="fridge_measure_kilogram_plurals">

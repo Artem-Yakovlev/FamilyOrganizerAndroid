@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.domain
+package com.badger.familyorgfe.features.authjourney.auth.mail.domain
 
 import com.badger.familyorgfe.base.BaseUseCase
 import com.badger.familyorgfe.data.repository.IUserRepository

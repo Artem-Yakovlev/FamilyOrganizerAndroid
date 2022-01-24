@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.features.authjourney.auth.mail.viewmodel
+package com.badger.familyorgfe.features.authjourney.auth.mail
 
 import com.badger.familyorgfe.base.IBaseViewModel
 import kotlinx.coroutines.flow.StateFlow
