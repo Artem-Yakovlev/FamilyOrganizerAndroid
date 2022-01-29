@@ -6,9 +6,13 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface IProfileViewModel : IBaseViewModel<IProfileViewModel.Event> {
 
+    val showLogoutDialog: StateFlow<Boolean>
+
     val mainUser: StateFlow<User>
 
     sealed class Event {
         object OnLogoutClick : Event()
+        object OnLogoutDismiss : Event()
+        object OnLogoutAccepted : Event()
     }
 }

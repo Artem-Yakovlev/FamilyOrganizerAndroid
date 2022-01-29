@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -18,6 +19,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.badger.familyorgfe.R
+import com.badger.familyorgfe.ui.elements.BaseDialog
 import com.badger.familyorgfe.ui.elements.BaseToolbar
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 
@@ -26,12 +28,13 @@ fun ProfileScreen(
     modifier: Modifier,
     viewModel: IProfileViewModel = hiltViewModel<ProfileViewModel>()
 ) {
+    val showLogoutDialog by viewModel.showLogoutDialog.collectAsState()
 
     Column(
         modifier = modifier
             .fillMaxSize()
     ) {
-        Toolbar()
+        Toolbar(onLogoutClicked = { viewModel.onEvent(IProfileViewModel.Event.OnLogoutClick) })
 
         Column(
             modifier = modifier
@@ -53,11 +56,22 @@ fun ProfileScreen(
                 value = user.email
             )
         }
+
+        if (showLogoutDialog) {
+            BaseDialog(
+                titleText = stringResource(id = R.string.profile_logout_title),
+                descriptionText = stringResource(id = R.string.profile_logout_description),
+                dismissText = stringResource(id = R.string.profile_logout_dismiss),
+                actionText = stringResource(id = R.string.profile_logout_action),
+                onActionClicked = { viewModel.onEvent(IProfileViewModel.Event.OnLogoutAccepted) },
+                onDismissClicked = { viewModel.onEvent(IProfileViewModel.Event.OnLogoutDismiss) }
+            )
+        }
     }
 }
 
 @Composable
-private fun Toolbar() {
+private fun Toolbar(onLogoutClicked: () -> Unit) {
     BaseToolbar {
         Spacer(modifier = Modifier.width(16.dp))
 
@@ -72,9 +86,9 @@ private fun Toolbar() {
             modifier = Modifier
                 .size(24.dp)
                 .clickable(
-                    indication = null,
+                    indication = rememberRipple(bounded = false),
                     interactionSource = remember { MutableInteractionSource() }
-                ) { },
+                ) { onLogoutClicked() },
             painter = painterResource(id = R.drawable.ic_logout),
             contentDescription = null,
             tint = FamilyOrganizerTheme.colors.blackPrimary

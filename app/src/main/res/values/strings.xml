@@ -19,6 +19,10 @@
 
     <!-- Fridge  -->
     <string name="fridge_toolbar_title">Ваши продукты</string>
+    <string name="fridge_delete_product_title">Удаление продукта</string>
+    <string name="fridge_delete_product_description">Вы действительно хотите удалить %1$1s из холодильника?</string>
+    <string name="fridge_delete_product_dismiss">Отмена</string>
+    <string name="fridge_delete_product_action">Удалить</string>
 
     <plurals name="fridge_measure_liter_plurals">
         <item quantity="one">Литр</item>
@@ -39,7 +43,7 @@
     <plurals name="fridge_measure_things_plurals">
         <item quantity="other">Шт.</item>
     </plurals>
-    
+
     <string name="fridge_quantity_unknown">Неизвестно</string>
 
     <plurals name="fridge_expiration_day_plurals">
@@ -69,4 +73,9 @@
     <string name="profile_toolbar_title">Профиль</string>
     <string name="profile_name_title">Имя</string>
     <string name="profile_login_title">Логин</string>
+
+    <string name="profile_logout_title">Внимание</string>
+    <string name="profile_logout_description">Вы действительно хотите выйти из аккаунта?</string>
+    <string name="profile_logout_dismiss">Отмена</string>
+    <string name="profile_logout_action">Выйти</string>
 </resources>
