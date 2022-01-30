@@ -64,7 +64,7 @@ private fun DialogContent(
 
         Text(
             text = titleText,
-            style = FamilyOrganizerTheme.textStyle.headline3.copy(fontSize = 18.sp),
+            style = FamilyOrganizerTheme.textStyle.headline3.copy(fontSize = 20.sp),
             color = FamilyOrganizerTheme.colors.blackPrimary
         )
         Spacer(modifier = Modifier.height(8.dp))

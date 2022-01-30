@@ -23,4 +23,8 @@ class ProductRepository @Inject constructor(
     override fun getProductByIds(ids: List<String>): Flow<List<Product>> {
         return productDao.getByIds(ids)
     }
+
+    override suspend fun deleteItemByIds(ids: List<String>) {
+        productDao.deleteByIds(ids = ids.toTypedArray())
+    }
 }

@@ -1,7 +1,6 @@
 package com.badger.familyorgfe.data.source.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.badger.familyorgfe.data.model.Product
@@ -22,6 +21,6 @@ interface ProductDao {
     @Insert
     suspend fun insertAll(vararg products: Product)
 
-    @Delete
-    suspend fun delete(product: Product)
+    @Query("DELETE FROM products WHERE id IN (:ids)")
+    suspend fun deleteByIds(vararg ids: String)
 }

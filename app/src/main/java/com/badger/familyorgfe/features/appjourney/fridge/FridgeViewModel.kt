@@ -2,20 +2,24 @@ package com.badger.familyorgfe.features.appjourney.fridge
 
 import com.badger.familyorgfe.base.BaseViewModel
 import com.badger.familyorgfe.ext.viewModelScope
+import com.badger.familyorgfe.features.appjourney.fridge.domain.DeleteFridgeItemUseCase
 import com.badger.familyorgfe.features.appjourney.fridge.domain.GetAllFridgeItemsUseCase
 import com.badger.familyorgfe.features.appjourney.fridge.domain.SearchInFridgeItemsUseCase
+import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FridgeViewModel @Inject constructor(
     getAllFridgeItemsUseCase: GetAllFridgeItemsUseCase,
-    private val searchInFridgeItemsUseCase: SearchInFridgeItemsUseCase
+    private val searchInFridgeItemsUseCase: SearchInFridgeItemsUseCase,
+    private val deleteFridgeItemUseCase: DeleteFridgeItemUseCase
 ) : BaseViewModel(), IFridgeViewModel {
 
     override val isSearchActive = MutableStateFlow(false)
@@ -35,6 +39,8 @@ class FridgeViewModel @Inject constructor(
     )
 
     override val expandedItemId = MutableStateFlow<String?>(null)
+
+    override val deleteItemDialog = MutableStateFlow<FridgeItem?>(null)
 
     override fun onEvent(event: IFridgeViewModel.Event) {
         when (event) {
@@ -56,6 +62,25 @@ class FridgeViewModel @Inject constructor(
             }
             is IFridgeViewModel.Event.OpenSearch -> {
                 isSearchActive.value = true
+            }
+            is IFridgeViewModel.Event.DismissDialogs -> {
+                deleteItemDialog.value = null
+            }
+            is IFridgeViewModel.Event.RequestDeleteItemDialog -> {
+                expandedItemId.value = null
+                deleteItemDialog.value = event.item
+            }
+            is IFridgeViewModel.Event.DeleteItem -> {
+                viewModelScope(
+                    dispatcher = Dispatchers.IO,
+                    onError = {
+                        deleteItemDialog.value = null
+                    }
+                ).launch {
+                    deleteFridgeItemUseCase(event.item)
+                    deleteItemDialog.value = null
+                }
+
             }
         }
     }

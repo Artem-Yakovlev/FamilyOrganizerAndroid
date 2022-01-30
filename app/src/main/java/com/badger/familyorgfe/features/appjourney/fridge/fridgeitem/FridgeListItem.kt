@@ -14,6 +14,7 @@ import androidx.compose.material.Card
 import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -41,7 +42,7 @@ fun FridgeListItem(
     onExpand: () -> Unit,
     onCollapse: () -> Unit,
     onEdit: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: (FridgeItem) -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -50,7 +51,7 @@ fun FridgeListItem(
     ) {
         ActionIconsLayout(
             onEdit = onEdit,
-            onDelete = onDelete
+            onDelete = { onDelete(item) }
         )
 
         SwipeableContent(
@@ -102,7 +103,10 @@ private fun ActionIcon(
                 .size(size = size)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
-                    indication = null,
+                    indication = rememberRipple(
+                        bounded = false,
+                        color = FamilyOrganizerTheme.colors.primary
+                    ),
                     onClick = onClick
                 ),
             painter = painterResource(id = iconResourceId),

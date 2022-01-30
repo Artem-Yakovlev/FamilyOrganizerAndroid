@@ -9,4 +9,6 @@ interface IProductRepository {
     fun getFridgeById(id: String): Flow<Fridge>
 
     fun getProductByIds(ids: List<String>): Flow<List<Product>>
+
+    suspend fun deleteItemByIds(ids: List<String>)
 }

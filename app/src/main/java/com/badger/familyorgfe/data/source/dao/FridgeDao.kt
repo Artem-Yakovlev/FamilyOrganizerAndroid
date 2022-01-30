@@ -1,7 +1,6 @@
 package com.badger.familyorgfe.data.source.dao
 
 import androidx.room.Dao
-import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import com.badger.familyorgfe.data.model.Fridge
@@ -18,7 +17,4 @@ interface FridgeDao {
 
     @Insert
     suspend fun insertAll(vararg fridges: Fridge)
-
-    @Delete
-    suspend fun delete(fridge: Fridge)
 }
