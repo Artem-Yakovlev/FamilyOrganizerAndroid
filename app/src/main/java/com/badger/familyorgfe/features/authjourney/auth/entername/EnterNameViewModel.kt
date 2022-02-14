@@ -5,12 +5,17 @@ import com.badger.familyorgfe.features.authjourney.auth.entername.IEnterNameView
 import com.badger.familyorgfe.features.authjourney.auth.entername.domain.SetNameUseCase
 import com.badger.familyorgfe.ext.isValidName
 import com.badger.familyorgfe.ext.longRunning
+import com.badger.familyorgfe.ext.route
+import com.badger.familyorgfe.features.authjourney.AuthJourneyType
+import com.badger.familyorgfe.navigation.NavigationCommand.To
+import com.badger.familyorgfe.navigation.NavigationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
 class EnterNameViewModel @Inject constructor(
+    private val navigationManager: NavigationManager,
     private val setNameUseCase: SetNameUseCase
 ) : BaseViewModel(), IEnterNameViewModel {
 
@@ -37,12 +42,12 @@ class EnterNameViewModel @Inject constructor(
 
     private suspend fun handleContinueClick() {
         setNameUseCase.invoke(name.value)
-        // TODO: navigate to welcome screen
+        navigationManager.navigate(To(AuthJourneyType.WELCOME.route))
     }
 
     private suspend fun handleSkipClick() {
         setNameUseCase.invoke(EMPTY_NAME)
-        // TODO: navigate to welcome screen
+        navigationManager.navigate(To(AuthJourneyType.WELCOME.route))
     }
 
     override fun clearData() = Unit

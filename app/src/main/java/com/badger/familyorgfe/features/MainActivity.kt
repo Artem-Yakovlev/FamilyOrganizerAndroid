@@ -12,14 +12,18 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.badger.familyorgfe.features.appjourney.AppJourney
 import com.badger.familyorgfe.features.authjourney.AuthJourney
+import com.badger.familyorgfe.navigation.NavigationManager
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     private val viewModel: IMainViewModel by viewModels<MainViewModel>()
+    @Inject
+    lateinit var navigationManager: NavigationManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -34,13 +38,17 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun JourneyScreen() {
-        val auth by viewModel.isAuth.collectAsState()
+        val isUserAuthorized by viewModel.isUserAuthorized.collectAsState()
         val appModifier = Modifier.fillMaxSize()
 
-        if (auth) {
+        if (isUserAuthorized) {
             AppJourney(modifier = appModifier)
         } else {
-            AuthJourney(modifier = appModifier)
+            AuthJourney(
+                modifier = appModifier,
+                lifecycleOwner = this,
+                navigationManager = navigationManager
+            )
         }
     }
 }

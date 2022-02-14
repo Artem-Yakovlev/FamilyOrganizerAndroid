@@ -4,16 +4,19 @@ import androidx.navigation.NavController
 import com.badger.familyorgfe.base.BaseViewModel
 import com.badger.familyorgfe.ext.isValidMail
 import com.badger.familyorgfe.ext.longRunning
+import com.badger.familyorgfe.ext.route
 import com.badger.familyorgfe.features.authjourney.AuthJourneyType
 import com.badger.familyorgfe.features.authjourney.auth.mail.IMailViewModel.Event
 import com.badger.familyorgfe.features.authjourney.auth.mail.domain.SetMailUseCase
+import com.badger.familyorgfe.navigation.NavigationCommand.To
+import com.badger.familyorgfe.navigation.NavigationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
 class MailViewModel @Inject constructor(
-    private val navController: NavController,
+    private val navigationManager: NavigationManager,
     private val setMailUseCase: SetMailUseCase
 ) : BaseViewModel(), IMailViewModel {
 
@@ -35,7 +38,7 @@ class MailViewModel @Inject constructor(
 
     private suspend fun handleContinueClick() {
         setMailUseCase.invoke(Unit)
-        navController.navigate(AuthJourneyType.CODE.name)
+        navigationManager.navigate(To(AuthJourneyType.CODE.route))
     }
 
     override fun clearData() = Unit

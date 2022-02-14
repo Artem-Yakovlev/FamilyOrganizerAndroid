@@ -1,15 +1,20 @@
 package com.badger.familyorgfe.features.authjourney.auth.code
 
 import com.badger.familyorgfe.base.BaseViewModel
+import com.badger.familyorgfe.ext.isValidCode
 import com.badger.familyorgfe.features.authjourney.auth.code.ICodeViewModel.Event
-import com.badger.familyorgfe.ext.isValidMail
 import com.badger.familyorgfe.ext.longRunning
+import com.badger.familyorgfe.ext.route
+import com.badger.familyorgfe.features.authjourney.AuthJourneyType
+import com.badger.familyorgfe.navigation.NavigationCommand.To
+import com.badger.familyorgfe.navigation.NavigationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
 class CodeViewModel @Inject constructor(
+    private val navigationManager: NavigationManager,
 //    private val setMailUseCase: SetCodeUseCase
 ) : BaseViewModel(), ICodeViewModel {
 
@@ -29,15 +34,14 @@ class CodeViewModel @Inject constructor(
 
     private fun handleCodeUpdate(query: String) {
         code.value = query
-        continueEnabled.value = query.isValidMail()
+        continueEnabled.value = query.isValidCode()
     }
 
     private suspend fun handleContinueClick() {
-        // TODO: navigate to code screen
+        navigationManager.navigate(To(AuthJourneyType.ENTER_NAME.route))
     }
 
     private suspend fun handleResendCodeClick() {
-        // TODO: navigate to code screen
     }
 
     override fun clearData() = Unit

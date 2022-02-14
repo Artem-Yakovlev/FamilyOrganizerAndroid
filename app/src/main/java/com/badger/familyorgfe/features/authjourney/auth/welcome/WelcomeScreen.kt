@@ -14,15 +14,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.badger.familyorgfe.R
 import com.badger.familyorgfe.ui.style.buttonColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
+import com.badger.familyorgfe.features.authjourney.auth.welcome.IWelcomeViewModel.Event
 
 @Composable
 fun WelcomeScreen(
     modifier: Modifier,
-    viewModel: WelcomeViewModel = viewModel()
+    viewModel: IWelcomeViewModel = hiltViewModel<WelcomeViewModel>()
 ) {
 
     Column(
@@ -68,7 +69,7 @@ fun WelcomeScreen(
         }
 
         Button(
-            onClick = { },
+            onClick = { viewModel.onEvent(Event.ContinueClicked) },
             colors = buttonColors(),
             modifier = Modifier
                 .fillMaxWidth()
