@@ -22,6 +22,7 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
 
     private val viewModel: IMainViewModel by viewModels<MainViewModel>()
+
     @Inject
     lateinit var navigationManager: NavigationManager
 
@@ -38,17 +39,20 @@ class MainActivity : ComponentActivity() {
 
     @Composable
     private fun JourneyScreen() {
-        val isUserAuthorized by viewModel.isUserAuthorized.collectAsState()
+        val isAuthorized by viewModel.isAuthorized.collectAsState()
         val appModifier = Modifier.fillMaxSize()
 
-        if (isUserAuthorized) {
-            AppJourney(modifier = appModifier)
-        } else {
-            AuthJourney(
-                modifier = appModifier,
-                lifecycleOwner = this,
-                navigationManager = navigationManager
-            )
+        when (isAuthorized) {
+            is IMainViewModel.AuthState.Auth -> AppJourney(modifier = appModifier)
+            is IMainViewModel.AuthState.NoAuth ->
+                AuthJourney(
+                    modifier = appModifier,
+                    lifecycleOwner = this,
+                    navigationManager = navigationManager
+                )
+            is IMainViewModel.AuthState.Loading -> {
+                // TODO: make splash screen
+            }
         }
     }
 }

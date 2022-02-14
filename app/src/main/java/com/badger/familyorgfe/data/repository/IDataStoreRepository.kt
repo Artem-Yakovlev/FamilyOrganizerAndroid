@@ -11,4 +11,8 @@ interface IDataStoreRepository {
     val userId: Flow<String>
 
     suspend fun setUserId(id: String)
+
+    val isUserAuthorized: Flow<Boolean>
+
+    suspend fun setIsUserAuthorized(isUserAuthorized: Boolean)
 }

@@ -2,7 +2,9 @@ package com.badger.familyorgfe.features.appjourney.profile
 
 import com.badger.familyorgfe.base.BaseViewModel
 import com.badger.familyorgfe.commoninteractors.GetMainUserUseCase
+import com.badger.familyorgfe.commoninteractors.SetIsUserAuthorizedUseCase
 import com.badger.familyorgfe.data.model.User
+import com.badger.familyorgfe.ext.longRunning
 import com.badger.familyorgfe.ext.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -11,7 +13,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
-    getMainUserUseCase: GetMainUserUseCase
+    getMainUserUseCase: GetMainUserUseCase,
+    private val setIsUserAuthorizedUseCase: SetIsUserAuthorizedUseCase
 ) : BaseViewModel(), IProfileViewModel {
 
     override val mainUser: StateFlow<User> = getMainUserUseCase(Unit)
@@ -29,13 +32,15 @@ class ProfileViewModel @Inject constructor(
             IProfileViewModel.Event.OnLogoutClick -> {
                 showLogoutDialog.value = true
             }
-            IProfileViewModel.Event.OnLogoutAccepted -> {
-                showLogoutDialog.value = false
-            }
+            IProfileViewModel.Event.OnLogoutAccepted -> longRunning { handleLogout() }
             IProfileViewModel.Event.OnLogoutDismiss -> {
                 showLogoutDialog.value = false
             }
         }
     }
 
+    private suspend fun handleLogout() {
+        showLogoutDialog.value = false
+        setIsUserAuthorizedUseCase.invoke(false)
+    }
 }
