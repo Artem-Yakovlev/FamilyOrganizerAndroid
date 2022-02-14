@@ -18,5 +18,4 @@ enum class BottomNavigationType(
         resourceId = R.drawable.ic_bottom_navigation_account
     );
 
-    val route get() = name
 }

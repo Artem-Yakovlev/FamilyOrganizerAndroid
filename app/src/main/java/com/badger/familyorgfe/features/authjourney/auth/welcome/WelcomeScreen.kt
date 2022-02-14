@@ -20,7 +20,10 @@ import com.badger.familyorgfe.ui.style.buttonColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 
 @Composable
-fun WelcomeScreen(viewModel: WelcomeViewModel = viewModel()) {
+fun WelcomeScreen(
+    modifier: Modifier,
+    viewModel: WelcomeViewModel = viewModel()
+) {
 
     Column(
         modifier = Modifier
