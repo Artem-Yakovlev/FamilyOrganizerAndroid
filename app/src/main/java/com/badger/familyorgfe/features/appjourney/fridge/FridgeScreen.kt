@@ -2,6 +2,7 @@ package com.badger.familyorgfe.features.appjourney.fridge
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -49,37 +50,38 @@ fun FridgeScreen(
         LazyColumn(
             modifier = modifier
                 .fillMaxWidth()
-                .weight(1f)
+                .weight(1f),
         ) {
             item {
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
-            fridgeItems.forEach { item ->
-                item {
-                    FridgeListItem(
-                        item = item,
-                        isExpanded = item.id == expandedItemId,
-                        onExpand = {
-                            val event = IFridgeViewModel.Event.OnItemExpanded(item.id)
-                            viewModel.onEvent(event)
-                        },
-                        onCollapse = {
-                            val event = IFridgeViewModel.Event.OnItemCollapsed
-                            viewModel.onEvent(event)
-                        },
-                        onEdit = {
+            items(
+                items = fridgeItems,
+                key = { item -> item.id }
+            ) { item ->
+                FridgeListItem(
+                    item = item,
+                    isExpanded = item.id == expandedItemId,
+                    onExpand = {
+                        val event = IFridgeViewModel.Event.OnItemExpanded(item.id)
+                        viewModel.onEvent(event)
+                    },
+                    onCollapse = {
+                        val event = IFridgeViewModel.Event.OnItemCollapsed
+                        viewModel.onEvent(event)
+                    },
+                    onEdit = {
 
-                        },
-                        onDelete = { item ->
-                            val event = IFridgeViewModel.Event.RequestDeleteItemDialog(item)
-                            viewModel.onEvent(event)
-                        }
-                    )
-                    Spacer(
-                        modifier = Modifier.height(8.dp)
-                    )
-                }
+                    },
+                    onDelete = { deletedItem ->
+                        val event = IFridgeViewModel.Event.RequestDeleteItemDialog(deletedItem)
+                        viewModel.onEvent(event)
+                    }
+                )
+                Spacer(
+                    modifier = Modifier.height(8.dp)
+                )
             }
         }
 
