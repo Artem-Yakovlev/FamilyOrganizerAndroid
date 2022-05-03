@@ -7,7 +7,7 @@ import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
 import com.badger.familyorgfe.data.source.AppDatabase
 import com.badger.familyorgfe.data.source.ProductApi
-import com.badger.familyorgfe.data.source.UserApi
+import com.badger.familyorgfe.data.source.auth.AuthApi
 import com.badger.familyorgfe.data.source.getPrepopulateCallback
 import dagger.Module
 import dagger.Provides
@@ -76,5 +76,5 @@ class SourceModule {
 
     @Provides
     @Singleton
-    fun provideUserApi(retrofit: Retrofit): UserApi = retrofit.create(UserApi::class.java)
+    fun provideUserApi(retrofit: Retrofit): AuthApi = retrofit.create(AuthApi::class.java)
 }

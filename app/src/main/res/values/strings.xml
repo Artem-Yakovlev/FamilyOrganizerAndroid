@@ -3,7 +3,7 @@
 
     <!-- Auth    -->
     <string name="enter_mail_title">Введите\nвашу почту</string>
-    <string name="enter_mail_subtitle">Если Вы еще не аккаунта, то мы\nего создадим</string>
+    <string name="enter_mail_subtitle">Если у Вас еще нет аккаунта, то мы\nего создадим</string>
     <string name="continue_text">Продолжить</string>
     <string name="enter_code_title">Введите код</string>
     <string name="enter_code_subtitle">он отправлен Вам на почту</string>

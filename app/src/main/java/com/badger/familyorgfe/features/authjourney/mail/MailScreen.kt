@@ -1,12 +1,17 @@
-package com.badger.familyorgfe.features.authjourney.auth.mail
+package com.badger.familyorgfe.features.authjourney.mail
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.material.Button
+import androidx.compose.material.OutlinedTextField
+import androidx.compose.material.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -15,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.badger.familyorgfe.R
-import com.badger.familyorgfe.features.authjourney.auth.mail.IMailViewModel.Event
+import com.badger.familyorgfe.ui.elements.FullScreenLoading
 import com.badger.familyorgfe.ui.style.buttonColors
 import com.badger.familyorgfe.ui.style.outlinedTextFieldColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
@@ -23,16 +28,40 @@ import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 @Composable
 fun MailScreen(
     modifier: Modifier,
-    viewModel: IMailViewModel = hiltViewModel<MailViewModel>()
+    viewModel: IMailViewModel = hiltViewModel<MailViewModel>(),
+    onEmailSent: (email: String) -> Unit
 ) {
 
-    val mail by viewModel.mail.collectAsState()
+    val sentEmail by viewModel.onEmailSent.collectAsState()
+    if (sentEmail.isNotEmpty()) {
+        onEmailSent(sentEmail)
+    }
 
+    val loading by viewModel.isLoading.collectAsState()
+    val screen = @Composable { Screen(viewModel = viewModel) }
+    if (loading) {
+        FullScreenLoading(
+            modifier = modifier.fillMaxSize(),
+            content = screen
+        )
+    } else {
+        Screen(
+            viewModel = viewModel
+        )
+    }
+}
+
+@Composable
+private fun Screen(
+    viewModel: IMailViewModel
+) {
+    val mail by viewModel.mail.collectAsState()
     val continueEnabled by viewModel.continueEnabled.collectAsState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(FamilyOrganizerTheme.colors.whitePrimary)
             .padding(horizontal = 32.dp),
         horizontalAlignment = Alignment.Start
     ) {
@@ -55,7 +84,7 @@ fun MailScreen(
 
         OutlinedTextField(
             value = mail,
-            onValueChange = { viewModel.onEvent(Event.MailUpdate(it)) },
+            onValueChange = { viewModel.onEvent(IMailViewModel.Event.MailUpdate(it)) },
             textStyle = FamilyOrganizerTheme.textStyle.input,
             colors = outlinedTextFieldColors(),
             modifier = Modifier
@@ -64,7 +93,7 @@ fun MailScreen(
         )
 
         Button(
-            onClick = { viewModel.onEvent(Event.ContinueClick) },
+            onClick = { viewModel.onEvent(IMailViewModel.Event.ContinueClick(mail)) },
             enabled = continueEnabled,
             colors = buttonColors(),
             modifier = Modifier

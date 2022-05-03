@@ -1,8 +1,8 @@
-package com.badger.familyorgfe.features.authjourney.auth.entername
+package com.badger.familyorgfe.features.authjourney.entername
 
 import com.badger.familyorgfe.base.BaseViewModel
-import com.badger.familyorgfe.features.authjourney.auth.entername.IEnterNameViewModel.Event
-import com.badger.familyorgfe.features.authjourney.auth.entername.domain.SetNameUseCase
+import com.badger.familyorgfe.features.authjourney.entername.IEnterNameViewModel.Event
+import com.badger.familyorgfe.features.authjourney.entername.domain.SetNameUseCase
 import com.badger.familyorgfe.ext.isValidName
 import com.badger.familyorgfe.ext.longRunning
 import dagger.hilt.android.lifecycle.HiltViewModel

@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.features.authjourney.auth.welcome
+package com.badger.familyorgfe.features.authjourney.welcome
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
