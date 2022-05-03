@@ -1,5 +1,6 @@
 package com.badger.familyorgfe.features.authjourney.mail
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,6 +11,7 @@ import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -24,6 +26,7 @@ import com.badger.familyorgfe.ui.elements.FullScreenLoading
 import com.badger.familyorgfe.ui.style.buttonColors
 import com.badger.familyorgfe.ui.style.outlinedTextFieldColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun MailScreen(
@@ -31,10 +34,12 @@ fun MailScreen(
     viewModel: IMailViewModel = hiltViewModel<MailViewModel>(),
     onEmailSent: (email: String) -> Unit
 ) {
-
-    val sentEmail by viewModel.onEmailSent.collectAsState()
-    if (sentEmail.isNotEmpty()) {
-        onEmailSent(sentEmail)
+    LaunchedEffect(Unit) {
+        Log.d("ASMR", "!!!")
+        viewModel.onEmailSentAction.collectLatest { email ->
+            onEmailSent(email)
+            Log.d("ASMR", email)
+        }
     }
 
     val loading by viewModel.isLoading.collectAsState()

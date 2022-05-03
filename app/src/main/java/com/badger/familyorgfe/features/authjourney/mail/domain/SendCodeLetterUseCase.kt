@@ -2,6 +2,7 @@ package com.badger.familyorgfe.features.authjourney.mail.domain
 
 import com.badger.familyorgfe.base.BaseUseCase
 import com.badger.familyorgfe.data.source.auth.AuthApi
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 class SendCodeLetterUseCase @Inject constructor(
@@ -14,7 +15,7 @@ class SendCodeLetterUseCase @Inject constructor(
 //        )
 //        val response = api.sendCode(body)
 //        return response.success
-//        delay(100)
+        delay(500)
         return true
     }
 }

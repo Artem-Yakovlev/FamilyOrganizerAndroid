@@ -6,8 +6,9 @@ import com.badger.familyorgfe.ext.longRunning
 import com.badger.familyorgfe.features.authjourney.mail.IMailViewModel.Event
 import com.badger.familyorgfe.features.authjourney.mail.domain.SendCodeLetterUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,7 +22,8 @@ class MailViewModel @Inject constructor(
 
     override val continueEnabled = MutableStateFlow(false)
 
-    override val onEmailSent = MutableStateFlow("")
+    private val _onEmailSentAction = MutableSharedFlow<String>()
+    override val onEmailSentAction = _onEmailSentAction.asSharedFlow()
 
     override fun onEvent(event: Event) {
         when (event) {
@@ -38,10 +40,8 @@ class MailViewModel @Inject constructor(
     private suspend fun handleContinueClick(email: String) {
         isLoading.value = true
         if (sendCodeLetterUseCase.invoke(email)) {
-            onEmailSent.value = email
-            delay(1)
-            onEmailSent.value = ""
             isLoading.value = false
+            _onEmailSentAction.emit(email)
         } else {
             clearData()
         }
