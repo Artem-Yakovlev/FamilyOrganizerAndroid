@@ -62,7 +62,7 @@ fun EnterNameScreen(
         )
 
         Button(
-            onClick = { viewModel.onEvent(Event.ContinueClick) },
+            onClick = { viewModel.onEvent(Event.ContinueClick(name)) },
             enabled = continueEnabled,
             colors = buttonColors(),
             modifier = Modifier

@@ -9,6 +9,7 @@ import com.badger.familyorgfe.data.source.AppDatabase
 import com.badger.familyorgfe.data.source.ProductApi
 import com.badger.familyorgfe.data.source.auth.AuthApi
 import com.badger.familyorgfe.data.source.getPrepopulateCallback
+import com.badger.familyorgfe.data.source.user.UserApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -76,5 +77,9 @@ class SourceModule {
 
     @Provides
     @Singleton
-    fun provideUserApi(retrofit: Retrofit): AuthApi = retrofit.create(AuthApi::class.java)
+    fun provideAuthApi(retrofit: Retrofit): AuthApi = retrofit.create(AuthApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideUserApi(retrofit: Retrofit): UserApi = retrofit.create(UserApi::class.java)
 }

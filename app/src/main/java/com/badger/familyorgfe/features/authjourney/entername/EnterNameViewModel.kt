@@ -1,22 +1,24 @@
 package com.badger.familyorgfe.features.authjourney.entername
 
 import com.badger.familyorgfe.base.BaseViewModel
-import com.badger.familyorgfe.features.authjourney.entername.IEnterNameViewModel.Event
-import com.badger.familyorgfe.features.authjourney.entername.domain.SetNameUseCase
+import com.badger.familyorgfe.data.repository.IDataStoreRepository
 import com.badger.familyorgfe.ext.isValidName
 import com.badger.familyorgfe.ext.longRunning
+import com.badger.familyorgfe.features.authjourney.entername.IEnterNameViewModel.Event
+import com.badger.familyorgfe.features.authjourney.entername.domain.GetProfileUseCase
+import com.badger.familyorgfe.features.authjourney.entername.domain.UpdateProfileNameUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
 class EnterNameViewModel @Inject constructor(
-    private val setNameUseCase: SetNameUseCase
+    private val getProfileUseCase: GetProfileUseCase,
+    private val updateProfileNameUseCase: UpdateProfileNameUseCase,
+    private val dataStoreRepository: IDataStoreRepository
 ) : BaseViewModel(), IEnterNameViewModel {
 
-    companion object {
-        private const val EMPTY_NAME = ""
-    }
+    private var userId: String? = null
 
     override val name = MutableStateFlow("")
 
@@ -24,9 +26,20 @@ class EnterNameViewModel @Inject constructor(
 
     override fun onEvent(event: Event) {
         when (event) {
+            is Event.Init -> longRunning { init() }
             is Event.NameUpdate -> handleNameUpdate(event.query)
-            is Event.ContinueClick -> longRunning { handleContinueClick() }
+            is Event.ContinueClick -> longRunning { handleContinueClick(event.name) }
             is Event.SkipClick -> longRunning { handleSkipClick() }
+        }
+    }
+
+    private suspend fun init() {
+        getProfileUseCase(Unit)?.let { user ->
+            if (user.name.isValidName()) {
+                dataStoreRepository.setUserId(user.id)
+            } else {
+                userId = user.id
+            }
         }
     }
 
@@ -35,14 +48,13 @@ class EnterNameViewModel @Inject constructor(
         continueEnabled.value = query.isValidName()
     }
 
-    private suspend fun handleContinueClick() {
-        setNameUseCase.invoke(name.value)
-        // TODO: navigate to welcome screen
+    private suspend fun handleContinueClick(name: String) {
+        updateProfileNameUseCase(name)
+        userId?.let { id -> dataStoreRepository.setUserId(id) }
     }
 
     private suspend fun handleSkipClick() {
-        setNameUseCase.invoke(EMPTY_NAME)
-        // TODO: navigate to welcome screen
+        userId?.let { id -> dataStoreRepository.setUserId(id) }
     }
 
     override fun clearData() = Unit

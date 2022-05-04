@@ -37,10 +37,14 @@ class MainActivity : ComponentActivity() {
         val auth by viewModel.isAuth.collectAsState()
         val appModifier = Modifier.fillMaxSize()
 
-        if (auth) {
-            AppJourney(modifier = appModifier)
-        } else {
-            AuthJourney(modifier = appModifier)
+        auth?.let { isAuth ->
+            if (isAuth) {
+                AppJourney(modifier = appModifier)
+            } else {
+                AuthJourney(modifier = appModifier)
+            }
         }
+
+
     }
 }

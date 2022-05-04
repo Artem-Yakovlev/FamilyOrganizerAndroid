@@ -5,5 +5,5 @@ import kotlinx.coroutines.flow.StateFlow
 
 interface IMainViewModel : IBaseViewModel<Nothing> {
 
-    val isAuth: StateFlow<Boolean>
+    val isAuth: StateFlow<Boolean?>
 }

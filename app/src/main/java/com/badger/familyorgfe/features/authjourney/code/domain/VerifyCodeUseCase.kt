@@ -15,7 +15,7 @@ class VerifyCodeUseCase @Inject constructor(
     override suspend fun invoke(arg: CheckCodeJson.Form): Boolean {
 //        val response = api.checkCode(arg)
 //        response.token?.let { dataStoreRepository.setToken(it) }
-
+        dataStoreRepository.setToken("1234")
         delay(500)
 //        return response.success
         return true
