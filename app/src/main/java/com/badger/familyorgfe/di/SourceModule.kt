@@ -16,6 +16,8 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.DelicateCoroutinesApi
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
@@ -30,7 +32,8 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = DAT
 class SourceModule {
 
     companion object {
-        private const val BASE_URL = "https://family-organizer.com/"
+//        private const val BASE_URL = "https://family-organizer.com/"
+        private const val BASE_URL = "http://localhost:8080/"
         private const val DATABASE_NAME = "family-organizer-db"
     }
 
@@ -66,8 +69,18 @@ class SourceModule {
 
     @Provides
     @Singleton
-    fun provideRetrofit(): Retrofit = Retrofit.Builder()
+    fun provideOkHttpClient(): OkHttpClient {
+        val loggingInterceptor = HttpLoggingInterceptor().apply {
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+        return OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRetrofit(client: OkHttpClient): Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
+        .client(client)
         .addConverterFactory(MoshiConverterFactory.create())
         .build()
 

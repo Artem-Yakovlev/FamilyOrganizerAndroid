@@ -38,12 +38,14 @@ class MailViewModel @Inject constructor(
     }
 
     private suspend fun handleContinueClick(email: String) {
+
         isLoading.value = true
         if (sendCodeLetterUseCase.invoke(email)) {
             isLoading.value = false
             _onEmailSentAction.emit(email)
         } else {
             clearData()
+            onEvent(Event.MailUpdate(email))
         }
     }
 
