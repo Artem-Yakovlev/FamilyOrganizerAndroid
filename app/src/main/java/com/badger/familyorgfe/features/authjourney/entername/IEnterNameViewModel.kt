@@ -9,6 +9,8 @@ interface IEnterNameViewModel : IBaseViewModel<IEnterNameViewModel.Event> {
 
     val continueEnabled: StateFlow<Boolean>
 
+    val isLoading: StateFlow<Boolean>
+
     sealed class Event {
         object Init : Event()
         data class NameUpdate(val query: String) : Event()

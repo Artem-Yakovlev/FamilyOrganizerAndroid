@@ -19,12 +19,12 @@ class GetProfileUseCase @Inject constructor(
 //        return result.user
 
         delay(500)
-        val userId = "user"
+        val userId = "userID"
         val fridgeId = "fridge"
 
         return User(
             id = userId,
-            name = "Тони Роббинс",
+            name = "",
             email = "tony.robbing@email.com",
             fridgeId = fridgeId,
             createdAt = LocalDateTime.now(),

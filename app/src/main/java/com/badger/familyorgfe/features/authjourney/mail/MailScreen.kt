@@ -49,9 +49,7 @@ fun MailScreen(
             content = screen
         )
     } else {
-        Screen(
-            viewModel = viewModel
-        )
+        screen()
     }
 }
 
@@ -106,7 +104,6 @@ private fun Screen(
                 .padding(top = 16.dp)
                 .clip(RoundedCornerShape(8.dp))
         ) {
-
             Text(
                 text = stringResource(R.string.continue_text).uppercase(),
                 color = FamilyOrganizerTheme.colors.whitePrimary,

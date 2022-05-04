@@ -29,7 +29,9 @@ fun AuthJourney(modifier: Modifier) {
             CodeScreen(
                 modifier = modifier,
                 emailArg = currentStep.email,
-                onCodeVerified = { step = AuthJourneyStep.Name(currentStep.email) },
+                onCodeVerified = {
+                    step = AuthJourneyStep.Name(currentStep.email)
+                },
                 onBack = onBack
             )
         }

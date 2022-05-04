@@ -32,6 +32,8 @@ class CodeViewModel @Inject constructor(
 
     override val resendCodeEnabled = MutableStateFlow(false)
 
+    override val isLoading = MutableStateFlow(false)
+
     init {
         startResendDebounce()
     }
@@ -56,6 +58,7 @@ class CodeViewModel @Inject constructor(
     }
 
     private suspend fun handleContinueClick(code: String) {
+        isLoading.value = true
         continueEnabled.value = false
 
         val form = CheckCodeJson.Form(
@@ -64,15 +67,18 @@ class CodeViewModel @Inject constructor(
         )
         _onCodeVerifiedAction.emit(verifyCodeUseCase(form))
         continueEnabled.value = true
+        isLoading.value = false
     }
 
     private suspend fun handleResendCodeClick() {
+        isLoading.value = true
         resendCodeEnabled.value = false
         if (sendCodeLetterUseCase(email.value)) {
             startResendDebounce()
         } else {
             resendCodeEnabled.value = true
         }
+        isLoading.value = false
     }
 
     private fun startResendDebounce() {

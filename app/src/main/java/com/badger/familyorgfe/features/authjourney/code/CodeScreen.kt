@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.badger.familyorgfe.R
-import com.badger.familyorgfe.features.authjourney.code.ICodeViewModel.Event
+import com.badger.familyorgfe.ui.elements.FullScreenLoading
 import com.badger.familyorgfe.ui.style.buttonColors
 import com.badger.familyorgfe.ui.style.outlinedTextFieldColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
@@ -35,8 +35,36 @@ fun CodeScreen(
     viewModel: ICodeViewModel = hiltViewModel<CodeViewModel>()
 ) {
 
+    val loading by viewModel.isLoading.collectAsState()
+    val screen = @Composable {
+        Screen(
+            modifier = modifier,
+            emailArg = emailArg,
+            onCodeVerified = onCodeVerified,
+            onBack = onBack,
+            viewModel = viewModel
+        )
+    }
+    if (loading) {
+        FullScreenLoading(
+            modifier = modifier.fillMaxSize(),
+            content = screen
+        )
+    } else {
+        screen()
+    }
+}
+
+@Composable
+fun Screen(
+    modifier: Modifier,
+    emailArg: String,
+    onCodeVerified: () -> Unit,
+    onBack: () -> Unit,
+    viewModel: ICodeViewModel
+) {
     LaunchedEffect(Unit) {
-        viewModel.onEvent(Event.OnArgument(emailArg))
+        viewModel.onEvent(ICodeViewModel.Event.OnArgument(emailArg))
 
         viewModel.onCodeVerifiedAction
             .filter { isVerified -> isVerified }
@@ -108,7 +136,7 @@ fun CodeScreen(
             OutlinedTextField(
                 value = code,
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                onValueChange = { viewModel.onEvent(Event.CodeUpdate(it)) },
+                onValueChange = { viewModel.onEvent(ICodeViewModel.Event.CodeUpdate(it)) },
                 textStyle = FamilyOrganizerTheme.textStyle.input,
                 colors = outlinedTextFieldColors(),
                 placeholder = { Text(text = stringResource(R.string.enter_code_hint)) },
@@ -118,7 +146,7 @@ fun CodeScreen(
             )
 
             Button(
-                onClick = { viewModel.onEvent(Event.ContinueClicked(code)) },
+                onClick = { viewModel.onEvent(ICodeViewModel.Event.ContinueClicked(code)) },
                 enabled = continueEnabled,
                 colors = buttonColors(),
                 modifier = Modifier
@@ -136,7 +164,7 @@ fun CodeScreen(
             }
 
             TextButton(
-                onClick = { viewModel.onEvent(Event.ResendCodeClicked) },
+                onClick = { viewModel.onEvent(ICodeViewModel.Event.ResendCodeClicked) },
                 enabled = resendCodeEnabled,
                 modifier = Modifier
                     .fillMaxWidth()

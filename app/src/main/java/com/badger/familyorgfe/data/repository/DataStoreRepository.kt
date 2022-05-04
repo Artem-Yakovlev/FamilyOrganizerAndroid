@@ -13,10 +13,10 @@ class DataStoreRepository @Inject constructor(
 ) : IDataStoreRepository {
 
     companion object {
-        private const val tokenKeyName = "auth_token"
+        private const val tokenKeyName = "auth_token_key"
         private val tokenKey = stringPreferencesKey(tokenKeyName)
 
-        private const val userIdKeyName = "user_id"
+        private const val userIdKeyName = "user_id_key"
         private val userIdKey = stringPreferencesKey(userIdKeyName)
     }
 

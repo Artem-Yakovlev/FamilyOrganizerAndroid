@@ -8,7 +8,6 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.badger.familyorgfe.data.model.Fridge
 import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.data.model.User
-import com.badger.familyorgfe.data.repository.DataStoreRepository
 import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
@@ -38,16 +37,15 @@ class PrepopulateCallback(applicationContext: Context) : RoomDatabase.Callback()
         super.onCreate(db)
 
         val database = entryPoint.getDatabase()
-        val dataStore = DataStoreRepository(entryPoint.getDataStore())
 
         GlobalScope.launch(Dispatchers.IO) {
-            val userId = "user"
+            val userId = "userID"
             val fridgeId = "fridge"
 
             val user = User(
                 id = userId,
-                name = "Тони Роббинс",
-                email = "tony.robbing@email.com",
+                name = "",
+                email = "artem_yakovlev@email.com",
                 fridgeId = fridgeId,
                 createdAt = LocalDateTime.now(),
                 updateAt = LocalDateTime.now(),
@@ -66,7 +64,6 @@ class PrepopulateCallback(applicationContext: Context) : RoomDatabase.Callback()
             database.userDao().insertAll(user)
             database.fridgeDao().insertAll(fridge)
             database.productDao().insertAll(*products.toTypedArray())
-            dataStore.setUserId(userId)
         }
     }
 

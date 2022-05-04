@@ -22,6 +22,8 @@ class EnterNameViewModel @Inject constructor(
 
     override val name = MutableStateFlow("")
 
+    override val isLoading = MutableStateFlow(false)
+
     override val continueEnabled = MutableStateFlow(false)
 
     override fun onEvent(event: Event) {
@@ -49,11 +51,14 @@ class EnterNameViewModel @Inject constructor(
     }
 
     private suspend fun handleContinueClick(name: String) {
+        continueEnabled.value = false
+        isLoading.value = true
         updateProfileNameUseCase(name)
         userId?.let { id -> dataStoreRepository.setUserId(id) }
     }
 
     private suspend fun handleSkipClick() {
+        isLoading.value = true
         userId?.let { id -> dataStoreRepository.setUserId(id) }
     }
 

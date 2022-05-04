@@ -16,6 +16,8 @@ interface ICodeViewModel : IBaseViewModel<ICodeViewModel.Event> {
 
     val resendCodeEnabled: StateFlow<Boolean>
 
+    val isLoading: StateFlow<Boolean>
+
     sealed class Event {
         data class OnArgument(val email: String) : Event()
         data class CodeUpdate(val query: String) : Event()

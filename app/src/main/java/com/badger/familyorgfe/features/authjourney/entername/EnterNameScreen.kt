@@ -11,6 +11,7 @@ import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -22,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.badger.familyorgfe.R
 import com.badger.familyorgfe.features.authjourney.entername.IEnterNameViewModel.Event
+import com.badger.familyorgfe.ui.elements.FullScreenLoading
 import com.badger.familyorgfe.ui.style.buttonColors
 import com.badger.familyorgfe.ui.style.outlinedTextFieldColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
@@ -30,6 +32,33 @@ import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 fun EnterNameScreen(
     modifier: Modifier,
     viewModel: IEnterNameViewModel = hiltViewModel<EnterNameViewModel>()
+) {
+
+    LaunchedEffect(Unit) {
+        viewModel.onEvent(Event.Init)
+    }
+
+    val loading by viewModel.isLoading.collectAsState()
+    val screen = @Composable {
+        Screen(
+            modifier = modifier,
+            viewModel = viewModel
+        )
+    }
+    if (loading) {
+        FullScreenLoading(
+            modifier = modifier.fillMaxSize(),
+            content = screen
+        )
+    } else {
+        screen()
+    }
+}
+
+@Composable
+fun Screen(
+    modifier: Modifier,
+    viewModel: IEnterNameViewModel
 ) {
     val name by viewModel.name.collectAsState()
 
