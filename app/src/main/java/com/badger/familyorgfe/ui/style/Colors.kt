@@ -17,3 +17,10 @@ fun buttonColors() = ButtonDefaults.buttonColors(
     backgroundColor = FamilyOrganizerTheme.colors.primary,
     disabledBackgroundColor = FamilyOrganizerTheme.colors.darkClay
 )
+
+@Composable
+fun textButtonColors() = ButtonDefaults.textButtonColors(
+    backgroundColor = FamilyOrganizerTheme.colors.whitePrimary,
+    contentColor = FamilyOrganizerTheme.colors.primary,
+    disabledContentColor = FamilyOrganizerTheme.colors.darkClay
+)

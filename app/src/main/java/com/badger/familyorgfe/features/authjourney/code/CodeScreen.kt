@@ -5,17 +5,16 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -24,21 +23,34 @@ import com.badger.familyorgfe.features.authjourney.code.ICodeViewModel.Event
 import com.badger.familyorgfe.ui.style.buttonColors
 import com.badger.familyorgfe.ui.style.outlinedTextFieldColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filter
 
 @Composable
 fun CodeScreen(
     modifier: Modifier,
+    emailArg: String,
+    onCodeVerified: () -> Unit,
+    onBack: () -> Unit,
     viewModel: ICodeViewModel = hiltViewModel<CodeViewModel>()
 ) {
 
+    LaunchedEffect(Unit) {
+        viewModel.onEvent(Event.OnArgument(emailArg))
+
+        viewModel.onCodeVerifiedAction
+            .filter { isVerified -> isVerified }
+            .collectLatest { onCodeVerified() }
+    }
+
+    val email by viewModel.email.collectAsState()
     val code by viewModel.code.collectAsState()
 
     val continueEnabled by viewModel.continueEnabled.collectAsState()
-
     val resendCodeEnabled by viewModel.resendCodeEnabled.collectAsState()
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .background(FamilyOrganizerTheme.colors.whitePrimary),
         horizontalAlignment = Alignment.Start
@@ -59,15 +71,13 @@ fun CodeScreen(
                         indication = rememberRipple(
                             bounded = false,
                             color = FamilyOrganizerTheme.colors.primary
-                        )
-                    ) {
-
-                    }
+                        ), onClick = onBack
+                    )
                     .padding(18.dp)
             )
 
             Text(
-                text = "nikolay123@bk.ru",
+                text = email,
                 style = FamilyOrganizerTheme.textStyle.body.copy(fontSize = 16.sp),
                 modifier = Modifier
             )
@@ -97,6 +107,7 @@ fun CodeScreen(
 
             OutlinedTextField(
                 value = code,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                 onValueChange = { viewModel.onEvent(Event.CodeUpdate(it)) },
                 textStyle = FamilyOrganizerTheme.textStyle.input,
                 colors = outlinedTextFieldColors(),
@@ -107,7 +118,7 @@ fun CodeScreen(
             )
 
             Button(
-                onClick = { viewModel.onEvent(Event.ContinueClicked) },
+                onClick = { viewModel.onEvent(Event.ContinueClicked(code)) },
                 enabled = continueEnabled,
                 colors = buttonColors(),
                 modifier = Modifier
@@ -135,7 +146,11 @@ fun CodeScreen(
 
                 Text(
                     text = stringResource(R.string.send_code_again).uppercase(),
-                    color = FamilyOrganizerTheme.colors.primary,
+                    color = if (resendCodeEnabled) {
+                        FamilyOrganizerTheme.colors.primary
+                    } else {
+                        FamilyOrganizerTheme.colors.darkClay
+                    },
                     style = FamilyOrganizerTheme.textStyle.button,
                     modifier = Modifier.padding(vertical = 10.dp)
                 )

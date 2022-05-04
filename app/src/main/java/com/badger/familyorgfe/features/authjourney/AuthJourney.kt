@@ -3,6 +3,7 @@ package com.badger.familyorgfe.features.authjourney
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import com.badger.familyorgfe.features.authjourney.code.CodeScreen
+import com.badger.familyorgfe.features.authjourney.entername.EnterNameScreen
 import com.badger.familyorgfe.features.authjourney.mail.MailScreen
 import com.badger.familyorgfe.utils.BackHandler
 
@@ -10,9 +11,10 @@ import com.badger.familyorgfe.utils.BackHandler
 fun AuthJourney(modifier: Modifier) {
     var step by remember { mutableStateOf<AuthJourneyStep>(AuthJourneyStep.Email) }
 
-    when (step) {
-        is AuthJourneyStep.Email -> {
+    val currentStep: AuthJourneyStep = step
 
+    when (currentStep) {
+        is AuthJourneyStep.Email -> {
             MailScreen(
                 modifier = modifier,
                 onEmailSent = { email ->
@@ -21,12 +23,20 @@ fun AuthJourney(modifier: Modifier) {
             )
         }
         is AuthJourneyStep.Code -> {
+            val onBack: () -> Unit = { step = AuthJourneyStep.Email }
 
-            BackHandler {
-                step = AuthJourneyStep.Email
-            }
-
-            CodeScreen(modifier = modifier)
+            BackHandler(onBack = onBack)
+            CodeScreen(
+                modifier = modifier,
+                emailArg = currentStep.email,
+                onCodeVerified = { step = AuthJourneyStep.Name(currentStep.email) },
+                onBack = onBack
+            )
+        }
+        is AuthJourneyStep.Name -> {
+            EnterNameScreen(
+                modifier = modifier
+            )
         }
     }
 
@@ -36,4 +46,5 @@ fun AuthJourney(modifier: Modifier) {
 sealed class AuthJourneyStep {
     object Email : AuthJourneyStep()
     data class Code(val email: String) : AuthJourneyStep()
+    data class Name(val email: String) : AuthJourneyStep()
 }

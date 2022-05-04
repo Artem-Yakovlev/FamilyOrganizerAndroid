@@ -1,5 +1,6 @@
 package com.badger.familyorgfe.features.authjourney.entername
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -9,7 +10,9 @@ import androidx.compose.material.Button
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -28,13 +31,13 @@ fun EnterNameScreen(
     modifier: Modifier,
     viewModel: IEnterNameViewModel = hiltViewModel<EnterNameViewModel>()
 ) {
-
     val name by viewModel.name.collectAsState()
 
     val continueEnabled by viewModel.continueEnabled.collectAsState()
 
     Column(
-        modifier = Modifier
+        modifier = modifier
+            .background(FamilyOrganizerTheme.colors.whitePrimary)
             .fillMaxSize()
             .padding(horizontal = 32.dp),
         horizontalAlignment = Alignment.Start
