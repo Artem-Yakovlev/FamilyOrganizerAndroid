@@ -1,10 +1,13 @@
 package com.badger.familyorgfe.di
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import androidx.room.Room
+import com.badger.familyorgfe.data.repository.DataStoreRepository
+import com.badger.familyorgfe.data.repository.IDataStoreRepository
 import com.badger.familyorgfe.data.source.AppDatabase
 import com.badger.familyorgfe.data.source.ProductApi
 import com.badger.familyorgfe.data.source.auth.AuthApi
@@ -16,6 +19,9 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.runBlocking
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -32,9 +38,12 @@ val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = DAT
 class SourceModule {
 
     companion object {
-//        private const val BASE_URL = "https://family-organizer.com/"
-        private const val BASE_URL = "http://localhost:8080/"
+        //        private const val BASE_URL = "https://family-organizer.com/"
+        private const val BASE_URL = "http://10.0.2.2:8080/"
         private const val DATABASE_NAME = "family-organizer-db"
+
+        private const val AUTHORIZATION = "Authorization"
+        private const val BEARER_PREFIX = "Bearer"
     }
 
     /**
@@ -69,11 +78,27 @@ class SourceModule {
 
     @Provides
     @Singleton
-    fun provideOkHttpClient(): OkHttpClient {
+    fun provideOkHttpClient(dataStore: DataStore<Preferences>): OkHttpClient {
+        val dataStoreRepository: IDataStoreRepository = DataStoreRepository(dataStore)
         val loggingInterceptor = HttpLoggingInterceptor().apply {
             level = HttpLoggingInterceptor.Level.BODY
         }
-        return OkHttpClient.Builder().addInterceptor(loggingInterceptor).build()
+        val authorizationInterceptor = Interceptor { chain ->
+            runBlocking { dataStoreRepository.token.firstOrNull() }
+                ?.let { token ->
+                    Log.d("ASMR", token)
+                    chain.request()
+                        .newBuilder()
+                        .addHeader(AUTHORIZATION, "$BEARER_PREFIX $token")
+                        .build()
+                        .let(chain::proceed)
+                } ?: chain.proceed(chain.request())
+        }
+
+        return OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .addInterceptor(authorizationInterceptor)
+            .build()
     }
 
     @Provides

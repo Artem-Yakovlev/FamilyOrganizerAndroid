@@ -38,9 +38,9 @@ class EnterNameViewModel @Inject constructor(
     private suspend fun init() {
         getProfileUseCase(Unit)?.let { user ->
             if (user.name.isValidName()) {
-                dataStoreRepository.setUserId(user.id)
+                dataStoreRepository.setUserEmail(user.email)
             } else {
-                userId = user.id
+                userId = user.email
             }
         }
     }
@@ -54,12 +54,12 @@ class EnterNameViewModel @Inject constructor(
         continueEnabled.value = false
         isLoading.value = true
         updateProfileNameUseCase(name)
-        userId?.let { id -> dataStoreRepository.setUserId(id) }
+        userId?.let { id -> dataStoreRepository.setUserEmail(id) }
     }
 
     private suspend fun handleSkipClick() {
         isLoading.value = true
-        userId?.let { id -> dataStoreRepository.setUserId(id) }
+        userId?.let { id -> dataStoreRepository.setUserEmail(id) }
     }
 
     override fun clearData() = Unit

@@ -1,9 +1,6 @@
 package com.badger.familyorgfe.data.source.dao
 
-import androidx.room.Dao
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
+import androidx.room.*
 import com.badger.familyorgfe.data.model.User
 import kotlinx.coroutines.flow.Flow
 
@@ -13,10 +10,10 @@ interface UserDao {
     @Query("SELECT * FROM users")
     fun getAll(): Flow<List<User>>
 
-    @Query("SELECT * FROM users WHERE id = :id")
-    fun getById(id: String): Flow<User>
+    @Query("SELECT * FROM users WHERE email = :email")
+    fun getByEmail(email: String): Flow<User>
 
-    @Insert
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(vararg users: User)
 
     @Delete

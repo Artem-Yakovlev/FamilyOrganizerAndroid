@@ -14,6 +14,6 @@ class GetMainUserUseCase @Inject constructor(
 ) : FlowUseCase<Unit, User>() {
 
     override fun invoke(arg: Unit): Flow<User> {
-        return dataStoreRepository.userId.flatMapLatest(userRepository::getUserById)
+        return dataStoreRepository.userId.flatMapLatest(userRepository::getUserByEmail)
     }
 }

@@ -16,19 +16,21 @@ class DataStoreRepository @Inject constructor(
         private const val tokenKeyName = "auth_token_key"
         private val tokenKey = stringPreferencesKey(tokenKeyName)
 
-        private const val userIdKeyName = "user_id_key"
-        private val userIdKey = stringPreferencesKey(userIdKeyName)
+        private const val userEmailKeyName = "user_email_key"
+        private val userEmailKey = stringPreferencesKey(userEmailKeyName)
     }
 
-    override val token: Flow<String> = dataStore.data.map { prefs -> prefs[tokenKey].orEmpty() }
+    override val token: Flow<String> = dataStore.data
+        .map { prefs -> prefs[tokenKey].orEmpty() }
 
     override suspend fun setToken(token: String) {
         dataStore.edit { prefs -> prefs[tokenKey] = token }
     }
 
-    override val userId: Flow<String> = dataStore.data.map { prefs -> prefs[userIdKey].orEmpty() }
+    override val userId: Flow<String> = dataStore.data
+        .map { prefs -> prefs[userEmailKey].orEmpty() }
 
-    override suspend fun setUserId(id: String) {
-        dataStore.edit { prefs -> prefs[userIdKey] = id }
+    override suspend fun setUserEmail(id: String) {
+        dataStore.edit { prefs -> prefs[userEmailKey] = id }
     }
 }

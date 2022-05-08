@@ -5,5 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface IUserRepository {
 
-    fun getUserById(id: String): Flow<User>
+    fun getUserByEmail(id: String): Flow<User>
+
+    suspend fun saveUser(user: User)
 }

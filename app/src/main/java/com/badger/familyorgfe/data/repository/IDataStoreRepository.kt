@@ -10,5 +10,5 @@ interface IDataStoreRepository {
 
     val userId: Flow<String>
 
-    suspend fun setUserId(id: String)
+    suspend fun setUserEmail(id: String)
 }

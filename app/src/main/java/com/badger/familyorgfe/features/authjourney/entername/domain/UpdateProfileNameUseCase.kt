@@ -1,20 +1,21 @@
 package com.badger.familyorgfe.features.authjourney.entername.domain
 
 import com.badger.familyorgfe.base.BaseUseCase
+import com.badger.familyorgfe.data.repository.IUserRepository
+import com.badger.familyorgfe.data.source.user.UpdateProfileNameJson
 import com.badger.familyorgfe.data.source.user.UserApi
-import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 class UpdateProfileNameUseCase @Inject constructor(
-    private val api: UserApi
+    private val api: UserApi,
+    private val userRepository: IUserRepository
 ) : BaseUseCase<String, Unit>() {
 
     override suspend fun invoke(arg: String) {
-//        val token = dataStoreRepository.token.firstOrNull()
-//        val result = api.updateProfileName(UpdateProfileNameJson.Form(arg))
-//        // save user
-//        return result.
-
-        delay(500)
+        try {
+            api.updateProfileName(UpdateProfileNameJson.Form(arg)).user
+        } catch (e: Exception) {
+            null
+        }?.let { userRepository.saveUser(it) }
     }
 }

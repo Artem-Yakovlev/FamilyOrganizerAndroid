@@ -39,17 +39,12 @@ class PrepopulateCallback(applicationContext: Context) : RoomDatabase.Callback()
         val database = entryPoint.getDatabase()
 
         GlobalScope.launch(Dispatchers.IO) {
-            val userId = "userID"
             val fridgeId = "fridge"
 
             val user = User(
-                id = userId,
                 name = "",
                 email = "artem_yakovlev@email.com",
                 fridgeId = fridgeId,
-                createdAt = LocalDateTime.now(),
-                updateAt = LocalDateTime.now(),
-                isRegistered = true
             )
 
             val products = List(5) { id -> productMock(id.toString()) }
