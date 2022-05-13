@@ -8,7 +8,11 @@ interface IDataStoreRepository {
 
     suspend fun setToken(token: String)
 
-    val userId: Flow<String>
+    val userEmail: Flow<String>
 
     suspend fun setUserEmail(id: String)
+
+    val familyId: Flow<String>
+
+    suspend fun setFamilyId(id: String)
 }

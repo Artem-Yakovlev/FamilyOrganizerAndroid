@@ -18,9 +18,11 @@ class GetAllFridgeItemsUseCase @Inject constructor(
 ) : FlowUseCase<Unit, List<FridgeItem>>() {
 
     override fun invoke(arg: Unit): Flow<List<FridgeItem>> {
-        return dataStoreRepository.userId
+        // todo() extract fridgeId
+        return dataStoreRepository.userEmail
             .flatMapLatest(userRepository::getUserByEmail)
-            .map { user -> user.fridgeId }
+//            .map { user -> user.fridgeId }
+            .map { user -> "1" }
             .flatMapLatest(productRepository::getFridgeById)
             .map { fridge -> fridge.items }
             .flatMapLatest(productRepository::getProductByIds)

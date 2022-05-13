@@ -18,6 +18,9 @@ class DataStoreRepository @Inject constructor(
 
         private const val userEmailKeyName = "user_email_key"
         private val userEmailKey = stringPreferencesKey(userEmailKeyName)
+
+        private const val familyIdKeyName = "family_id_key"
+        private val familyKey = stringPreferencesKey(familyIdKeyName)
     }
 
     override val token: Flow<String> = dataStore.data
@@ -27,10 +30,17 @@ class DataStoreRepository @Inject constructor(
         dataStore.edit { prefs -> prefs[tokenKey] = token }
     }
 
-    override val userId: Flow<String> = dataStore.data
+    override val userEmail: Flow<String> = dataStore.data
         .map { prefs -> prefs[userEmailKey].orEmpty() }
 
     override suspend fun setUserEmail(id: String) {
         dataStore.edit { prefs -> prefs[userEmailKey] = id }
+    }
+
+    override val familyId: Flow<String> = dataStore.data
+        .map { prefs -> prefs[familyKey].orEmpty() }
+
+    override suspend fun setFamilyId(id: String) {
+        dataStore.edit { prefs -> prefs[familyKey] = id }
     }
 }

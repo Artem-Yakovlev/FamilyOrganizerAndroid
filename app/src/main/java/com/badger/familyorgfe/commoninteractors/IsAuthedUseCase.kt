@@ -11,7 +11,7 @@ class IsAuthedUseCase @Inject constructor(
 ) : FlowUseCase<Unit, Boolean>() {
 
     override fun invoke(arg: Unit): Flow<Boolean> {
-        return combine(dataStoreRepository.token, dataStoreRepository.userId) { token, userId ->
+        return combine(dataStoreRepository.token, dataStoreRepository.userEmail) { token, userId ->
             token.isNotEmpty() && userId.isNotEmpty()
         }
     }

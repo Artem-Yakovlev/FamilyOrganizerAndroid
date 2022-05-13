@@ -43,8 +43,7 @@ class PrepopulateCallback(applicationContext: Context) : RoomDatabase.Callback()
 
             val user = User(
                 name = "",
-                email = "artem_yakovlev@email.com",
-                fridgeId = fridgeId,
+                email = "artem_yakovlev@email.com"
             )
 
             val products = List(5) { id -> productMock(id.toString()) }
