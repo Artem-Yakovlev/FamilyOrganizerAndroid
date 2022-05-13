@@ -12,6 +12,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import com.badger.familyorgfe.features.appjourney.AppJourney
 import com.badger.familyorgfe.features.authjourney.AuthJourney
+import com.badger.familyorgfe.features.familyauthjourney.FamilyAuthJourney
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 import com.jakewharton.threetenabp.AndroidThreeTen
 import dagger.hilt.android.AndroidEntryPoint
@@ -35,16 +36,17 @@ class MainActivity : ComponentActivity() {
     @Composable
     private fun JourneyScreen() {
         val auth by viewModel.isAuth.collectAsState()
+        val family by viewModel.hasFamily.collectAsState()
         val appModifier = Modifier.fillMaxSize()
 
         auth?.let { isAuth ->
-            if (isAuth) {
-                AppJourney(modifier = appModifier)
-            } else {
-                AuthJourney(modifier = appModifier)
+            family?.let { hasFamily ->
+                when {
+                    isAuth && hasFamily -> AppJourney(modifier = appModifier)
+                    isAuth -> FamilyAuthJourney(modifier = appModifier)
+                    else -> AuthJourney(modifier = appModifier)
+                }
             }
         }
-
-
     }
 }

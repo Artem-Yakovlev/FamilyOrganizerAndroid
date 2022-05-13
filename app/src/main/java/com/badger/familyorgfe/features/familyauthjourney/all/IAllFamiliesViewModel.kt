@@ -1,4 +1,10 @@
 package com.badger.familyorgfe.features.familyauthjourney.all
 
-interface IAllFamiliesViewModel {
+import com.badger.familyorgfe.base.IBaseViewModel
+
+interface IAllFamiliesViewModel : IBaseViewModel<IAllFamiliesViewModel.Event> {
+
+    sealed class Event {
+
+    }
 }
