@@ -17,6 +17,14 @@
     <string name="welcome_funny_message">- Мы все сломали. Но ничего, страшного…</string>
     <string name="welcome_next_text">Круто</string>
 
+    <!-- Family -->
+    <string name="family_auth_families">Ваши семейные круги</string>
+    <string name="family_auth_invites">Приглашения</string>
+    <string name="family_auth_create">Создать семейный круг</string>
+    <string name="family_auth_dialog_title">Введите название вашего семейного круга</string>
+    <string name="family_auth_dialog_desc">Не волнуйтесь, изменить название вы сможете в любое время</string>
+    <string name="family_auth_dialog_create">Создать</string>
+
     <!-- Fridge  -->
     <string name="fridge_toolbar_title">Ваши продукты</string>
     <string name="fridge_delete_product_title">Удаление продукта</string>
