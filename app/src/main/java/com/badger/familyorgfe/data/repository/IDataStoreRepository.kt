@@ -12,7 +12,7 @@ interface IDataStoreRepository {
 
     suspend fun setUserEmail(id: String)
 
-    val familyId: Flow<String>
+    val familyId: Flow<Long?>
 
-    suspend fun setFamilyId(id: String)
+    suspend fun setFamilyId(id: Long?)
 }

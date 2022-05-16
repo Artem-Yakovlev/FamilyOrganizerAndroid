@@ -11,6 +11,6 @@ class HasFamilyUseCase @Inject constructor(
 ) : FlowUseCase<Unit, Boolean>() {
 
     override fun invoke(arg: Unit): Flow<Boolean> {
-        return dataStoreRepository.familyId.map(String::isNotEmpty)
+        return dataStoreRepository.familyId.map { it != null }
     }
 }
