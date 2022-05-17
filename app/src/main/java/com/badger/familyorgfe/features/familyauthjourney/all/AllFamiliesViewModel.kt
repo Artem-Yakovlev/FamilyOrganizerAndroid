@@ -1,6 +1,7 @@
 package com.badger.familyorgfe.features.familyauthjourney.all
 
 import com.badger.familyorgfe.base.BaseViewModel
+import com.badger.familyorgfe.data.model.Family
 import com.badger.familyorgfe.ext.longRunning
 import com.badger.familyorgfe.ext.viewModelScope
 import com.badger.familyorgfe.features.familyauthjourney.all.domain.*
@@ -33,10 +34,12 @@ class AllFamiliesViewModel @Inject constructor(
                 getFamiliesUseCase(Unit)
             }
             is IAllFamiliesViewModel.Event.AcceptInvite -> doActionAndUpdateFamilies {
-                acceptInviteUseCase(event.id)
+                val arg = AcceptInviteUseCase.Arg(event.id, familiesAndInvites.value)
+                acceptInviteUseCase(arg)
             }
             is IAllFamiliesViewModel.Event.DeclineInvite -> doActionAndUpdateFamilies {
-                declineInviteUseCase(event.id)
+                val arg = DeclineInviteUseCase.Arg(event.id, familiesAndInvites.value)
+                declineInviteUseCase(arg)
             }
             is IAllFamiliesViewModel.Event.CreateFamily -> longRunning {
                 if (createEnabled.value) {
@@ -63,7 +66,11 @@ class AllFamiliesViewModel @Inject constructor(
 
     private fun doActionAndUpdateFamilies(action: suspend () -> FamiliesAndInvites) =
         viewModelScope().launch {
-            familiesAndInvites.value = action()
+            val result = action()
+            familiesAndInvites.value = FamiliesAndInvites(
+                families = result.families.sortedBy(Family::name),
+                invites = result.invites.sortedBy(Family::name),
+            )
         }
 
     companion object {

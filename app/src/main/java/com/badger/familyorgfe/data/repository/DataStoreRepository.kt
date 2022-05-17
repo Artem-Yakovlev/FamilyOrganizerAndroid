@@ -19,7 +19,7 @@ class DataStoreRepository @Inject constructor(
         private const val userEmailKeyName = "user_email_key"
         private val userEmailKey = stringPreferencesKey(userEmailKeyName)
 
-        private const val familyIdKeyName = "family_id_key2"
+        private const val familyIdKeyName = "family_id_key"
         private val familyKey = stringPreferencesKey(familyIdKeyName)
     }
 
