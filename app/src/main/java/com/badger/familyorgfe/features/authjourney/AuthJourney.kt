@@ -2,6 +2,7 @@ package com.badger.familyorgfe.features.authjourney
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import com.badger.familyorgfe.ext.hideKeyboard
 import com.badger.familyorgfe.features.authjourney.code.CodeScreen
 import com.badger.familyorgfe.features.authjourney.entername.EnterNameScreen
 import com.badger.familyorgfe.features.authjourney.mail.MailScreen
@@ -9,6 +10,7 @@ import com.badger.familyorgfe.utils.BackHandler
 
 @Composable
 fun AuthJourney(modifier: Modifier) {
+    hideKeyboard()
     var step by remember { mutableStateOf<AuthJourneyStep>(AuthJourneyStep.Email) }
 
     val currentStep: AuthJourneyStep = step

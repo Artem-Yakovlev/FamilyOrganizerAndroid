@@ -25,6 +25,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.badger.familyorgfe.ext.hideKeyboard
 import com.badger.familyorgfe.features.appjourney.adding.AddingScreen
 import com.badger.familyorgfe.features.appjourney.fridge.FridgeScreen
 import com.badger.familyorgfe.features.appjourney.profile.ProfileScreen
@@ -35,6 +36,7 @@ fun AppJourney(
     modifier: Modifier,
     viewModel: IAppJourneyViewModel = hiltViewModel<AppJourneyViewModel>()
 ) {
+    hideKeyboard()
     Column(modifier = modifier.background(FamilyOrganizerTheme.colors.whitePrimary)) {
         val navController = rememberNavController()
 
