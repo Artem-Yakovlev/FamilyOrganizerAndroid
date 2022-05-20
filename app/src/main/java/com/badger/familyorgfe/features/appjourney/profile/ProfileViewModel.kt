@@ -6,6 +6,7 @@ import com.badger.familyorgfe.data.model.LocalName
 import com.badger.familyorgfe.ext.isValidName
 import com.badger.familyorgfe.ext.longRunning
 import com.badger.familyorgfe.ext.viewModelScope
+import com.badger.familyorgfe.features.appjourney.profile.domain.ExcludeFamilyMemberUseCase
 import com.badger.familyorgfe.features.appjourney.profile.domain.GetAllFamilyMembersUseCase
 import com.badger.familyorgfe.features.appjourney.profile.domain.SaveLocalNameUseCase
 import com.badger.familyorgfe.features.appjourney.profile.model.FamilyMember
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     getMainUserUseCase: GetMainUserUseCase,
     private val getAllFamilyMembersUseCase: GetAllFamilyMembersUseCase,
-    private val saveLocalNameUseCase: SaveLocalNameUseCase
+    private val saveLocalNameUseCase: SaveLocalNameUseCase,
+    private val excludeFamilyMemberUseCase: ExcludeFamilyMemberUseCase
 ) : BaseViewModel(), IProfileViewModel {
 
     override val mainUser: StateFlow<FamilyMember> = getMainUserUseCase(Unit)
@@ -37,6 +39,8 @@ class ProfileViewModel @Inject constructor(
         MutableStateFlow("")
     override val editFamilyMemberSaveEnabled: MutableStateFlow<Boolean> =
         MutableStateFlow(false)
+    override val excludeFamilyMemberDialog: MutableStateFlow<FamilyMember?> =
+        MutableStateFlow(null)
 
     override val members: StateFlow<List<FamilyMember>> = getAllFamilyMembersUseCase(Unit).stateIn(
         scope = viewModelScope(),
@@ -73,6 +77,18 @@ class ProfileViewModel @Inject constructor(
             is IProfileViewModel.Event.OnMemberLocalNameSaved -> longRunning {
                 saveLocalNameUseCase(LocalName(event.email, event.localName))
                 closeEditMemberDialog()
+            }
+            is IProfileViewModel.Event.OnExcludeDismiss -> {
+                excludeFamilyMemberDialog.value = null
+            }
+            is IProfileViewModel.Event.OnExcludeFamilyMemberAccepted -> longRunning {
+                excludeFamilyMemberUseCase(event.familyMember)
+                closeEditMemberDialog()
+                excludeFamilyMemberDialog.value = null
+                Unit
+            }
+            is IProfileViewModel.Event.OnExcludeFamilyMemberClick -> {
+                excludeFamilyMemberDialog.value = event.familyMember
             }
         }
     }

@@ -46,6 +46,7 @@ fun ProfileScreen(
 ) {
     val showLogoutDialog by viewModel.showLogoutDialog.collectAsState()
     val editFamilyMemberDialog by viewModel.editFamilyMemberDialog.collectAsState()
+    val excludeFamilyMemberDialog by viewModel.excludeFamilyMemberDialog.collectAsState()
 
     Column(
         modifier = modifier
@@ -82,16 +83,25 @@ fun ProfileScreen(
             }
         }
 
-        if (showLogoutDialog) {
+        excludeFamilyMemberDialog?.let { familyMember ->
             BaseDialog(
-                titleText = stringResource(id = R.string.profile_logout_title),
-                descriptionText = stringResource(id = R.string.profile_logout_description),
-                dismissText = stringResource(id = R.string.profile_logout_dismiss),
-                actionText = stringResource(id = R.string.profile_logout_action),
-                onActionClicked = { viewModel.onEvent(IProfileViewModel.Event.OnLogoutAccepted) },
-                onDismissClicked = { viewModel.onEvent(IProfileViewModel.Event.OnLogoutDismiss) }
+                titleText = stringResource(id = R.string.exclude_family_member_title),
+                descriptionText = stringResource(
+                    id = R.string.exclude_family_member_description,
+                    excludeFamilyMemberDialog?.name.orEmpty()
+                ),
+                dismissText = stringResource(id = R.string.exclude_family_member_dismiss),
+                actionText = stringResource(id = R.string.exclude_family_member_action),
+                onActionClicked = {
+                    viewModel.onEvent(
+                        IProfileViewModel.Event.OnExcludeFamilyMemberAccepted(
+                            familyMember
+                        )
+                    )
+                },
+                onDismissClicked = { viewModel.onEvent(IProfileViewModel.Event.OnExcludeDismiss) }
             )
-        } else if (editFamilyMemberDialog != null) {
+        } ?: editFamilyMemberDialog?.let { familyMember ->
             val localName by viewModel.editFamilyMemberText.collectAsState()
             val saveEnabled by viewModel.editFamilyMemberSaveEnabled.collectAsState()
 
@@ -121,11 +131,29 @@ fun ProfileScreen(
                                         localName = localName
                                     )
                                 )
+                            },
+                            onExcludeFamilyMemberClick = {
+                                viewModel.onEvent(
+                                    IProfileViewModel.Event.OnExcludeFamilyMemberClick(
+                                        familyMember
+                                    )
+                                )
                             }
                         )
                     }
                 )
             }
+        } ?: if (showLogoutDialog) {
+            BaseDialog(
+                titleText = stringResource(id = R.string.profile_logout_title),
+                descriptionText = stringResource(id = R.string.profile_logout_description),
+                dismissText = stringResource(id = R.string.profile_logout_dismiss),
+                actionText = stringResource(id = R.string.profile_logout_action),
+                onActionClicked = { viewModel.onEvent(IProfileViewModel.Event.OnLogoutAccepted) },
+                onDismissClicked = { viewModel.onEvent(IProfileViewModel.Event.OnLogoutDismiss) }
+            )
+        } else {
+            Unit
         }
     }
 }
@@ -368,7 +396,8 @@ private fun EditFamilyMemberDialog(
     localName: String,
     saveEnabled: Boolean,
     onTextChanged: (String) -> Unit,
-    onSaveClicked: (String) -> Unit
+    onSaveClicked: (String) -> Unit,
+    onExcludeFamilyMemberClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -425,6 +454,21 @@ private fun EditFamilyMemberDialog(
                     modifier = Modifier.padding(vertical = 10.dp)
                 )
             }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = stringResource(R.string.family_member_edit_dialog_exclude),
+                style = FamilyOrganizerTheme.textStyle.subtitle2.copy(
+                    fontSize = 14.sp,
+                    color = FamilyOrganizerTheme.colors.primary
+                ),
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) { onExcludeFamilyMemberClick() }
+            )
         }
         Spacer(modifier = Modifier.height(16.dp))
     }

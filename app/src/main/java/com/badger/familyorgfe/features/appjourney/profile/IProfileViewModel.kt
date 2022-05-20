@@ -18,6 +18,8 @@ interface IProfileViewModel : IBaseViewModel<IProfileViewModel.Event> {
 
     val editFamilyMemberSaveEnabled: StateFlow<Boolean>
 
+    val excludeFamilyMemberDialog: StateFlow<FamilyMember?>
+
     sealed class Event {
         object OnLogoutClick : Event()
         object OnLogoutDismiss : Event()
@@ -27,5 +29,9 @@ interface IProfileViewModel : IBaseViewModel<IProfileViewModel.Event> {
         data class OnEditMemberTextChanged(val text: String) : Event()
         data class OnMemberLocalNameSaved(val email: String, val localName: String) : Event()
         object OnEditMemberDismiss : Event()
+
+        data class OnExcludeFamilyMemberClick(val familyMember: FamilyMember) : Event()
+        object OnExcludeDismiss : Event()
+        data class OnExcludeFamilyMemberAccepted(val familyMember: FamilyMember) : Event()
     }
 }
