@@ -43,4 +43,12 @@ class DataStoreRepository @Inject constructor(
     override suspend fun setFamilyId(id: Long?) {
         dataStore.edit { prefs -> prefs[familyKey] = id?.toString().orEmpty() }
     }
+
+    override suspend fun clearData() {
+        dataStore.edit { prefs ->
+            prefs[familyKey] = ""
+            prefs[tokenKey] = ""
+            prefs[userEmailKey] = ""
+        }
+    }
 }

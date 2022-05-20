@@ -15,4 +15,6 @@ interface IDataStoreRepository {
     val familyId: Flow<Long?>
 
     suspend fun setFamilyId(id: Long?)
+
+    suspend fun clearData()
 }

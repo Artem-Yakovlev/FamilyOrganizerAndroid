@@ -8,12 +8,12 @@ import com.badger.familyorgfe.ext.longRunning
 import com.badger.familyorgfe.ext.viewModelScope
 import com.badger.familyorgfe.features.appjourney.profile.domain.ExcludeFamilyMemberUseCase
 import com.badger.familyorgfe.features.appjourney.profile.domain.GetAllFamilyMembersUseCase
+import com.badger.familyorgfe.features.appjourney.profile.domain.LogoutUseCase
 import com.badger.familyorgfe.features.appjourney.profile.domain.SaveLocalNameUseCase
 import com.badger.familyorgfe.features.appjourney.profile.model.FamilyMember
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,8 +21,11 @@ class ProfileViewModel @Inject constructor(
     getMainUserUseCase: GetMainUserUseCase,
     private val getAllFamilyMembersUseCase: GetAllFamilyMembersUseCase,
     private val saveLocalNameUseCase: SaveLocalNameUseCase,
-    private val excludeFamilyMemberUseCase: ExcludeFamilyMemberUseCase
+    private val excludeFamilyMemberUseCase: ExcludeFamilyMemberUseCase,
+    private val logoutUseCase: LogoutUseCase
 ) : BaseViewModel(), IProfileViewModel {
+
+    private val refreshAllMembersCrutch: MutableStateFlow<Long> = MutableStateFlow(0L)
 
     override val mainUser: StateFlow<FamilyMember> = getMainUserUseCase(Unit)
         .map(FamilyMember::createForMainUser)
@@ -42,11 +45,13 @@ class ProfileViewModel @Inject constructor(
     override val excludeFamilyMemberDialog: MutableStateFlow<FamilyMember?> =
         MutableStateFlow(null)
 
-    override val members: StateFlow<List<FamilyMember>> = getAllFamilyMembersUseCase(Unit).stateIn(
-        scope = viewModelScope(),
-        started = SharingStarted.Lazily,
-        initialValue = emptyList()
-    )
+    override val members: StateFlow<List<FamilyMember>> = refreshAllMembersCrutch
+        .flatMapLatest { getAllFamilyMembersUseCase(Unit) }
+        .stateIn(
+            scope = viewModelScope(),
+            started = SharingStarted.Lazily,
+            initialValue = emptyList()
+        )
 
     override val showLogoutDialog = MutableStateFlow(false)
 
@@ -55,8 +60,10 @@ class ProfileViewModel @Inject constructor(
             is IProfileViewModel.Event.OnLogoutClick -> {
                 showLogoutDialog.value = true
             }
-            is IProfileViewModel.Event.OnLogoutAccepted -> {
+            is IProfileViewModel.Event.OnLogoutAccepted -> longRunning {
+                logoutUseCase(Unit)
                 showLogoutDialog.value = false
+                Unit
             }
             is IProfileViewModel.Event.OnLogoutDismiss -> {
                 showLogoutDialog.value = false
@@ -83,6 +90,7 @@ class ProfileViewModel @Inject constructor(
             }
             is IProfileViewModel.Event.OnExcludeFamilyMemberAccepted -> longRunning {
                 excludeFamilyMemberUseCase(event.familyMember)
+                refreshAllMembersCrutch.value = System.currentTimeMillis()
                 closeEditMemberDialog()
                 excludeFamilyMemberDialog.value = null
                 Unit
@@ -91,13 +99,6 @@ class ProfileViewModel @Inject constructor(
                 excludeFamilyMemberDialog.value = event.familyMember
             }
         }
-    }
-
-    private fun updateUserFlow() = flow {
-        val familyMembers = withContext(viewModelScope().coroutineContext) {
-            getAllFamilyMembersUseCase(Unit)
-        }
-        emit(familyMembers)
     }
 
     private fun closeEditMemberDialog() {
