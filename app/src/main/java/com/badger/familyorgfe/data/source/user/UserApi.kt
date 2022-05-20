@@ -9,6 +9,7 @@ interface UserApi {
         private const val API = "/user"
         private const val GET_PROFILE = "$API/getProfile"
         private const val UPDATE_PROFILE_NAME = "$API/updateProfileName"
+        private const val UPDATE_STATUS = "$API/updateStatus"
     }
 
     @POST(GET_PROFILE)
@@ -16,4 +17,7 @@ interface UserApi {
 
     @POST(UPDATE_PROFILE_NAME)
     suspend fun updateProfileName(@Body form: UpdateProfileNameJson.Form): UpdateProfileNameJson.Response
+
+    @POST(UPDATE_STATUS)
+    suspend fun updateStatus(@Body form: UpdateStatusJson.Form): UpdateStatusJson.Response
 }

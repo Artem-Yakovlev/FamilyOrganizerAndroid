@@ -30,6 +30,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.badger.familyorgfe.R
+import com.badger.familyorgfe.data.model.UserStatus
 import com.badger.familyorgfe.features.appjourney.profile.model.FamilyMember
 import com.badger.familyorgfe.ui.elements.BaseDialog
 import com.badger.familyorgfe.ui.elements.BaseToolbar
@@ -47,6 +48,7 @@ fun ProfileScreen(
     val showLogoutDialog by viewModel.showLogoutDialog.collectAsState()
     val editFamilyMemberDialog by viewModel.editFamilyMemberDialog.collectAsState()
     val excludeFamilyMemberDialog by viewModel.excludeFamilyMemberDialog.collectAsState()
+    val statusMenuShowed by viewModel.changeStatusDialog.collectAsState()
 
     Column(
         modifier = modifier
@@ -58,7 +60,13 @@ fun ProfileScreen(
         val members by viewModel.members.collectAsState()
 
         MainUserItem(
-            familyMember = mainFamilyMember
+            familyMember = mainFamilyMember,
+            statusMenuShowed = statusMenuShowed,
+            showStatusMenu = { show ->
+                viewModel.onEvent(
+                    IProfileViewModel.Event.ShowStatusMenu(show)
+                )
+            }
         )
         Spacer(modifier = Modifier.height(10.dp))
         LazyColumn(
@@ -152,8 +160,22 @@ fun ProfileScreen(
                 onActionClicked = { viewModel.onEvent(IProfileViewModel.Event.OnLogoutAccepted) },
                 onDismissClicked = { viewModel.onEvent(IProfileViewModel.Event.OnLogoutDismiss) }
             )
-        } else {
-            Unit
+        } else if (statusMenuShowed) {
+
+            val dismissStatusDialog = {
+                val event = IProfileViewModel.Event.ShowStatusMenu(false)
+                viewModel.onEvent(event)
+            }
+            Dialog(
+                onDismissRequest = dismissStatusDialog
+            ) {
+                Dropdown(
+                    dismiss = dismissStatusDialog
+                ) { status ->
+                    val event = IProfileViewModel.Event.ChangeStatus(status)
+                    viewModel.onEvent(event)
+                }
+            }
         }
     }
 }
@@ -188,7 +210,9 @@ private fun Toolbar(onLogoutClicked: () -> Unit) {
 
 @Composable
 private fun MainUserItem(
-    familyMember: FamilyMember
+    familyMember: FamilyMember,
+    statusMenuShowed: Boolean,
+    showStatusMenu: (Boolean) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -243,12 +267,35 @@ private fun MainUserItem(
 
                         Spacer(modifier = Modifier.height(4.dp))
 
-                        Text(
-                            text = stringResource(id = familyMember.status.stringResource),
-                            style = FamilyOrganizerTheme.textStyle.body,
-                            color = familyMember.status.color,
-                            maxLines = 1
-                        )
+                        Row(modifier = Modifier.wrapContentWidth()) {
+                            Text(
+                                text = stringResource(id = familyMember.status.stringResource),
+                                style = FamilyOrganizerTheme.textStyle.body,
+                                color = familyMember.status.color,
+                                maxLines = 1
+                            )
+                            Spacer(modifier = Modifier.width(4.dp))
+                            Icon(
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clickable(
+                                        interactionSource = remember { MutableInteractionSource() },
+                                        indication = rememberRipple(
+                                            bounded = false,
+                                            color = FamilyOrganizerTheme.colors.darkClay
+                                        )
+                                    ) { showStatusMenu(!statusMenuShowed) },
+                                painter = painterResource(
+                                    id = if (statusMenuShowed) {
+                                        R.drawable.ic_profile_status_arrow_up
+                                    } else {
+                                        R.drawable.ic_profile_status_arrow_down
+                                    }
+                                ),
+                                contentDescription = null,
+                                tint = FamilyOrganizerTheme.colors.darkClay
+                            )
+                        }
                     }
                 }
 
@@ -388,6 +435,59 @@ private fun BoxScope.OnlineCircle(online: Boolean) {
     }
 }
 
+@Composable
+private fun Dropdown(
+    dismiss: () -> Unit,
+    changeStatus: (UserStatus) -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) { dismiss() },
+        contentAlignment = Alignment.Center,
+        content = {
+            val shape = RoundedCornerShape(
+                topStart = 0.dp, topEnd = 8.dp, bottomStart = 8.dp, bottomEnd = 8.dp
+            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .align(Alignment.TopCenter)
+                    .padding(top = 96.dp, start = 52.dp, end = 32.dp)
+                    .clip(shape)
+                    .background(FamilyOrganizerTheme.colors.whitePrimary)
+            ) {
+                Spacer(modifier = Modifier.height(4.dp))
+                UserStatus.values().forEach { status ->
+                    DropdownItem(status = status, changeStatus = changeStatus)
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Divider()
+                }
+            }
+        }
+    )
+}
+
+@Composable
+private fun DropdownItem(status: UserStatus, changeStatus: (UserStatus) -> Unit) {
+    Text(
+        modifier = Modifier
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) { changeStatus(status) }
+            .padding(horizontal = 16.dp, vertical = 4.dp),
+        text = stringResource(id = status.stringResource),
+        style = FamilyOrganizerTheme.textStyle.body.copy(fontSize = 16.sp),
+        color = status.color,
+        maxLines = 1
+    )
+}
+
 private const val imageUrl =
     "https://st.depositphotos.com/1144472/2003/i/600/depositphotos_20030237-stock-photo-cheerful-young-man-over-white.jpg"
 
@@ -457,17 +557,18 @@ private fun EditFamilyMemberDialog(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .fillMaxWidth()
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) { onExcludeFamilyMemberClick() },
                 text = stringResource(R.string.family_member_edit_dialog_exclude),
                 style = FamilyOrganizerTheme.textStyle.subtitle2.copy(
                     fontSize = 14.sp,
                     color = FamilyOrganizerTheme.colors.primary
                 ),
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) { onExcludeFamilyMemberClick() }
             )
         }
         Spacer(modifier = Modifier.height(16.dp))

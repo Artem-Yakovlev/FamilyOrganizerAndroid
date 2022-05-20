@@ -1,6 +1,7 @@
 package com.badger.familyorgfe.features.appjourney.profile
 
 import com.badger.familyorgfe.base.IBaseViewModel
+import com.badger.familyorgfe.data.model.UserStatus
 import com.badger.familyorgfe.features.appjourney.profile.model.FamilyMember
 import kotlinx.coroutines.flow.StateFlow
 
@@ -20,6 +21,8 @@ interface IProfileViewModel : IBaseViewModel<IProfileViewModel.Event> {
 
     val excludeFamilyMemberDialog: StateFlow<FamilyMember?>
 
+    val changeStatusDialog: StateFlow<Boolean>
+
     sealed class Event {
         object OnLogoutClick : Event()
         object OnLogoutDismiss : Event()
@@ -33,5 +36,8 @@ interface IProfileViewModel : IBaseViewModel<IProfileViewModel.Event> {
         data class OnExcludeFamilyMemberClick(val familyMember: FamilyMember) : Event()
         object OnExcludeDismiss : Event()
         data class OnExcludeFamilyMemberAccepted(val familyMember: FamilyMember) : Event()
+
+        data class ShowStatusMenu(val show: Boolean) : Event()
+        data class ChangeStatus(val status: UserStatus) : Event()
     }
 }

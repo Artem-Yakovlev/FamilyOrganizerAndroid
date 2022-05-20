@@ -6,10 +6,7 @@ import com.badger.familyorgfe.data.model.LocalName
 import com.badger.familyorgfe.ext.isValidName
 import com.badger.familyorgfe.ext.longRunning
 import com.badger.familyorgfe.ext.viewModelScope
-import com.badger.familyorgfe.features.appjourney.profile.domain.ExcludeFamilyMemberUseCase
-import com.badger.familyorgfe.features.appjourney.profile.domain.GetAllFamilyMembersUseCase
-import com.badger.familyorgfe.features.appjourney.profile.domain.LogoutUseCase
-import com.badger.familyorgfe.features.appjourney.profile.domain.SaveLocalNameUseCase
+import com.badger.familyorgfe.features.appjourney.profile.domain.*
 import com.badger.familyorgfe.features.appjourney.profile.model.FamilyMember
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +19,7 @@ class ProfileViewModel @Inject constructor(
     private val getAllFamilyMembersUseCase: GetAllFamilyMembersUseCase,
     private val saveLocalNameUseCase: SaveLocalNameUseCase,
     private val excludeFamilyMemberUseCase: ExcludeFamilyMemberUseCase,
+    private val updateStatusUseCase: UpdateStatusUseCase,
     private val logoutUseCase: LogoutUseCase
 ) : BaseViewModel(), IProfileViewModel {
 
@@ -45,6 +43,8 @@ class ProfileViewModel @Inject constructor(
         MutableStateFlow(false)
     override val excludeFamilyMemberDialog: MutableStateFlow<FamilyMember?> =
         MutableStateFlow(null)
+    override val changeStatusDialog: MutableStateFlow<Boolean> =
+        MutableStateFlow(false)
 
     override val members: StateFlow<List<FamilyMember>> = refreshAllMembersCrutch
         .flatMapLatest { getAllFamilyMembersUseCase(Unit) }
@@ -98,6 +98,15 @@ class ProfileViewModel @Inject constructor(
             }
             is IProfileViewModel.Event.OnExcludeFamilyMemberClick -> {
                 excludeFamilyMemberDialog.value = event.familyMember
+            }
+            is IProfileViewModel.Event.ShowStatusMenu -> {
+                changeStatusDialog.value = event.show
+            }
+            is IProfileViewModel.Event.ChangeStatus -> longRunning {
+                updateStatusUseCase(event.status)
+                refreshAllMembersCrutch.value = System.currentTimeMillis()
+                changeStatusDialog.value = false
+                Unit
             }
         }
     }
