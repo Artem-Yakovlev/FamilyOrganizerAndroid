@@ -86,4 +86,19 @@
     <string name="profile_logout_description">Вы действительно хотите выйти из аккаунта?</string>
     <string name="profile_logout_dismiss">Отмена</string>
     <string name="profile_logout_action">Выйти</string>
+
+
+<!--    AT_HOME(stringResource = ),-->
+<!--    AT_SHOP,-->
+<!--    AT_WALK,-->
+<!--    AT_WORK,-->
+<!--    IN_ROAD-->
+
+    <!-- Status -->
+    <string name="status_undefined">Неизвестно</string>
+    <string name="status_at_home">Дома</string>
+    <string name="status_at_shop">В магазине</string>
+    <string name="status_at_walk">На прогулке</string>
+    <string name="status_at_work">На работе</string>
+    <string name="status_in_road">В дороге</string>
 </resources>

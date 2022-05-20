@@ -25,3 +25,15 @@ val LightClay = Color(0xFFF4F7FE)
 val ExpirationNormalColor = Color(0xFF151A2F)
 val ExpirationBadSoonColor = Color(0xFFF2C94C)
 val ExpirationSpoiledColor = Color(0xFFEB5757)
+
+
+/**
+ * Status colors
+ * */
+
+val StatusUndefinedColor = Color(0xFFAFAFAF)
+val StatusAtHomeColor = Color(0xFF27AE60)
+val StatusAtShopColor = Color(0xFF2D9CDB)
+val StatusAtWalkColor = Color(0xFFF2C94C)
+val StatusAtWorkColor = Color(0xFFEB5757)
+val StatusInRoadColor = Color(0xFFF2C94C)

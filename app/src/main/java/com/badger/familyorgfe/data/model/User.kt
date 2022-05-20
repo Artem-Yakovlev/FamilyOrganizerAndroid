@@ -12,13 +12,17 @@ data class User(
     val email: String,
 
     @ColumnInfo(name = "name")
-    val name: String
+    val name: String,
+
+    @ColumnInfo(name = "image_url")
+    val imageUrl: String
 ) {
 
     companion object {
         fun createEmpty() = User(
             name = "",
-            email = ""
+            email = "",
+            imageUrl = ""
         )
     }
 }
