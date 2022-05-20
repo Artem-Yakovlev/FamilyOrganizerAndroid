@@ -1,6 +1,7 @@
 package com.badger.familyorgfe.features.appjourney.profile
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,6 +34,8 @@ import com.badger.familyorgfe.features.appjourney.profile.model.FamilyMember
 import com.badger.familyorgfe.ui.elements.BaseDialog
 import com.badger.familyorgfe.ui.elements.BaseToolbar
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
+import com.badger.familyorgfe.ui.theme.StatusAtHomeColor
+import com.badger.familyorgfe.ui.theme.WhitePrimary
 
 @Composable
 fun ProfileScreen(
@@ -139,15 +143,17 @@ private fun MainUserItem(
                         .weight(1f)
                         .padding(vertical = 16.dp)
                 ) {
-                    Image(
-                        modifier = Modifier
-                            .size(57.dp)
-                            .clip(CircleShape),
-                        painter = rememberAsyncImagePainter(imageUrl),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop,
-                    )
-
+                    Box(modifier = Modifier.size(57.dp)) {
+                        Image(
+                            modifier = Modifier
+                                .size(57.dp)
+                                .clip(CircleShape),
+                            painter = rememberAsyncImagePainter(imageUrl),
+                            contentDescription = null,
+                            contentScale = ContentScale.Crop,
+                        )
+                        OnlineCircle(familyMember.online)
+                    }
                     Column(
                         modifier = Modifier
                             .weight(1f)
@@ -205,14 +211,18 @@ private fun FamilyMemberItem(
             .wrapContentHeight()
             .padding(horizontal = 16.dp)
     ) {
-        Image(
-            modifier = Modifier
-                .size(57.dp)
-                .clip(CircleShape),
-            painter = rememberAsyncImagePainter(imageUrl),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-        )
+
+        Box(modifier = Modifier.size(57.dp)) {
+            Image(
+                modifier = Modifier
+                    .size(57.dp)
+                    .clip(CircleShape),
+                painter = rememberAsyncImagePainter(imageUrl),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+            )
+            OnlineCircle(familyMember.online)
+        }
         Spacer(modifier = Modifier.width(16.dp))
 
         Card(
@@ -271,6 +281,31 @@ private fun FamilyMemberItem(
             }
 
         }
+    }
+}
+
+@Composable
+private fun BoxScope.OnlineCircle(online: Boolean) {
+    Box(
+        modifier = Modifier
+            .size(15.dp)
+            .clip(CircleShape)
+            .background(WhitePrimary)
+            .align(Alignment.BottomEnd)
+            .padding(1.dp)
+    ) {
+        val onlineColor = if (online) {
+            StatusAtHomeColor
+        } else {
+            FamilyOrganizerTheme.colors.disabled
+        }
+        Box(
+            modifier = Modifier
+                .size(12.dp)
+                .clip(CircleShape)
+                .background(onlineColor)
+                .align(Alignment.Center)
+        )
     }
 }
 
