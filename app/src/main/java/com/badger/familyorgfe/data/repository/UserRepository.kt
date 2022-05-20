@@ -22,7 +22,11 @@ class UserRepository @Inject constructor(
         userDao.insertAll(user)
     }
 
-    override suspend fun getAllLocalNames(): List<LocalName> {
+    override suspend fun getAllLocalNames(): Flow<List<LocalName>> {
         return localNameDao.getAll()
+    }
+
+    override suspend fun saveLocalName(localName: LocalName) {
+        localNameDao.insertAll(localName)
     }
 }

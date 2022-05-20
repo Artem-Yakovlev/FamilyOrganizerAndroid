@@ -9,10 +9,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Card
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.*
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -25,14 +23,18 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.badger.familyorgfe.R
 import com.badger.familyorgfe.features.appjourney.profile.model.FamilyMember
 import com.badger.familyorgfe.ui.elements.BaseDialog
 import com.badger.familyorgfe.ui.elements.BaseToolbar
+import com.badger.familyorgfe.ui.style.buttonColors
+import com.badger.familyorgfe.ui.style.outlinedTextFieldColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 import com.badger.familyorgfe.ui.theme.StatusAtHomeColor
 import com.badger.familyorgfe.ui.theme.WhitePrimary
@@ -43,6 +45,7 @@ fun ProfileScreen(
     viewModel: IProfileViewModel = hiltViewModel<ProfileViewModel>()
 ) {
     val showLogoutDialog by viewModel.showLogoutDialog.collectAsState()
+    val editFamilyMemberDialog by viewModel.editFamilyMemberDialog.collectAsState()
 
     Column(
         modifier = modifier
@@ -67,7 +70,14 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(10.dp))
             }
             items(members) { item ->
-                FamilyMemberItem(familyMember = item)
+                FamilyMemberItem(
+                    familyMember = item,
+                    onEditMemberClicked = { familyMember ->
+                        viewModel.onEvent(
+                            IProfileViewModel.Event.OnEditMemberClicked(familyMember)
+                        )
+                    }
+                )
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
@@ -81,6 +91,41 @@ fun ProfileScreen(
                 onActionClicked = { viewModel.onEvent(IProfileViewModel.Event.OnLogoutAccepted) },
                 onDismissClicked = { viewModel.onEvent(IProfileViewModel.Event.OnLogoutDismiss) }
             )
+        } else if (editFamilyMemberDialog != null) {
+            val localName by viewModel.editFamilyMemberText.collectAsState()
+            val saveEnabled by viewModel.editFamilyMemberSaveEnabled.collectAsState()
+
+            Dialog(
+                onDismissRequest = {
+                    val event = IProfileViewModel.Event.OnEditMemberDismiss
+                    viewModel.onEvent(event)
+                }
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    content = {
+                        EditFamilyMemberDialog(
+                            localName = localName,
+                            saveEnabled = saveEnabled,
+                            onTextChanged = { text ->
+                                viewModel.onEvent(
+                                    IProfileViewModel.Event.OnEditMemberTextChanged(
+                                        text = text
+                                    )
+                                )
+                            },
+                            onSaveClicked = {
+                                viewModel.onEvent(
+                                    IProfileViewModel.Event.OnMemberLocalNameSaved(
+                                        email = editFamilyMemberDialog?.email.orEmpty(),
+                                        localName = localName
+                                    )
+                                )
+                            }
+                        )
+                    }
+                )
+            }
         }
     }
 }
@@ -203,7 +248,8 @@ private fun MainUserItem(
 
 @Composable
 private fun FamilyMemberItem(
-    familyMember: FamilyMember
+    familyMember: FamilyMember,
+    onEditMemberClicked: (FamilyMember) -> Unit
 ) {
     Row(
         Modifier
@@ -211,7 +257,6 @@ private fun FamilyMemberItem(
             .wrapContentHeight()
             .padding(horizontal = 16.dp)
     ) {
-
         Box(modifier = Modifier.size(57.dp)) {
             Image(
                 modifier = Modifier
@@ -242,7 +287,6 @@ private fun FamilyMemberItem(
                         .fillMaxHeight()
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                 ) {
-
                     Text(
                         text = familyMember.name,
                         style = FamilyOrganizerTheme.textStyle.headline3.copy(fontSize = 18.sp),
@@ -271,7 +315,14 @@ private fun FamilyMemberItem(
                 Icon(
                     modifier = Modifier
                         .size(24.dp)
-                        .align(CenterVertically),
+                        .align(CenterVertically)
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = rememberRipple(
+                                bounded = false,
+                                color = FamilyOrganizerTheme.colors.darkClay
+                            )
+                        ) { onEditMemberClicked(familyMember) },
                     painter = painterResource(id = R.drawable.ic_settings),
                     contentDescription = null,
                     tint = FamilyOrganizerTheme.colors.darkClay
@@ -311,3 +362,70 @@ private fun BoxScope.OnlineCircle(online: Boolean) {
 
 private const val imageUrl =
     "https://st.depositphotos.com/1144472/2003/i/600/depositphotos_20030237-stock-photo-cheerful-young-man-over-white.jpg"
+
+@Composable
+private fun EditFamilyMemberDialog(
+    localName: String,
+    saveEnabled: Boolean,
+    onTextChanged: (String) -> Unit,
+    onSaveClicked: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .wrapContentHeight()
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(size = 16.dp))
+            .background(color = FamilyOrganizerTheme.colors.whitePrimary)
+            .padding(start = 16.dp, end = 16.dp)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.Start
+        ) {
+
+            Text(
+                text = stringResource(R.string.family_member_edit_dialog_title),
+                style = FamilyOrganizerTheme.textStyle.headline2,
+                lineHeight = 26.sp,
+                modifier = Modifier.padding(top = 16.dp)
+            )
+
+            Text(
+                text = stringResource(R.string.family_member_edit_dialog_desc),
+                style = FamilyOrganizerTheme.textStyle.subtitle2.copy(
+                    fontSize = 14.sp,
+                    color = FamilyOrganizerTheme.colors.darkClay
+                ),
+                modifier = Modifier.padding(top = 8.dp)
+            )
+
+            OutlinedTextField(
+                value = localName,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                onValueChange = { onTextChanged(it) },
+                textStyle = FamilyOrganizerTheme.textStyle.input,
+                colors = outlinedTextFieldColors(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            )
+
+            Button(
+                onClick = { onSaveClicked(localName) },
+                enabled = saveEnabled,
+                colors = buttonColors(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            ) {
+                Text(
+                    text = stringResource(R.string.family_member_edit_dialog_save).uppercase(),
+                    color = FamilyOrganizerTheme.colors.whitePrimary,
+                    style = FamilyOrganizerTheme.textStyle.button,
+                    modifier = Modifier.padding(vertical = 10.dp)
+                )
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}

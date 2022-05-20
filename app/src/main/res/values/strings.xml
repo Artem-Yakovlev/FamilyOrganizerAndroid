@@ -88,11 +88,10 @@
     <string name="profile_logout_action">Выйти</string>
 
 
-<!--    AT_HOME(stringResource = ),-->
-<!--    AT_SHOP,-->
-<!--    AT_WALK,-->
-<!--    AT_WORK,-->
-<!--    IN_ROAD-->
+
+    <string name="family_member_edit_dialog_title">Изменить отображаемое имя пользователя</string>
+    <string name="family_member_edit_dialog_desc">Не волнуйтесь, измененное имя будете видеть только Вы</string>
+    <string name="family_member_edit_dialog_save">Сохранить</string>
 
     <!-- Status -->
     <string name="status_undefined">Неизвестно</string>

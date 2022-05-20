@@ -10,5 +10,7 @@ interface IUserRepository {
 
     suspend fun saveUser(user: User)
 
-    suspend fun getAllLocalNames(): List<LocalName>
+    suspend fun getAllLocalNames(): Flow<List<LocalName>>
+
+    suspend fun saveLocalName(localName: LocalName)
 }

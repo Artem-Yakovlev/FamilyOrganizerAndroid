@@ -12,9 +12,20 @@ interface IProfileViewModel : IBaseViewModel<IProfileViewModel.Event> {
 
     val members: StateFlow<List<FamilyMember>>
 
+    val editFamilyMemberDialog: StateFlow<FamilyMember?>
+
+    val editFamilyMemberText: StateFlow<String>
+
+    val editFamilyMemberSaveEnabled: StateFlow<Boolean>
+
     sealed class Event {
         object OnLogoutClick : Event()
         object OnLogoutDismiss : Event()
         object OnLogoutAccepted : Event()
+
+        data class OnEditMemberClicked(val familyMember: FamilyMember) : Event()
+        data class OnEditMemberTextChanged(val text: String) : Event()
+        data class OnMemberLocalNameSaved(val email: String, val localName: String) : Event()
+        object OnEditMemberDismiss : Event()
     }
 }
