@@ -18,7 +18,7 @@ data class User(
     val name: String,
 
     @ColumnInfo(name = "image_url")
-    val imageUrl: String,
+    val imageUrl: String?,
 
     @ColumnInfo(name = "status")
     val status: UserStatus

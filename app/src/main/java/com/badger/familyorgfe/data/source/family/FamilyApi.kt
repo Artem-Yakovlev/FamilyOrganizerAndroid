@@ -9,7 +9,7 @@ interface FamilyApi {
     companion object {
         private const val API = "/family"
         private const val GET_FAMILY = "$API/getFamily"
-        private const val GET_ALL_MEMBERS = "$API/getAllMember"
+        private const val GET_ALL_MEMBERS = "$API/getAllMembers"
     }
 
     @POST(GET_ALL_MEMBERS)

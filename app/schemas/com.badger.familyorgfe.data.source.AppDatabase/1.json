@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "cd5ab5993f2dc84a2b992fc6c8c55cbc",
+    "identityHash": "dfd1151da5e508da9408df920270ddd0",
     "entities": [
       {
         "tableName": "users",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`email` TEXT NOT NULL, `name` TEXT NOT NULL, `image_url` TEXT NOT NULL, `status` TEXT NOT NULL, PRIMARY KEY(`email`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`email` TEXT NOT NULL, `name` TEXT NOT NULL, `image_url` TEXT, `status` TEXT NOT NULL, PRIMARY KEY(`email`))",
         "fields": [
           {
             "fieldPath": "email",
@@ -24,7 +24,7 @@
             "fieldPath": "imageUrl",
             "columnName": "image_url",
             "affinity": "TEXT",
-            "notNull": true
+            "notNull": false
           },
           {
             "fieldPath": "status",
@@ -146,7 +146,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'cd5ab5993f2dc84a2b992fc6c8c55cbc')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'dfd1151da5e508da9408df920270ddd0')"
     ]
   }
 }
