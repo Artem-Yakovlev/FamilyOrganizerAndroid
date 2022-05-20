@@ -8,6 +8,6 @@ class GetAllMembersJson {
     )
 
     data class Response(
-        val familyMembers: List<OnlineUser>
+        val onlineUsers: List<OnlineUser>
     )
 }

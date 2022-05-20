@@ -1,5 +1,6 @@
 package com.badger.familyorgfe.data.repository
 
+import com.badger.familyorgfe.data.model.LocalName
 import com.badger.familyorgfe.data.model.User
 import com.badger.familyorgfe.data.source.AppDatabase
 import kotlinx.coroutines.flow.Flow
@@ -11,11 +12,17 @@ class UserRepository @Inject constructor(
 
     private val userDao = database.userDao()
 
+    private val localNameDao = database.localNamesDao()
+
     override fun getUserByEmail(id: String): Flow<User> {
         return userDao.getByEmail(id)
     }
 
     override suspend fun saveUser(user: User) {
         userDao.insertAll(user)
+    }
+
+    override suspend fun getAllLocalNames(): List<LocalName> {
+        return localNameDao.getAll()
     }
 }

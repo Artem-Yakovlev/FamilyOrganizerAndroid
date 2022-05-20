@@ -11,6 +11,8 @@ data class FamilyMember(
 
     val status = onlineUser.user.status
 
+    val email = onlineUser.user.email
+
     companion object {
 
         private const val ONLINE_DEBOUNCE = 5000L
@@ -30,7 +32,7 @@ data class FamilyMember(
             )
         )
 
-        fun createForOnlineUser(name: String = "123", onlineUser: OnlineUser) = FamilyMember(
+        fun createForOnlineUser(name: String, onlineUser: OnlineUser) = FamilyMember(
             name = name,
             online = System.currentTimeMillis() - onlineUser.lastRegisterTime <= ONLINE_DEBOUNCE,
             onlineUser = onlineUser

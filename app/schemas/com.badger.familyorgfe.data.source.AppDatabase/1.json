@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "dfd1151da5e508da9408df920270ddd0",
+    "identityHash": "2a9981f79c97f84d532d93e3b353d203",
     "entities": [
       {
         "tableName": "users",
@@ -141,12 +141,38 @@
         },
         "indices": [],
         "foreignKeys": []
+      },
+      {
+        "tableName": "local_names",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`email` TEXT NOT NULL, `local_name` TEXT NOT NULL, PRIMARY KEY(`email`))",
+        "fields": [
+          {
+            "fieldPath": "email",
+            "columnName": "email",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "localName",
+            "columnName": "local_name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "email"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
       }
     ],
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'dfd1151da5e508da9408df920270ddd0')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2a9981f79c97f84d532d93e3b353d203')"
     ]
   }
 }
