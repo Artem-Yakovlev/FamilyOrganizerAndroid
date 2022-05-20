@@ -1,11 +1,13 @@
 package com.badger.familyorgfe.data.source.family
 
-class LeaveJson {
+import com.badger.familyorgfe.data.source.family.model.OnlineUser
+
+class GetAllMembersJson {
     data class Form(
         val familyId: Long
     )
 
     data class Response(
-        val success: Boolean
+        val familyMembers: List<OnlineUser>
     )
 }

@@ -28,7 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.badger.familyorgfe.R
-import com.badger.familyorgfe.features.appjourney.profile.domain.FamilyMember
+import com.badger.familyorgfe.features.appjourney.profile.model.FamilyMember
 import com.badger.familyorgfe.ui.elements.BaseDialog
 import com.badger.familyorgfe.ui.elements.BaseToolbar
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme

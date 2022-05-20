@@ -8,6 +8,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.badger.familyorgfe.data.model.Fridge
 import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.data.model.User
+import com.badger.familyorgfe.data.model.UserStatus
 import dagger.hilt.EntryPoint
 import dagger.hilt.EntryPoints
 import dagger.hilt.InstallIn
@@ -44,7 +45,8 @@ class PrepopulateCallback(applicationContext: Context) : RoomDatabase.Callback()
             val user = User(
                 name = "",
                 email = "artem_yakovlev@email.com",
-                imageUrl = ""
+                imageUrl = "",
+                status = UserStatus.UNDEFINED
             )
 
             val products = List(5) { id -> productMock(id.toString()) }

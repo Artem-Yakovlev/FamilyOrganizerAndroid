@@ -8,11 +8,12 @@ import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.data.model.User
 import com.badger.familyorgfe.data.source.converters.DateTimeConverter
 import com.badger.familyorgfe.data.source.converters.StringListConverter
+import com.badger.familyorgfe.data.source.converters.UserStatusConverter
 import com.badger.familyorgfe.data.source.dao.FridgeDao
 import com.badger.familyorgfe.data.source.dao.ProductDao
 import com.badger.familyorgfe.data.source.dao.UserDao
 
-@TypeConverters(DateTimeConverter::class, StringListConverter::class)
+@TypeConverters(DateTimeConverter::class, StringListConverter::class, UserStatusConverter::class)
 @Database(entities = [User::class, Fridge::class, Product::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
