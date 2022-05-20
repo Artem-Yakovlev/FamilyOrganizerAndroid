@@ -7,8 +7,7 @@ import com.badger.familyorgfe.data.repository.IProductRepository
 import com.badger.familyorgfe.data.repository.IUserRepository
 import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeItem
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flatMapLatest
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.emptyFlow
 import javax.inject.Inject
 
 class GetAllFridgeItemsUseCase @Inject constructor(
@@ -19,14 +18,15 @@ class GetAllFridgeItemsUseCase @Inject constructor(
 
     override fun invoke(arg: Unit): Flow<List<FridgeItem>> {
         // todo() extract fridgeId
-        return dataStoreRepository.userEmail
-            .flatMapLatest(userRepository::getUserByEmail)
-//            .map { user -> user.fridgeId }
-            .map { user -> "1" }
-            .flatMapLatest(productRepository::getFridgeById)
-            .map { fridge -> fridge.items }
-            .flatMapLatest(productRepository::getProductByIds)
-            .map { products -> products.toFridgeItems() }
+        return emptyFlow()
+//        return dataStoreRepository.userEmail
+//            .flatMapLatest(userRepository::getUserByEmail)
+////            .map { user -> user.fridgeId }
+//            .map { user -> "1" }
+//            .flatMapLatest(productRepository::getFridgeById)
+//            .map { fridge -> fridge.items }
+//            .flatMapLatest(productRepository::getProductByIds)
+//            .map { products -> products.toFridgeItems() }
     }
 
     private fun List<Product>.toFridgeItems() = map { item -> item.toFridgeItem() }

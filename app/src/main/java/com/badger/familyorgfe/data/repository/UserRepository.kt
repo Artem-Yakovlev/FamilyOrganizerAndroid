@@ -14,10 +14,6 @@ class UserRepository @Inject constructor(
 
     private val localNameDao = database.localNamesDao()
 
-    override fun getUserByEmail(id: String): Flow<User> {
-        return userDao.getByEmail(id)
-    }
-
     override suspend fun saveUser(user: User) {
         userDao.insertAll(user)
     }

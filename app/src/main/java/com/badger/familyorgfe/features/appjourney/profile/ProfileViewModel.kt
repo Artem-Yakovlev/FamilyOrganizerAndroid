@@ -27,13 +27,14 @@ class ProfileViewModel @Inject constructor(
 
     private val refreshAllMembersCrutch: MutableStateFlow<Long> = MutableStateFlow(0L)
 
-    override val mainUser: StateFlow<FamilyMember> = getMainUserUseCase(Unit)
+    override val mainUser: StateFlow<FamilyMember> = refreshAllMembersCrutch
+        .flatMapLatest { flow { emit(getMainUserUseCase(Unit)) } }
         .map(FamilyMember::createForMainUser)
         .flowOn(Dispatchers.IO)
         .stateIn(
             scope = viewModelScope(),
             started = SharingStarted.Lazily,
-            initialValue = FamilyMember.createEmpty().copy(name = "Artem ")
+            initialValue = FamilyMember.createEmpty()
         )
 
     override val editFamilyMemberDialog: MutableStateFlow<FamilyMember?> =

@@ -6,8 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface IUserRepository {
 
-    fun getUserByEmail(id: String): Flow<User>
-
     suspend fun saveUser(user: User)
 
     suspend fun getAllLocalNames(): Flow<List<LocalName>>
