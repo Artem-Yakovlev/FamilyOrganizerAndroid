@@ -15,15 +15,20 @@ fun Product.toFridgeItem(): FridgeItem {
                 expDate
             ).toDays() + 1
         }
-    }?.takeIf { it > 0 } ?: 0
-
+    }
     return FridgeItem(
         id = id,
         name = name,
         quantity = quantity,
         measure = measure,
         category = category,
-        expDaysLeft = expDaysLeft.toInt(),
-        expStatus = Product.ExpirationStatus.BAD_SOON
+        expDaysLeft = expDaysLeft?.toInt(),
+        expStatus = expDaysLeft?.toInt()?.let(::getExpirationStatusFor)
     )
+}
+
+fun getExpirationStatusFor(expDaysLeft: Int) = when {
+    expDaysLeft < 0 -> Product.ExpirationStatus.SPOILED
+    expDaysLeft <= 3 -> Product.ExpirationStatus.BAD_SOON
+    else -> Product.ExpirationStatus.NORMAL
 }
