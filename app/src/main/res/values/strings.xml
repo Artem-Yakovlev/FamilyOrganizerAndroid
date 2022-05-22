@@ -5,6 +5,7 @@
     <string name="enter_mail_title">Введите\nвашу почту</string>
     <string name="enter_mail_subtitle">Если у Вас еще нет аккаунта, то мы\nего создадим</string>
     <string name="continue_text">Продолжить</string>
+    <string name="create_text">Создать</string>
     <string name="enter_code_title">Введите код</string>
     <string name="enter_code_subtitle">он отправлен Вам на почту</string>
     <string name="enter_code_hint">Код из письма</string>
@@ -76,6 +77,15 @@
 
     <!-- Adding   -->
     <string name="adding_toolbar_title">Добавить продукты</string>
+    <string name="bottom_sheet_adding_title">Добавление продукта</string>
+    <string name="bottom_sheet_adding_info">Информация</string>
+    <string name="bottom_sheet_adding_hint_title">Название</string>
+    <string name="bottom_sheet_adding_hint_quantity">Количество</string>
+    <string name="bottom_sheet_adding_expiration">Срок годности</string>
+    <string name="bottom_sheet_adding_expiration_days">Осталось дней</string>
+    <string name="bottom_sheet_adding_expiration_and">или</string>
+    <string name="bottom_sheet_adding_expiration_date">Точная дата</string>
+    <string name="bottom_sheet_adding_button">Создать</string>
 
     <!-- Profile -->
     <string name="profile_toolbar_title">Профиль</string>

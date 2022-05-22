@@ -70,9 +70,7 @@ class PrepopulateCallback(applicationContext: Context) : RoomDatabase.Callback()
         quantity = 1.0,
         measure = Product.Measure.THINGS,
         category = Product.Category.HEALTHY,
-        expiryDate = LocalDateTime.now().plusDays(5),
-        createdAt = LocalDateTime.now(),
-        updatedAt = LocalDateTime.now()
+        expiryDate = LocalDateTime.now().plusDays(5)
     )
 }
 

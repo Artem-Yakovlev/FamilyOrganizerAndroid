@@ -3,7 +3,7 @@ package com.badger.familyorgfe.features.appjourney.profile
 import com.badger.familyorgfe.base.BaseViewModel
 import com.badger.familyorgfe.commoninteractors.GetMainUserUseCase
 import com.badger.familyorgfe.data.model.LocalName
-import com.badger.familyorgfe.ext.isValidName
+import com.badger.familyorgfe.ext.isValidUserName
 import com.badger.familyorgfe.ext.longRunning
 import com.badger.familyorgfe.ext.viewModelScope
 import com.badger.familyorgfe.features.appjourney.profile.domain.*
@@ -71,7 +71,7 @@ class ProfileViewModel @Inject constructor(
             }
             is IProfileViewModel.Event.OnEditMemberClicked -> {
                 editFamilyMemberText.value = event.familyMember.name
-                editFamilyMemberSaveEnabled.value = event.familyMember.name.isValidName()
+                editFamilyMemberSaveEnabled.value = event.familyMember.name.isValidUserName()
                 editFamilyMemberDialog.value = event.familyMember
             }
             is IProfileViewModel.Event.OnEditMemberDismiss -> longRunning {
@@ -79,7 +79,7 @@ class ProfileViewModel @Inject constructor(
             }
             is IProfileViewModel.Event.OnEditMemberTextChanged -> longRunning {
                 editFamilyMemberText.value = event.text
-                editFamilyMemberSaveEnabled.value = event.text.isValidName()
+                editFamilyMemberSaveEnabled.value = event.text.isValidUserName()
                 Unit
             }
             is IProfileViewModel.Event.OnMemberLocalNameSaved -> longRunning {

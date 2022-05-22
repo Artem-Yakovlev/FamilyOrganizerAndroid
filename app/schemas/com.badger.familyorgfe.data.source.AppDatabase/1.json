@@ -2,7 +2,7 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "2a9981f79c97f84d532d93e3b353d203",
+    "identityHash": "8ce5ddeb0dd3737c72bb147372e58e16",
     "entities": [
       {
         "tableName": "users",
@@ -82,7 +82,7 @@
       },
       {
         "tableName": "products",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `quantity` REAL, `measure` TEXT, `category` TEXT NOT NULL, `expiryDate` INTEGER, `createdAt` INTEGER NOT NULL, `updatedAt` INTEGER NOT NULL, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT NOT NULL, `quantity` REAL, `measure` TEXT, `category` TEXT NOT NULL, `expiryDate` INTEGER, PRIMARY KEY(`id`))",
         "fields": [
           {
             "fieldPath": "id",
@@ -119,18 +119,6 @@
             "columnName": "expiryDate",
             "affinity": "INTEGER",
             "notNull": false
-          },
-          {
-            "fieldPath": "createdAt",
-            "columnName": "createdAt",
-            "affinity": "INTEGER",
-            "notNull": true
-          },
-          {
-            "fieldPath": "updatedAt",
-            "columnName": "updatedAt",
-            "affinity": "INTEGER",
-            "notNull": true
           }
         ],
         "primaryKey": {
@@ -172,7 +160,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2a9981f79c97f84d532d93e3b353d203')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '8ce5ddeb0dd3737c72bb147372e58e16')"
     ]
   }
 }

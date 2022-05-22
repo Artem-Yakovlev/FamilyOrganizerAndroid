@@ -30,12 +30,6 @@ data class Product(
 
     @ColumnInfo(name = "expiryDate")
     val expiryDate: LocalDateTime?,
-
-    @ColumnInfo(name = "createdAt")
-    val createdAt: LocalDateTime,
-
-    @ColumnInfo(name = "updatedAt")
-    val updatedAt: LocalDateTime
 ) {
     enum class Measure {
         LITER,

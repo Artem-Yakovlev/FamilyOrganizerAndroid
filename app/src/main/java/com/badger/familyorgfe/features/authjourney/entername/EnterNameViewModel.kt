@@ -2,7 +2,7 @@ package com.badger.familyorgfe.features.authjourney.entername
 
 import com.badger.familyorgfe.base.BaseViewModel
 import com.badger.familyorgfe.data.repository.IDataStoreRepository
-import com.badger.familyorgfe.ext.isValidName
+import com.badger.familyorgfe.ext.isValidUserName
 import com.badger.familyorgfe.ext.longRunning
 import com.badger.familyorgfe.features.authjourney.entername.IEnterNameViewModel.Event
 import com.badger.familyorgfe.features.authjourney.entername.domain.GetProfileUseCase
@@ -37,7 +37,7 @@ class EnterNameViewModel @Inject constructor(
 
     private suspend fun init() {
         getProfileUseCase(Unit)?.let { user ->
-            if (user.name.isValidName()) {
+            if (user.name.isValidUserName()) {
                 dataStoreRepository.setUserEmail(user.email)
             } else {
                 userId = user.email
@@ -47,7 +47,7 @@ class EnterNameViewModel @Inject constructor(
 
     private fun handleNameUpdate(query: String) {
         name.value = query
-        continueEnabled.value = query.isValidName()
+        continueEnabled.value = query.isValidUserName()
     }
 
     private suspend fun handleContinueClick(name: String) {

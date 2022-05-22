@@ -1,17 +1,20 @@
 package com.badger.familyorgfe.features.appjourney.adding
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
@@ -19,14 +22,19 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.badger.familyorgfe.R
+import com.badger.familyorgfe.ext.clickableWithoutIndication
 import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeListItem
 import com.badger.familyorgfe.ui.elements.BaseDialog
 import com.badger.familyorgfe.ui.elements.BaseToolbar
+import com.badger.familyorgfe.ui.style.buttonColors
+import com.badger.familyorgfe.ui.style.outlinedTextFieldColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 import com.badger.familyorgfe.utils.BackHandler
 import kotlin.math.roundToInt
@@ -37,31 +45,94 @@ fun AddingScreen(
     navOnBack: () -> Unit,
     viewModel: IAddingViewModel = hiltViewModel<AddingViewModel>()
 ) {
+    val manualAddingState by viewModel.manualAddingState.collectAsState()
     val onBack: () -> Unit = {
-        val event = IAddingViewModel.Event.OnBackClicked
-        viewModel.onEvent(event)
-        navOnBack()
-    }
-    val doneEnabled by viewModel.doneEnabled.collectAsState()
-    BackHandler(onBack = onBack)
-
-    val fabHeightPx = with(LocalDensity.current) { 72.dp.roundToPx().toFloat() }
-    val fabOffsetHeightPx = remember { mutableStateOf(0f) }
-
-    val nestedScrollConnection = remember {
-        object : NestedScrollConnection {
-            override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-
-                val delta = available.y
-                val newOffset = fabOffsetHeightPx.value + delta
-                fabOffsetHeightPx.value = newOffset.coerceIn(-fabHeightPx, 0f)
-
-                return Offset.Zero
+        when {
+            manualAddingState != null -> {
+                val event = IAddingViewModel.Event.OnBottomSheetClose
+                viewModel.onEvent(event)
+            }
+            else -> {
+                val event = IAddingViewModel.Event.OnBackClicked
+                viewModel.onEvent(event)
+                navOnBack()
             }
         }
     }
+    BackHandler(onBack = onBack)
+
+    Screen(
+        modifier = modifier,
+        viewModel = viewModel,
+        onBack = onBack
+    )
+
+    AnimatedVisibility(
+        visible = manualAddingState != null,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        Surface(
+            modifier = modifier
+                .fillMaxSize()
+                .clickableWithoutIndication(onBack),
+            color = FamilyOrganizerTheme.colors.blackPrimary.copy(alpha = 0.35f),
+            content = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 0.dp),
+                    contentAlignment = Alignment.Center,
+                    content = {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
+                                .background(FamilyOrganizerTheme.colors.whitePrimary)
+                                .align(Alignment.BottomCenter)
+                                .padding(horizontal = 32.dp)
+                        ) {
+                            manualAddingState?.let { state ->
+                                BottomSheetContent(viewModel = viewModel, manualAddingState = state)
+                            }
+                        }
+                    }
+                )
+
+            }
+        )
+    }
+}
+
+/**
+ * Screen
+ * */
+
+@Composable
+private fun Screen(
+    modifier: Modifier,
+    viewModel: IAddingViewModel,
+    onBack: () -> Unit
+) {
+    val doneEnabled by viewModel.doneEnabled.collectAsState()
 
     Box(modifier = modifier.fillMaxSize()) {
+        val fabHeightPx = with(LocalDensity.current) { 72.dp.roundToPx().toFloat() }
+        val fabOffsetHeightPx = remember { mutableStateOf(0f) }
+        val nestedScrollConnection = remember {
+            object : NestedScrollConnection {
+                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+
+                    val delta = available.y
+                    val newOffset = fabOffsetHeightPx.value + delta
+                    fabOffsetHeightPx.value = newOffset.coerceIn(-fabHeightPx, 0f)
+
+                    return Offset.Zero
+                }
+            }
+        }
+
         Column(
             modifier = modifier
                 .fillMaxSize()
@@ -77,27 +148,10 @@ fun AddingScreen(
                 nestedScrollConnection = nestedScrollConnection
             )
         }
-
-        FloatingActionButton(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(16.dp)
-                .offset { IntOffset(x = 0, y = -fabOffsetHeightPx.value.roundToInt()) },
-            backgroundColor = FamilyOrganizerTheme.colors.primary,
-            onClick = {
-                val event = IAddingViewModel.Event.OnAddClicked
-                viewModel.onEvent(event)
-            }
-        ) {
-            Icon(
-                modifier = Modifier
-                    .size(28.dp)
-                    .align(Alignment.Center),
-                painter = painterResource(id = R.drawable.ic_add),
-                contentDescription = null,
-                tint = FamilyOrganizerTheme.colors.whitePrimary
-            )
-        }
+        Fab(
+            fabOffsetHeightPx = fabOffsetHeightPx.value,
+            viewModel = viewModel
+        )
     }
 }
 
@@ -217,3 +271,168 @@ private fun ColumnScope.Listing(
 
     }
 }
+
+@Composable
+private fun BoxScope.Fab(
+    fabOffsetHeightPx: Float,
+    viewModel: IAddingViewModel
+) {
+    FloatingActionButton(
+        modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .padding(16.dp)
+            .offset { IntOffset(x = 0, y = -fabOffsetHeightPx.roundToInt()) },
+        backgroundColor = FamilyOrganizerTheme.colors.primary,
+        onClick = {
+            val event = IAddingViewModel.Event.OnAddClicked
+            viewModel.onEvent(event)
+        }
+    ) {
+        Icon(
+            modifier = Modifier
+                .size(28.dp)
+                .align(Alignment.Center),
+            painter = painterResource(id = R.drawable.ic_add),
+            contentDescription = null,
+            tint = FamilyOrganizerTheme.colors.whitePrimary
+        )
+    }
+}
+
+/**
+ * ManualAddingBottomSheet
+ * */
+
+@Composable
+private fun ColumnScope.BottomSheetContent(
+    manualAddingState: IAddingViewModel.ManualAddingState,
+    viewModel: IAddingViewModel
+) {
+
+    Spacer(modifier = Modifier.height(16.dp))
+    Text(
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+        text = stringResource(id = R.string.bottom_sheet_adding_title),
+        style = FamilyOrganizerTheme.textStyle.headline3.copy(fontSize = 20.sp),
+        color = FamilyOrganizerTheme.colors.blackPrimary
+    )
+    Spacer(modifier = Modifier.height(22.dp))
+
+    /**
+     * Info
+     * */
+
+    Text(
+        modifier = Modifier.align(Alignment.Start),
+        text = stringResource(id = R.string.bottom_sheet_adding_info),
+        style = FamilyOrganizerTheme.textStyle.body.copy(fontWeight = FontWeight.Medium),
+        color = FamilyOrganizerTheme.colors.blackPrimary
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+
+    AddingBottomSheetTextInput(
+        modifier = Modifier.fillMaxWidth(),
+        value = manualAddingState.title,
+        hint = stringResource(id = R.string.bottom_sheet_adding_hint_title),
+        onValueChange = {
+            val event = IAddingViewModel.Event.OnManualAddingTitleChanged(it)
+            viewModel.onEvent(event)
+        }
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+
+    Row(modifier = Modifier.fillMaxWidth()) {
+        AddingBottomSheetTextInput(
+            modifier = Modifier.weight(1f),
+            value = manualAddingState.quantity?.toString().orEmpty(),
+            hint = stringResource(id = R.string.bottom_sheet_adding_hint_quantity),
+            onValueChange = {
+                val event = IAddingViewModel.Event.OnManualAddingQuantityChanged(it)
+                viewModel.onEvent(event)
+            }
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+    }
+
+   /**
+    * Expiration
+    * */
+
+    Spacer(modifier = Modifier.height(22.dp))
+
+    Text(
+        modifier = Modifier.align(Alignment.Start),
+        text = stringResource(id = R.string.bottom_sheet_adding_expiration),
+        style = FamilyOrganizerTheme.textStyle.body.copy(fontWeight = FontWeight.Medium),
+        color = FamilyOrganizerTheme.colors.blackPrimary
+    )
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    AddingBottomSheetTextInput(
+        modifier = Modifier.fillMaxWidth(),
+        value = "",
+        hint = stringResource(id = R.string.bottom_sheet_adding_expiration_days),
+        onValueChange = {
+            val event = IAddingViewModel.Event.OnManualAddingExpirationDaysChanged(it)
+            viewModel.onEvent(event)
+        }
+    )
+    Spacer(modifier = Modifier.height(4.dp))
+    Text(
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+        text = stringResource(id = R.string.bottom_sheet_adding_expiration_and),
+        style = FamilyOrganizerTheme.textStyle.body.copy(fontWeight = FontWeight.Medium),
+        color = FamilyOrganizerTheme.colors.blackPrimary
+    )
+    Spacer(modifier = Modifier.height(4.dp))
+    AddingBottomSheetTextInput(
+        modifier = Modifier.fillMaxWidth(),
+        value = "",
+        hint = stringResource(id = R.string.bottom_sheet_adding_expiration_date),
+        onValueChange = {
+            val event = IAddingViewModel.Event.OnManualAddingExpirationDateChanged(it)
+            viewModel.onEvent(event)
+        }
+    )
+    Spacer(modifier = Modifier.height(40.dp))
+
+    Button(
+        onClick = {
+            val event = IAddingViewModel.Event.OnCreateClicked
+            viewModel.onEvent(event)
+        },
+        enabled = manualAddingState.createEnabled,
+        colors = buttonColors(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp)
+            .clip(RoundedCornerShape(8.dp))
+    ) {
+        Text(
+            text = stringResource(R.string.create_text).uppercase(),
+            color = FamilyOrganizerTheme.colors.whitePrimary,
+            style = FamilyOrganizerTheme.textStyle.button,
+            modifier = Modifier.padding(vertical = 10.dp)
+        )
+    }
+    Spacer(modifier = Modifier.height(16.dp))
+}
+
+@Composable
+private fun AddingBottomSheetTextInput(
+    modifier: Modifier,
+    value: String,
+    hint: String,
+    onValueChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        modifier = modifier,
+        value = value,
+        onValueChange = onValueChange,
+        textStyle = FamilyOrganizerTheme.textStyle.input,
+        colors = outlinedTextFieldColors(),
+        placeholder = { Text(text = hint) }
+    )
+}
+
