@@ -65,7 +65,10 @@ private fun Content(modifier: Modifier, navController: NavHostController) {
             FridgeScreen(modifier)
         }
         composable(route = BottomNavigationType.ADDING.route) {
-            AddingScreen(modifier)
+            AddingScreen(
+                modifier = modifier,
+                navOnBack = { navController.popBackStack() }
+            )
         }
         composable(route = BottomNavigationType.PROFILE.route) {
             ProfileScreen(modifier)

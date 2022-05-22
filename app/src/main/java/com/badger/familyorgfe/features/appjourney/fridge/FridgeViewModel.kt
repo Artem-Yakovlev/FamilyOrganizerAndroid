@@ -80,7 +80,6 @@ class FridgeViewModel @Inject constructor(
                     deleteFridgeItemUseCase(event.item)
                     deleteItemDialog.value = null
                 }
-
             }
         }
     }
