@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.badger.familyorgfe.R
+import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.ext.clickableWithoutIndication
 import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeListItem
 import com.badger.familyorgfe.ui.elements.BaseDialog
@@ -92,6 +93,7 @@ fun AddingScreen(
                                 .background(FamilyOrganizerTheme.colors.whitePrimary)
                                 .align(Alignment.BottomCenter)
                                 .padding(horizontal = 32.dp)
+                                .clickableWithoutIndication {  }
                         ) {
                             manualAddingState?.let { state ->
                                 BottomSheetContent(viewModel = viewModel, manualAddingState = state)
@@ -352,11 +354,71 @@ private fun ColumnScope.BottomSheetContent(
             }
         )
         Spacer(modifier = Modifier.width(8.dp))
+
+        var expanded by remember { mutableStateOf(false) }
+
+        ExposedDropdownMenuBox(
+            modifier = Modifier.weight(1f),
+            expanded = expanded,
+            onExpandedChange = {
+                expanded = !expanded
+            }
+        ) {
+            OutlinedTextField(
+                value = getMeasureString(manualAddingState.measure),
+                onValueChange = {},
+                textStyle = FamilyOrganizerTheme.textStyle.input,
+                colors = outlinedTextFieldColors(),
+                trailingIcon = {
+                    Icon(
+                        modifier = Modifier
+                            .size(24.dp),
+                        painter = painterResource(
+                            id = if (expanded) {
+                                R.drawable.ic_profile_status_arrow_up
+                            } else {
+                                R.drawable.ic_profile_status_arrow_down
+                            }
+                        ),
+                        contentDescription = null,
+                        tint = FamilyOrganizerTheme.colors.darkClay
+                    )
+                }
+            )
+
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = {
+                    expanded = false
+                }
+            ) {
+                Product.Measure.values()
+                    .forEach { selectionOption ->
+                        DropdownMenuItem(
+                            onClick = {
+                                viewModel.onEvent(
+                                    IAddingViewModel.Event.OnManualAddingMeasureChanged(
+                                        selectionOption
+                                    )
+                                )
+                                expanded = false
+                            }
+                        ) {
+                            Text(
+                                text = getMeasureString(measure = selectionOption),
+                                style = FamilyOrganizerTheme.textStyle.body.copy(fontWeight = FontWeight.Medium),
+                                color = FamilyOrganizerTheme.colors.blackPrimary
+                            )
+                        }
+                    }
+            }
+        }
+
     }
 
-   /**
-    * Expiration
-    * */
+    /**
+     * Expiration
+     * */
 
     Spacer(modifier = Modifier.height(22.dp))
 
@@ -436,3 +498,9 @@ private fun AddingBottomSheetTextInput(
     )
 }
 
+@Composable
+private fun getMeasureString(measure: Product.Measure) = when (measure) {
+    Product.Measure.LITER -> stringResource(id = R.string.adding_measure_litter)
+    Product.Measure.KILOGRAM -> stringResource(id = R.string.adding_measure_kg)
+    Product.Measure.THINGS -> stringResource(id = R.string.adding_measure_things)
+}
