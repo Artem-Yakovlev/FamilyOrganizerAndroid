@@ -1,11 +1,15 @@
 package com.badger.familyorgfe.features.appjourney.adding
 
 import com.badger.familyorgfe.base.BaseViewModel
+import com.badger.familyorgfe.ext.convertToRealFutureDate
 import com.badger.familyorgfe.ext.toFridgeItem
 import com.badger.familyorgfe.ext.viewModelScope
 import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
+import org.threeten.bp.Duration
+import org.threeten.bp.LocalDate
+import org.threeten.bp.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -66,12 +70,42 @@ class AddingViewModel @Inject constructor() : BaseViewModel(), IAddingViewModel 
                 )
             }
             is IAddingViewModel.Event.OnManualAddingExpirationDateChanged -> {
-
+                val expirationDate = event.date.convertToRealFutureDate()
+                val expirationDays = try {
+                    if (LocalDate.now() == expirationDate) {
+                        ZERO
+                    } else {
+                        Duration.between(
+                            LocalDate.now().atStartOfDay(),
+                            expirationDate?.atStartOfDay()
+                        ).toDays().toString()
+                    }
+                } catch (e: Exception) {
+                    null
+                }
+                manualAddingState.value = manualAddingState.value?.copy(
+                    expirationDateString = event.date,
+                    expirationDate = expirationDate,
+                    expirationDaysString = expirationDays
+                )
             }
             is IAddingViewModel.Event.OnManualAddingExpirationDaysChanged -> {
+                val expirationDays = event.days.toIntOrNull()?.takeIf { it >= 0 }
+                val expirationDate = expirationDays?.let { expDays ->
+                    LocalDate.now().plusDays(expDays.toLong())
+                }
+                val expirationDateString = try {
+                    expirationDate?.format(dateFormat).orEmpty()
+                } catch (e: Exception) {
+                    ""
+                }
 
+                manualAddingState.value = manualAddingState.value?.copy(
+                    expirationDateString = expirationDateString,
+                    expirationDate = expirationDate,
+                    expirationDaysString = expirationDays?.toString().orEmpty()
+                )
             }
-
             is IAddingViewModel.Event.OnCreateClicked -> {
                 val product = manualAddingState.value?.createProduct() ?: return
                 manualAddingState.value = null
@@ -85,5 +119,11 @@ class AddingViewModel @Inject constructor() : BaseViewModel(), IAddingViewModel 
         expandedItemId.value = null
         deleteItemDialog.value = null
         manualAddingState.value = null
+    }
+
+    companion object {
+        private const val ZERO = "0"
+        private const val DATE_FORMAT = "dd.MM.yyyy"
+        private val dateFormat = DateTimeFormatter.ofPattern(DATE_FORMAT)
     }
 }

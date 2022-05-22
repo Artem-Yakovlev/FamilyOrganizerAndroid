@@ -36,9 +36,15 @@ interface IAddingViewModel : IBaseViewModel<IAddingViewModel.Event> {
         val title: String,
         val quantity: Double?,
         val measure: Product.Measure,
+        val expirationDateString: String?,
+        val expirationDaysString: String?,
         val expirationDate: LocalDate?
     ) {
-        val createEnabled = title.isValidProductName()
+        val createEnabled = title.isValidProductName() && (expirationDate != null
+                || expirationDateString.isNullOrEmpty() && expirationDaysString.isNullOrEmpty())
+
+        val isDateError = (expirationDateString != null || expirationDaysString != null)
+                && expirationDate == null
 
         fun createProduct() = if (createEnabled) {
             Product(
@@ -58,7 +64,9 @@ interface IAddingViewModel : IBaseViewModel<IAddingViewModel.Event> {
                 title = "",
                 quantity = null,
                 measure = Product.Measure.KILOGRAM,
-                expirationDate = null
+                expirationDate = null,
+                expirationDateString = null,
+                expirationDaysString = null
             )
         }
     }

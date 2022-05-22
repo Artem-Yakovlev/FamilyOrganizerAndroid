@@ -437,12 +437,13 @@ private fun ColumnScope.BottomSheetContent(
     AddingBottomSheetTextInput(
         modifier = Modifier.fillMaxWidth(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-        value = "",
+        value = manualAddingState.expirationDaysString.orEmpty(),
         hint = stringResource(id = R.string.bottom_sheet_adding_expiration_days),
         onValueChange = {
             val event = IAddingViewModel.Event.OnManualAddingExpirationDaysChanged(it)
             viewModel.onEvent(event)
-        }
+        },
+        isError = manualAddingState.isDateError
     )
     Spacer(modifier = Modifier.height(4.dp))
     Text(
@@ -455,12 +456,13 @@ private fun ColumnScope.BottomSheetContent(
     AddingBottomSheetTextInput(
         modifier = Modifier.fillMaxWidth(),
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-        value = "",
+        value = manualAddingState.expirationDateString.orEmpty(),
         hint = stringResource(id = R.string.bottom_sheet_adding_expiration_date),
         onValueChange = {
             val event = IAddingViewModel.Event.OnManualAddingExpirationDateChanged(it)
             viewModel.onEvent(event)
-        }
+        },
+        isError = manualAddingState.isDateError
     )
     Spacer(modifier = Modifier.height(40.dp))
 
@@ -492,11 +494,13 @@ private fun AddingBottomSheetTextInput(
     value: String,
     hint: String,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
-    onValueChange: (String) -> Unit
+    onValueChange: (String) -> Unit,
+    isError: Boolean = false
 ) {
     OutlinedTextField(
         modifier = modifier,
         value = value,
+        isError = isError,
         singleLine = true,
         onValueChange = onValueChange,
         textStyle = FamilyOrganizerTheme.textStyle.input,
