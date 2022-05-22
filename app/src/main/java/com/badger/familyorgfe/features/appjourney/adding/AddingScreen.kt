@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -23,6 +24,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -347,6 +349,7 @@ private fun ColumnScope.BottomSheetContent(
         AddingBottomSheetTextInput(
             modifier = Modifier.weight(1f),
             value = manualAddingState.quantity?.toString().orEmpty(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
             hint = stringResource(id = R.string.bottom_sheet_adding_hint_quantity),
             onValueChange = {
                 val event = IAddingViewModel.Event.OnManualAddingQuantityChanged(it)
@@ -433,6 +436,7 @@ private fun ColumnScope.BottomSheetContent(
 
     AddingBottomSheetTextInput(
         modifier = Modifier.fillMaxWidth(),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
         value = "",
         hint = stringResource(id = R.string.bottom_sheet_adding_expiration_days),
         onValueChange = {
@@ -450,6 +454,7 @@ private fun ColumnScope.BottomSheetContent(
     Spacer(modifier = Modifier.height(4.dp))
     AddingBottomSheetTextInput(
         modifier = Modifier.fillMaxWidth(),
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
         value = "",
         hint = stringResource(id = R.string.bottom_sheet_adding_expiration_date),
         onValueChange = {
@@ -486,13 +491,16 @@ private fun AddingBottomSheetTextInput(
     modifier: Modifier,
     value: String,
     hint: String,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     onValueChange: (String) -> Unit
 ) {
     OutlinedTextField(
         modifier = modifier,
         value = value,
+        singleLine = true,
         onValueChange = onValueChange,
         textStyle = FamilyOrganizerTheme.textStyle.input,
+        keyboardOptions = keyboardOptions,
         colors = outlinedTextFieldColors(),
         placeholder = { Text(text = hint) }
     )
