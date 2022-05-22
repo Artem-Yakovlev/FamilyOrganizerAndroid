@@ -1,5 +1,6 @@
 package com.badger.familyorgfe.features.appjourney.adding
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
@@ -41,10 +42,10 @@ fun AddingScreen(
         viewModel.onEvent(event)
         navOnBack()
     }
+    val doneEnabled by viewModel.doneEnabled.collectAsState()
     BackHandler(onBack = onBack)
 
-    val fabHeight = 72.dp //FabSize+Padding
-    val fabHeightPx = with(LocalDensity.current) { fabHeight.roundToPx().toFloat() }
+    val fabHeightPx = with(LocalDensity.current) { 72.dp.roundToPx().toFloat() }
     val fabOffsetHeightPx = remember { mutableStateOf(0f) }
 
     val nestedScrollConnection = remember {
@@ -67,6 +68,7 @@ fun AddingScreen(
         ) {
             Toolbar(
                 onBackClicked = onBack,
+                doneEnabled = doneEnabled,
                 onDoneClicked = {}
             )
             Listing(
@@ -102,6 +104,7 @@ fun AddingScreen(
 @Composable
 private fun Toolbar(
     onBackClicked: () -> Unit,
+    doneEnabled: Boolean,
     onDoneClicked: () -> Unit
 ) {
     BaseToolbar {
@@ -128,19 +131,19 @@ private fun Toolbar(
             color = FamilyOrganizerTheme.colors.blackPrimary
         )
 
-        Icon(
-            modifier = Modifier
-                .size(24.dp)
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { onDoneClicked() },
-            painter = painterResource(id = R.drawable.ic_done),
-            contentDescription = null,
-            tint = FamilyOrganizerTheme.colors.blackPrimary
-        )
-
-
+        AnimatedVisibility(visible = doneEnabled) {
+            Icon(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) { onDoneClicked() },
+                painter = painterResource(id = R.drawable.ic_done),
+                contentDescription = null,
+                tint = FamilyOrganizerTheme.colors.blackPrimary
+            )
+        }
         Spacer(modifier = Modifier.width(16.dp))
     }
 }
@@ -158,7 +161,8 @@ private fun ColumnScope.Listing(
     LazyColumn(
         modifier = modifier
             .fillMaxWidth()
-            .weight(1f).nestedScroll(nestedScrollConnection),
+            .weight(1f)
+            .nestedScroll(nestedScrollConnection),
     ) {
         item {
             Spacer(modifier = Modifier.height(16.dp))

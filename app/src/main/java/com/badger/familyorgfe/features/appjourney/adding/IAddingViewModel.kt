@@ -7,6 +7,12 @@ import kotlinx.coroutines.flow.StateFlow
 interface IAddingViewModel : IBaseViewModel<IAddingViewModel.Event> {
 
     /**
+     * Toolbar
+     * */
+
+    val doneEnabled: StateFlow<Boolean>
+
+    /**
      * Items
      * */
 
@@ -21,7 +27,7 @@ interface IAddingViewModel : IBaseViewModel<IAddingViewModel.Event> {
     val deleteItemDialog: StateFlow<FridgeItem?>
 
     sealed class Event {
-        object OnBackClicked: Event()
+        object OnBackClicked : Event()
         object OnAddClicked : Event()
         object OnDoneClicked : Event()
 

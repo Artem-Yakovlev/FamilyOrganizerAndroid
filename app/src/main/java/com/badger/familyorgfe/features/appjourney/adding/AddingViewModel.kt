@@ -1,9 +1,10 @@
 package com.badger.familyorgfe.features.appjourney.adding
 
 import com.badger.familyorgfe.base.BaseViewModel
+import com.badger.familyorgfe.ext.viewModelScope
 import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeItem
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 import kotlin.random.Random
 
@@ -13,6 +14,8 @@ class AddingViewModel @Inject constructor() : BaseViewModel(), IAddingViewModel 
     override val items = MutableStateFlow<List<FridgeItem>>(emptyList())
     override val expandedItemId = MutableStateFlow<String?>(null)
     override val deleteItemDialog = MutableStateFlow<FridgeItem?>(null)
+    override val doneEnabled = items.map(List<FridgeItem>::isNotEmpty)
+        .stateIn(viewModelScope(), started = SharingStarted.Lazily, initialValue = false)
 
     override fun onEvent(event: IAddingViewModel.Event) {
         when (event) {
