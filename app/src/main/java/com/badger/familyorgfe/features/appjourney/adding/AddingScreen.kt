@@ -62,6 +62,12 @@ fun AddingScreen(
             }
         }
     }
+
+    val successAdded by viewModel.successAdded.collectAsState()
+    if (successAdded) {
+        onBack()
+    }
+
     BackHandler(onBack = onBack)
 
     Screen(
@@ -95,7 +101,7 @@ fun AddingScreen(
                                 .background(FamilyOrganizerTheme.colors.whitePrimary)
                                 .align(Alignment.BottomCenter)
                                 .padding(horizontal = 32.dp)
-                                .clickableWithoutIndication {  }
+                                .clickableWithoutIndication { }
                         ) {
                             manualAddingState?.let { state ->
                                 BottomSheetContent(viewModel = viewModel, manualAddingState = state)
@@ -144,7 +150,10 @@ private fun Screen(
             Toolbar(
                 onBackClicked = onBack,
                 doneEnabled = doneEnabled,
-                onDoneClicked = {}
+                onDoneClicked = {
+                    val event = IAddingViewModel.Event.OnDoneClicked
+                    viewModel.onEvent(event)
+                }
             )
             Listing(
                 modifier = modifier,

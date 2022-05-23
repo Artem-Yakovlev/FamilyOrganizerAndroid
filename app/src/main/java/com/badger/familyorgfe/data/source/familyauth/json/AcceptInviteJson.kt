@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.data.source.familyauth
+package com.badger.familyorgfe.data.source.familyauth.json
 
 import com.badger.familyorgfe.data.model.Family
 

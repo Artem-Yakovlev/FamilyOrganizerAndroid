@@ -9,7 +9,7 @@ import androidx.room.Room
 import com.badger.familyorgfe.data.repository.DataStoreRepository
 import com.badger.familyorgfe.data.repository.IDataStoreRepository
 import com.badger.familyorgfe.data.source.AppDatabase
-import com.badger.familyorgfe.data.source.ProductApi
+import com.badger.familyorgfe.data.source.products.ProductsApi
 import com.badger.familyorgfe.data.source.auth.AuthApi
 import com.badger.familyorgfe.data.source.family.FamilyApi
 import com.badger.familyorgfe.data.source.familyauth.FamilyAuthApi
@@ -113,8 +113,8 @@ class SourceModule {
 
     @Provides
     @Singleton
-    fun provideProductApi(retrofit: Retrofit): ProductApi =
-        retrofit.create(ProductApi::class.java)
+    fun provideProductApi(retrofit: Retrofit): ProductsApi =
+        retrofit.create(ProductsApi::class.java)
 
     @Provides
     @Singleton

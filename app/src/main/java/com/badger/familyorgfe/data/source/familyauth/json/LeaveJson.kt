@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.data.source.familyauth
+package com.badger.familyorgfe.data.source.familyauth.json
 
 class LeaveJson {
     data class Form(

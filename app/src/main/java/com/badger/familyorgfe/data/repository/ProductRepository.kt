@@ -3,12 +3,12 @@ package com.badger.familyorgfe.data.repository
 import com.badger.familyorgfe.data.model.Fridge
 import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.data.source.AppDatabase
-import com.badger.familyorgfe.data.source.ProductApi
+import com.badger.familyorgfe.data.source.products.ProductsApi
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class ProductRepository @Inject constructor(
-    private val productApi: ProductApi,
+    private val productsApi: ProductsApi,
     database: AppDatabase
 ) : IProductRepository {
 

@@ -1,6 +1,9 @@
 package com.badger.familyorgfe.data.source.family
 
 import com.badger.familyorgfe.base.BaseResponse
+import com.badger.familyorgfe.data.source.family.json.ExcludeFamilyMemberJson
+import com.badger.familyorgfe.data.source.family.json.GetAllMembersJson
+import com.badger.familyorgfe.data.source.family.json.GetFamilyJson
 import retrofit2.http.Body
 import retrofit2.http.POST
 

@@ -2,7 +2,7 @@ package com.badger.familyorgfe.features.appjourney.profile.domain
 
 import com.badger.familyorgfe.base.BaseUseCase
 import com.badger.familyorgfe.data.repository.IDataStoreRepository
-import com.badger.familyorgfe.data.source.family.ExcludeFamilyMemberJson
+import com.badger.familyorgfe.data.source.family.json.ExcludeFamilyMemberJson
 import com.badger.familyorgfe.data.source.family.FamilyApi
 import com.badger.familyorgfe.features.appjourney.profile.model.FamilyMember
 import kotlinx.coroutines.flow.firstOrNull

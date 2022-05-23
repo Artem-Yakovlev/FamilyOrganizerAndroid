@@ -1,9 +1,12 @@
 package com.badger.familyorgfe.features.appjourney.adding
 
 import com.badger.familyorgfe.base.BaseViewModel
+import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.ext.convertToRealFutureDate
+import com.badger.familyorgfe.ext.longRunning
 import com.badger.familyorgfe.ext.toFridgeItem
 import com.badger.familyorgfe.ext.viewModelScope
+import com.badger.familyorgfe.features.appjourney.adding.domain.AddProductUseCase
 import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -13,9 +16,18 @@ import org.threeten.bp.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
-class AddingViewModel @Inject constructor() : BaseViewModel(), IAddingViewModel {
+class AddingViewModel @Inject constructor(
+    private val addProductUseCase: AddProductUseCase
+) : BaseViewModel(), IAddingViewModel {
 
-    override val items = MutableStateFlow<List<FridgeItem>>(emptyList())
+    private val products = MutableStateFlow<List<Product>>(emptyList())
+    private val isLoading = MutableStateFlow(false)
+    override val successAdded = MutableStateFlow(false)
+
+    override val items: StateFlow<List<FridgeItem>> = products
+        .map { products -> products.map(Product::toFridgeItem) }
+        .stateIn(viewModelScope(), started = SharingStarted.Lazily, initialValue = emptyList())
+
     override val expandedItemId = MutableStateFlow<String?>(null)
     override val deleteItemDialog = MutableStateFlow<FridgeItem?>(null)
     override val manualAddingState = MutableStateFlow<IAddingViewModel.ManualAddingState?>(null)
@@ -27,8 +39,13 @@ class AddingViewModel @Inject constructor() : BaseViewModel(), IAddingViewModel 
             is IAddingViewModel.Event.OnAddClicked -> {
                 manualAddingState.value = IAddingViewModel.ManualAddingState.createEmpty()
             }
-            is IAddingViewModel.Event.OnDoneClicked -> {
-
+            is IAddingViewModel.Event.OnDoneClicked -> longRunning {
+                if (!isLoading.value) {
+                    isLoading.value = true
+                    val success = addProductUseCase(products.value)
+                    isLoading.value = success
+                    successAdded.value = success
+                }
             }
             is IAddingViewModel.Event.OnItemCollapsed -> {
                 expandedItemId.value = null
@@ -37,7 +54,7 @@ class AddingViewModel @Inject constructor() : BaseViewModel(), IAddingViewModel 
                 expandedItemId.value = event.id
             }
             is IAddingViewModel.Event.DeleteItem -> {
-                items.value = items.value.filter { it.id != event.item.id }
+                products.value = products.value.filter { it.id != event.item.id }
                 deleteItemDialog.value = null
             }
             is IAddingViewModel.Event.DismissDeleteDialog -> {
@@ -109,16 +126,17 @@ class AddingViewModel @Inject constructor() : BaseViewModel(), IAddingViewModel 
             is IAddingViewModel.Event.OnCreateClicked -> {
                 val product = manualAddingState.value?.createProduct() ?: return
                 manualAddingState.value = null
-                items.value = (items.value + product.toFridgeItem()).sortedBy(FridgeItem::name)
+                products.value = (products.value + product).sortedBy(Product::name)
             }
         }
     }
 
     override fun clearData() {
-        items.value = emptyList()
+        products.value = emptyList()
         expandedItemId.value = null
         deleteItemDialog.value = null
         manualAddingState.value = null
+        isLoading.value = false
     }
 
     companion object {

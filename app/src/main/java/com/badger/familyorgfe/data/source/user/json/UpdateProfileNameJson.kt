@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.data.source.user
+package com.badger.familyorgfe.data.source.user.json
 
 import com.badger.familyorgfe.data.model.User
 

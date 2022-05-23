@@ -1,5 +1,8 @@
 package com.badger.familyorgfe.data.source.user
 
+import com.badger.familyorgfe.data.source.user.json.GetProfileJson
+import com.badger.familyorgfe.data.source.user.json.UpdateProfileNameJson
+import com.badger.familyorgfe.data.source.user.json.UpdateStatusJson
 import retrofit2.http.Body
 import retrofit2.http.POST
 

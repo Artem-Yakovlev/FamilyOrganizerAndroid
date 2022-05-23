@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.data.source.family
+package com.badger.familyorgfe.data.source.family.json
 
 import com.badger.familyorgfe.data.model.Family
 

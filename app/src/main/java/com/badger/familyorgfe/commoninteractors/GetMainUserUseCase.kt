@@ -2,7 +2,7 @@ package com.badger.familyorgfe.commoninteractors
 
 import com.badger.familyorgfe.base.BaseUseCase
 import com.badger.familyorgfe.data.model.User
-import com.badger.familyorgfe.data.source.user.GetProfileJson
+import com.badger.familyorgfe.data.source.user.json.GetProfileJson
 import com.badger.familyorgfe.data.source.user.UserApi
 import javax.inject.Inject
 

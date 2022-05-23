@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.data.source.family
+package com.badger.familyorgfe.data.source.family.json
 
 class ExcludeFamilyMemberJson {
 

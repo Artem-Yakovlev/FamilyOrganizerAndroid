@@ -2,7 +2,7 @@ package com.badger.familyorgfe.features.familyauthjourney.all.domain
 
 import com.badger.familyorgfe.base.BaseUseCase
 import com.badger.familyorgfe.data.source.familyauth.FamilyAuthApi
-import com.badger.familyorgfe.data.source.familyauth.LeaveJson
+import com.badger.familyorgfe.data.source.familyauth.json.LeaveJson
 import com.badger.familyorgfe.features.familyauthjourney.all.model.FamiliesAndInvites
 import javax.inject.Inject
 

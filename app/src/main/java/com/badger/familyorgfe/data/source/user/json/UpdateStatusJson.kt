@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.data.source.user
+package com.badger.familyorgfe.data.source.user.json
 
 class UpdateStatusJson {
     data class Form(

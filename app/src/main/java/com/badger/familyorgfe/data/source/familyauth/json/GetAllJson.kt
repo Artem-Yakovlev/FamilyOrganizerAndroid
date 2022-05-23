@@ -1,14 +1,13 @@
-package com.badger.familyorgfe.data.source.familyauth
+package com.badger.familyorgfe.data.source.familyauth.json
 
 import com.badger.familyorgfe.data.model.Family
 
-class CreateJson {
-    data class Form(
-        val familyName: String
+class GetAllJson {
+    class Form(
+
     )
 
     data class Response(
-        val createdId: Long,
         val families: List<Family>,
         val invites: List<Family>
     )

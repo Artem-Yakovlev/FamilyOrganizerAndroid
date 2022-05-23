@@ -16,6 +16,8 @@ interface IAddingViewModel : IBaseViewModel<IAddingViewModel.Event> {
 
     val doneEnabled: StateFlow<Boolean>
 
+    val successAdded: StateFlow<Boolean>
+
     /**
      * Items
      * */

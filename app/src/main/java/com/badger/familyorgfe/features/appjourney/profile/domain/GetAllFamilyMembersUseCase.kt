@@ -5,7 +5,7 @@ import com.badger.familyorgfe.base.FlowUseCase
 import com.badger.familyorgfe.data.repository.IDataStoreRepository
 import com.badger.familyorgfe.data.repository.IUserRepository
 import com.badger.familyorgfe.data.source.family.FamilyApi
-import com.badger.familyorgfe.data.source.family.GetAllMembersJson
+import com.badger.familyorgfe.data.source.family.json.GetAllMembersJson
 import com.badger.familyorgfe.features.appjourney.profile.model.FamilyMember
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
