@@ -37,7 +37,7 @@ class FridgeViewModel @Inject constructor(
         initialValue = emptyList()
     )
 
-    override val expandedItemId = MutableStateFlow<String?>(null)
+    override val expandedItemId = MutableStateFlow<Long?>(null)
 
     override val deleteItemDialog = MutableStateFlow<FridgeItem?>(null)
 
@@ -81,6 +81,7 @@ class FridgeViewModel @Inject constructor(
                 ).launch {
                     deleteFridgeItemUseCase(event.item)
                     deleteItemDialog.value = null
+                    refreshProductsCrutch.value = System.currentTimeMillis()
                 }
             }
         }

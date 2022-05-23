@@ -4,7 +4,7 @@ import com.badger.familyorgfe.data.model.Product
 
 
 data class FridgeItem(
-    val id: String,
+    val id: Long,
     val name: String,
     val quantity: Double?,
     val measure: Product.Measure?,
@@ -18,7 +18,7 @@ data class FridgeItem(
 
     companion object {
 
-        fun mock(id: String) = FridgeItem(
+        fun mock(id: Long) = FridgeItem(
             id = id,
             name = "Шоколадный батончик",
             quantity = 1.0,

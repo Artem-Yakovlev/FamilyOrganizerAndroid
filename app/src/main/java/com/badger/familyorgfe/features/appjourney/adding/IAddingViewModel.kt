@@ -25,7 +25,7 @@ interface IAddingViewModel : IBaseViewModel<IAddingViewModel.Event> {
 
     val items: StateFlow<List<FridgeItem>>
 
-    val expandedItemId: StateFlow<String?>
+    val expandedItemId: StateFlow<Long?>
 
     /**
      * Dialogs
@@ -51,7 +51,7 @@ interface IAddingViewModel : IBaseViewModel<IAddingViewModel.Event> {
 
         fun createProduct() = if (createEnabled) {
             Product(
-                id = Random.nextLong().toString(),
+                id = Random.nextLong(),
                 name = title,
                 quantity = quantity,
                 measure = measure,
@@ -79,7 +79,7 @@ interface IAddingViewModel : IBaseViewModel<IAddingViewModel.Event> {
         object OnAddClicked : Event()
         object OnDoneClicked : Event()
 
-        data class OnItemExpanded(val id: String) : Event()
+        data class OnItemExpanded(val id: Long) : Event()
         object OnItemCollapsed : Event()
 
         data class RequestDeleteItemDialog(val item: FridgeItem) : Event()

@@ -20,7 +20,7 @@ interface IFridgeViewModel : IBaseViewModel<IFridgeViewModel.Event> {
 
     val items: StateFlow<List<FridgeItem>>
 
-    val expandedItemId: StateFlow<String?>
+    val expandedItemId: StateFlow<Long?>
 
     /**
      * Dialogs
@@ -36,7 +36,7 @@ interface IFridgeViewModel : IBaseViewModel<IFridgeViewModel.Event> {
         object CloseSearch : Event()
         object ClearSearchQuery : Event()
 
-        data class OnItemExpanded(val id: String) : Event()
+        data class OnItemExpanded(val id: Long) : Event()
         object OnItemCollapsed : Event()
 
         data class RequestDeleteItemDialog(val item: FridgeItem) : Event()

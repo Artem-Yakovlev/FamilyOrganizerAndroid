@@ -28,7 +28,7 @@ class AddingViewModel @Inject constructor(
         .map { products -> products.map(Product::toFridgeItem) }
         .stateIn(viewModelScope(), started = SharingStarted.Lazily, initialValue = emptyList())
 
-    override val expandedItemId = MutableStateFlow<String?>(null)
+    override val expandedItemId = MutableStateFlow<Long?>(null)
     override val deleteItemDialog = MutableStateFlow<FridgeItem?>(null)
     override val manualAddingState = MutableStateFlow<IAddingViewModel.ManualAddingState?>(null)
     override val doneEnabled = items.map(List<FridgeItem>::isNotEmpty)

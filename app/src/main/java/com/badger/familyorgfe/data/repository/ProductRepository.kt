@@ -1,6 +1,5 @@
 package com.badger.familyorgfe.data.repository
 
-import com.badger.familyorgfe.data.model.Fridge
 import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.data.source.AppDatabase
 import com.badger.familyorgfe.data.source.products.ProductsApi
@@ -12,13 +11,7 @@ class ProductRepository @Inject constructor(
     database: AppDatabase
 ) : IProductRepository {
 
-    private val fridgeDao = database.fridgeDao()
-
     private val productDao = database.productDao()
-
-    override fun getFridgeById(id: String): Flow<Fridge> {
-        return fridgeDao.getById(id)
-    }
 
     override fun getProductByIds(ids: List<String>): Flow<List<Product>> {
         return productDao.getByIds(ids)

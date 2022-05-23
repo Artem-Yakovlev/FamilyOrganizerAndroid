@@ -5,7 +5,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.badger.familyorgfe.data.model.Fridge
 import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.data.model.User
 import com.badger.familyorgfe.data.model.UserStatus
@@ -17,7 +16,6 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import org.threeten.bp.LocalDateTime
 
 
 @EntryPoint
@@ -40,8 +38,6 @@ class PrepopulateCallback(applicationContext: Context) : RoomDatabase.Callback()
         val database = entryPoint.getDatabase()
 
         GlobalScope.launch(Dispatchers.IO) {
-            val fridgeId = "fridge"
-
             val user = User(
                 name = "",
                 email = "artem_yakovlev@email.com",
@@ -49,22 +45,14 @@ class PrepopulateCallback(applicationContext: Context) : RoomDatabase.Callback()
                 status = UserStatus.UNDEFINED
             )
 
-            val products = List(5) { id -> productMock(id.toString()) }
-
-            val fridge = Fridge(
-                id = fridgeId,
-                items = products.map(Product::id),
-                createdAt = LocalDateTime.now(),
-                updatedAt = LocalDateTime.now()
-            )
+            val products = List(5) { id -> productMock(id.toLong()) }
 
             database.userDao().insertAll(user)
-            database.fridgeDao().insertAll(fridge)
             database.productDao().insertAll(*products.toTypedArray())
         }
     }
 
-    private fun productMock(id: String) = Product(
+    private fun productMock(id: Long) = Product(
         id = id,
         name = "Шоколадный батончик",
         quantity = 1.0,

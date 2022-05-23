@@ -13,7 +13,7 @@ data class Product(
 
     @PrimaryKey
     @ColumnInfo(name = "id")
-    val id: String,
+    val id: Long,
 
     @ColumnInfo(name = "name")
     val name: String,
