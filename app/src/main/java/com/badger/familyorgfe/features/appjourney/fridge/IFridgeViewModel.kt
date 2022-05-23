@@ -29,6 +29,8 @@ interface IFridgeViewModel : IBaseViewModel<IFridgeViewModel.Event> {
     val deleteItemDialog: StateFlow<FridgeItem?>
 
     sealed class Event {
+        object Init : Event()
+
         data class OnSearchQueryChanged(val query: String) : Event()
         object OpenSearch : Event()
         object CloseSearch : Event()

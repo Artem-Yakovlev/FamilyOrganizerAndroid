@@ -1,7 +1,6 @@
 package com.badger.familyorgfe.di
 
 import android.content.Context
-import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
@@ -9,11 +8,11 @@ import androidx.room.Room
 import com.badger.familyorgfe.data.repository.DataStoreRepository
 import com.badger.familyorgfe.data.repository.IDataStoreRepository
 import com.badger.familyorgfe.data.source.AppDatabase
-import com.badger.familyorgfe.data.source.products.ProductsApi
 import com.badger.familyorgfe.data.source.auth.AuthApi
 import com.badger.familyorgfe.data.source.family.FamilyApi
 import com.badger.familyorgfe.data.source.familyauth.FamilyAuthApi
 import com.badger.familyorgfe.data.source.getPrepopulateCallback
+import com.badger.familyorgfe.data.source.products.ProductsApi
 import com.badger.familyorgfe.data.source.user.UserApi
 import dagger.Module
 import dagger.Provides
@@ -88,7 +87,6 @@ class SourceModule {
         val authorizationInterceptor = Interceptor { chain ->
             runBlocking { dataStoreRepository.token.firstOrNull() }
                 ?.let { token ->
-                    Log.d("ASMR", token)
                     chain.request()
                         .newBuilder()
                         .addHeader(AUTHORIZATION, "$BEARER_PREFIX $token")

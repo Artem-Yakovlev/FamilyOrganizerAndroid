@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -19,6 +20,11 @@ fun FridgeScreen(
     modifier: Modifier,
     viewModel: IFridgeViewModel = hiltViewModel<FridgeViewModel>()
 ) {
+    LaunchedEffect(Unit) {
+        val event = IFridgeViewModel.Event.Init
+        viewModel.onEvent(event)
+    }
+
     Column(
         modifier = modifier
             .fillMaxSize()

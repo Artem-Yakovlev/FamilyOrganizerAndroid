@@ -8,10 +8,7 @@ import com.badger.familyorgfe.features.appjourney.fridge.domain.SearchInFridgeIt
 import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,11 +19,13 @@ class FridgeViewModel @Inject constructor(
     private val deleteFridgeItemUseCase: DeleteFridgeItemUseCase
 ) : BaseViewModel(), IFridgeViewModel {
 
+    private val refreshProductsCrutch: MutableStateFlow<Long> = MutableStateFlow(0L)
+
     override val isSearchActive = MutableStateFlow(false)
 
     override val searchQuery = MutableStateFlow("")
 
-    private val rawItems = getAllFridgeItemsUseCase(Unit)
+    private val rawItems = refreshProductsCrutch.flatMapLatest { getAllFridgeItemsUseCase(Unit) }
 
     override val items = combine(
         flow = rawItems,
@@ -44,6 +43,9 @@ class FridgeViewModel @Inject constructor(
 
     override fun onEvent(event: IFridgeViewModel.Event) {
         when (event) {
+            is IFridgeViewModel.Event.Init -> {
+                refreshProductsCrutch.value = System.currentTimeMillis()
+            }
             is IFridgeViewModel.Event.OnItemCollapsed -> {
                 expandedItemId.value = null
             }
