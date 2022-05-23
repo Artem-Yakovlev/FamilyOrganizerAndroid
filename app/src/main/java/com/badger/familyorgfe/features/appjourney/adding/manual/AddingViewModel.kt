@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.features.appjourney.adding
+package com.badger.familyorgfe.features.appjourney.adding.manual
 
 import com.badger.familyorgfe.base.BaseViewModel
 import com.badger.familyorgfe.data.model.Product
@@ -6,7 +6,7 @@ import com.badger.familyorgfe.ext.convertToRealFutureDate
 import com.badger.familyorgfe.ext.longRunning
 import com.badger.familyorgfe.ext.toFridgeItem
 import com.badger.familyorgfe.ext.viewModelScope
-import com.badger.familyorgfe.features.appjourney.adding.domain.AddProductUseCase
+import com.badger.familyorgfe.features.appjourney.adding.manual.domain.AddProductUseCase
 import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*

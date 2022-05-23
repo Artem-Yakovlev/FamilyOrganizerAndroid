@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.features.appjourney.adding
+package com.badger.familyorgfe.features.appjourney.adding.manual
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -29,7 +29,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.badger.familyorgfe.R
 import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.ext.clickableWithoutIndication
@@ -42,11 +41,12 @@ import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 import com.badger.familyorgfe.utils.BackHandler
 import kotlin.math.roundToInt
 
+
 @Composable
 fun AddingScreen(
     modifier: Modifier,
     navOnBack: () -> Unit,
-    viewModel: IAddingViewModel = hiltViewModel<AddingViewModel>()
+    viewModel: IAddingViewModel
 ) {
     val manualAddingState by viewModel.manualAddingState.collectAsState()
     val onBack: () -> Unit = {

@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.features.appjourney.adding
+package com.badger.familyorgfe.features.appjourney.adding.manual
 
 import com.badger.familyorgfe.base.IBaseViewModel
 import com.badger.familyorgfe.data.model.Product

@@ -26,7 +26,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.badger.familyorgfe.ext.hideKeyboard
-import com.badger.familyorgfe.features.appjourney.adding.AddingScreen
+import com.badger.familyorgfe.features.appjourney.adding.manual.AddingJourney
 import com.badger.familyorgfe.features.appjourney.fridge.FridgeScreen
 import com.badger.familyorgfe.features.appjourney.profile.ProfileScreen
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
@@ -65,7 +65,7 @@ private fun Content(modifier: Modifier, navController: NavHostController) {
             FridgeScreen(modifier)
         }
         composable(route = BottomNavigationType.ADDING.route) {
-            AddingScreen(
+            AddingJourney(
                 modifier = modifier,
                 navOnBack = { navController.popBackStack() }
             )
