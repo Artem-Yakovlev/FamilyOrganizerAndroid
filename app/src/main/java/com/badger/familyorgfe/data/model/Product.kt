@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey
 import com.badger.familyorgfe.ui.theme.ExpirationBadSoonColor
 import com.badger.familyorgfe.ui.theme.ExpirationNormalColor
 import com.badger.familyorgfe.ui.theme.ExpirationSpoiledColor
-import org.threeten.bp.LocalDateTime
 
 @Entity(tableName = "products")
 data class Product(
@@ -29,7 +28,7 @@ data class Product(
     val category: Category,
 
     @ColumnInfo(name = "expiryDate")
-    val expiryDate: LocalDateTime?,
+    val expiryMillis: Long?,
 ) {
     enum class Measure {
         LITER,

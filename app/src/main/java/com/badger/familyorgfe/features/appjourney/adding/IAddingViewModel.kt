@@ -6,6 +6,7 @@ import com.badger.familyorgfe.ext.isValidProductName
 import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeItem
 import kotlinx.coroutines.flow.StateFlow
 import org.threeten.bp.LocalDate
+import org.threeten.bp.ZoneOffset
 import kotlin.random.Random
 
 interface IAddingViewModel : IBaseViewModel<IAddingViewModel.Event> {
@@ -55,7 +56,7 @@ interface IAddingViewModel : IBaseViewModel<IAddingViewModel.Event> {
                 quantity = quantity,
                 measure = measure,
                 category = Product.Category.DEFAULT,
-                expiryDate = expirationDate?.atStartOfDay()
+                expiryMillis = expirationDate?.atStartOfDay()?.toEpochSecond(ZoneOffset.UTC)
             )
         } else {
             null

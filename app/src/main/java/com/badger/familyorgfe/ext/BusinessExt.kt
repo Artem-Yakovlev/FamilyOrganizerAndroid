@@ -3,10 +3,16 @@ package com.badger.familyorgfe.ext
 import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeItem
 import org.threeten.bp.Duration
+import org.threeten.bp.Instant
 import org.threeten.bp.LocalDateTime
+import org.threeten.bp.ZoneId
 
 fun Product.toFridgeItem(): FridgeItem {
-    val expDaysLeft = expiryDate?.let { expDate ->
+    val expDaysLeft = expiryMillis?.let { expiryMillis ->
+        val expDate = Instant.ofEpochSecond(expiryMillis)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDateTime()
+
         if (LocalDateTime.now() == expDate) {
             0
         } else {

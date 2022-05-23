@@ -64,8 +64,10 @@ fun AddingScreen(
     }
 
     val successAdded by viewModel.successAdded.collectAsState()
-    if (successAdded) {
-        onBack()
+    LaunchedEffect(key1 = successAdded) {
+        if (successAdded) {
+            onBack()
+        }
     }
 
     BackHandler(onBack = onBack)
