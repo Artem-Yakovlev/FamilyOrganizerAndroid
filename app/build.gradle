@@ -47,6 +47,7 @@ android {
                 "-Xuse-experimental=androidx.compose.animation.ExperimentalAnimationApi",
                 "-Xuse-experimental=androidx.compose.ui.ExperimentalComposeUiApi",
                 "-Xuse-experimental=androidx.compose.material.ExperimentalMaterialApi",
+                "-Xuse-experimental=com.google.accompanist.permissions.ExperimentalPermissionsApi",
         ]
     }
     buildFeatures {
@@ -115,5 +116,7 @@ dependencies {
 
     implementation 'com.squareup.okhttp3:logging-interceptor:4.9.3'
 
-    implementation("io.coil-kt:coil-compose:2.0.0-rc01")
+    implementation "io.coil-kt:coil-compose:2.0.0-rc01"
+
+    implementation "com.google.accompanist:accompanist-permissions:0.24.9-beta"
 }

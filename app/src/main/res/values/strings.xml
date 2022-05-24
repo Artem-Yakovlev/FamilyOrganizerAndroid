@@ -120,4 +120,12 @@
     <string name="status_at_walk">На прогулке</string>
     <string name="status_at_work">На работе</string>
     <string name="status_in_road">В дороге</string>
+
+    <!-- QR scanning -->
+    <string name="qr_scanning_permission_title">Разрешите нам использовать камеру</string>
+    <string name="qr_scanning_permission_description_ration">Это необходимо для того, чтобы мы могли сосканировать QR с вашего чека</string>
+    <string name="qr_scanning_permission_description_denied">К сожалению мы не сможем сосканировать QR с вашего чека, если вы не дадите нашему приложению доступ к камере</string>
+    <string name="qr_scanning_permission_button">Разрешить доступ к камере</string>
+
+
 </resources>
