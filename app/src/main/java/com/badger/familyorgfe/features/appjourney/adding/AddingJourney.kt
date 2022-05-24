@@ -31,7 +31,12 @@ fun AddingJourney(
             modifier = modifier,
             navOnBack = { manual = true },
             viewModel = scannerViewModel,
-            productsReceived = { manual = true }
+            productsReceived = { products ->
+                addingViewModel.onEvent(
+                    IAddingViewModel.Event.Ordinal.OnProductsScanned(products)
+                )
+                manual = true
+            }
         )
     }
 }

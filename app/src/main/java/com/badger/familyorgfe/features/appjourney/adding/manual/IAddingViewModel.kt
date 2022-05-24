@@ -51,6 +51,8 @@ interface IAddingViewModel : IBaseViewModel<IAddingViewModel.Event> {
             data class RequestDeleteItemDialog(val item: FridgeItem) : Ordinal()
             data class DeleteItem(val item: FridgeItem) : Ordinal()
             object DismissDeleteDialog : Ordinal()
+
+            data class OnProductsScanned(val products: List<Product>) : Ordinal()
         }
 
         sealed class ProductEvent : Event() {

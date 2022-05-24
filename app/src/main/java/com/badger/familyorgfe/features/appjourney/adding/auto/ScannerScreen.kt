@@ -47,16 +47,17 @@ fun ScannerScreen(
 ) {
     val onBack: () -> Unit = {
         navOnBack()
-        viewModel.onEvent(
-            IScannerViewModel.Event.RetryScanning
-        )
+        viewModel.onEvent(IScannerViewModel.Event.RetryScanning)
     }
     BackHandler(onBack = onBack)
 
     val cameraPermissionState = rememberPermissionState(CAMERA_PERMISSION)
     LaunchedEffect(Unit) {
         cameraPermissionState.launchPermissionRequest()
-        viewModel.productsReceivedAction.collectLatest(productsReceived)
+        viewModel.productsReceivedAction.collectLatest { products ->
+            productsReceived(products)
+            viewModel.onEvent(IScannerViewModel.Event.RetryScanning)
+        }
     }
 
     when (cameraPermissionState.status) {

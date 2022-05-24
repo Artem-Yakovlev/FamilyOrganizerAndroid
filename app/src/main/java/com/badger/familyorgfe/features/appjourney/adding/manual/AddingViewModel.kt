@@ -100,6 +100,9 @@ class AddingViewModel @Inject constructor(
             is IAddingViewModel.Event.Ordinal.OnAddLongClicked -> {
                 isAutoAdding.value = !isAutoAdding.value
             }
+            is IAddingViewModel.Event.Ordinal.OnProductsScanned -> {
+                products.value = (products.value + event.products).sortedBy(Product::name)
+            }
         }
     }
 
