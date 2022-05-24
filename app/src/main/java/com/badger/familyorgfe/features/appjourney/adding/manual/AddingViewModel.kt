@@ -145,7 +145,7 @@ class AddingViewModel @Inject constructor(
                     expirationDaysString = expirationDays?.toString().orEmpty()
                 )
             }
-            is IAddingViewModel.Event.ProductEvent.onActionClicked -> {
+            is IAddingViewModel.Event.ProductEvent.OnActionClicked -> {
                 val product = state.value?.createProduct() ?: return
                 state.value = null
                 onAction(product)

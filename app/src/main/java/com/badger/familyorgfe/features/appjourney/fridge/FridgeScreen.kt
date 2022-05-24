@@ -12,17 +12,36 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.badger.familyorgfe.R
+import com.badger.familyorgfe.features.appjourney.common.ProductBottomSheet
 import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeListItem
 import com.badger.familyorgfe.ui.elements.BaseDialog
+import com.badger.familyorgfe.utils.BackHandler
 
 @Composable
 fun FridgeScreen(
     modifier: Modifier,
     viewModel: IFridgeViewModel = hiltViewModel<FridgeViewModel>()
 ) {
+    val editingState by viewModel.editingState.collectAsState()
+
+    val onBack: () -> Unit = {
+        when {
+            editingState != null -> {
+                viewModel.onEvent(
+                    IFridgeViewModel.Event.Editing.OnBottomSheetClose
+                )
+            }
+            else -> {
+
+            }
+        }
+    }
+    BackHandler(onBack = onBack, enabled = editingState != null)
+
     LaunchedEffect(Unit) {
-        val event = IFridgeViewModel.Event.Init
-        viewModel.onEvent(event)
+        viewModel.onEvent(
+            IFridgeViewModel.Event.Ordinal.Init
+        )
     }
 
     Column(
@@ -36,16 +55,16 @@ fun FridgeScreen(
             isSearchActive = isSearchActive,
             currentSearchQuery = currentSearchQuery,
             startSearch = {
-                viewModel.onEvent(event = IFridgeViewModel.Event.OpenSearch)
+                viewModel.onEvent(event = IFridgeViewModel.Event.Ordinal.OpenSearch)
             },
             closeSearch = {
-                viewModel.onEvent(event = IFridgeViewModel.Event.CloseSearch)
+                viewModel.onEvent(event = IFridgeViewModel.Event.Ordinal.CloseSearch)
             },
             searchQueryChanged = { query ->
-                viewModel.onEvent(event = IFridgeViewModel.Event.OnSearchQueryChanged(query))
+                viewModel.onEvent(event = IFridgeViewModel.Event.Ordinal.OnSearchQueryChanged(query))
             },
             clearSearchQuery = {
-                viewModel.onEvent(event = IFridgeViewModel.Event.ClearSearchQuery)
+                viewModel.onEvent(event = IFridgeViewModel.Event.Ordinal.ClearSearchQuery)
             }
         )
 
@@ -70,19 +89,24 @@ fun FridgeScreen(
                     item = item,
                     isExpanded = item.id == expandedItemId,
                     onExpand = {
-                        val event = IFridgeViewModel.Event.OnItemExpanded(item.id)
-                        viewModel.onEvent(event)
+                        viewModel.onEvent(
+                            IFridgeViewModel.Event.Ordinal.OnItemExpanded(item.id)
+                        )
                     },
                     onCollapse = {
-                        val event = IFridgeViewModel.Event.OnItemCollapsed
-                        viewModel.onEvent(event)
+                        viewModel.onEvent(
+                            IFridgeViewModel.Event.Ordinal.OnItemCollapsed
+                        )
                     },
-                    onEdit = {
-
+                    onEdit = { editableItem ->
+                        viewModel.onEvent(
+                            IFridgeViewModel.Event.Ordinal.OnEditClicked(editableItem)
+                        )
                     },
                     onDelete = { deletedItem ->
-                        val event = IFridgeViewModel.Event.RequestDeleteItemDialog(deletedItem)
-                        viewModel.onEvent(event)
+                        viewModel.onEvent(
+                            IFridgeViewModel.Event.Ordinal.RequestDeleteItemDialog(deletedItem)
+                        )
                     }
                 )
                 Spacer(
@@ -102,14 +126,53 @@ fun FridgeScreen(
                 dismissText = stringResource(id = R.string.fridge_delete_product_dismiss),
                 actionText = stringResource(id = R.string.fridge_delete_product_action),
                 onDismissClicked = {
-                    val event = IFridgeViewModel.Event.DismissDialogs
-                    viewModel.onEvent(event)
+                    viewModel.onEvent(
+                        IFridgeViewModel.Event.Ordinal.DismissDialogs
+                    )
                 },
                 onActionClicked = {
-                    val event = IFridgeViewModel.Event.DeleteItem(fridgeItem)
-                    viewModel.onEvent(event)
+                    viewModel.onEvent(
+                        IFridgeViewModel.Event.Ordinal.DeleteItem(fridgeItem)
+                    )
                 })
 
         }
     }
+
+    ProductBottomSheet(
+        modifier = modifier,
+        creating = false,
+        onBack = onBack,
+        productBottomSheetState = editingState,
+        onTitleChanged = {
+            viewModel.onEvent(
+                IFridgeViewModel.Event.Editing.OnTitleChanged(title = it)
+            )
+        },
+        onQuantityChanged = {
+            viewModel.onEvent(
+                IFridgeViewModel.Event.Editing.OnQuantityChanged(quantity = it)
+            )
+        },
+        onMeasureChanged = {
+            viewModel.onEvent(
+                IFridgeViewModel.Event.Editing.OnMeasureChanged(measure = it)
+            )
+        },
+        onExpirationDaysChanged = {
+            viewModel.onEvent(
+                IFridgeViewModel.Event.Editing.OnExpirationDaysChanged(days = it)
+            )
+        },
+        onExpirationDateChanged = {
+            viewModel.onEvent(
+                IFridgeViewModel.Event.Editing.OnExpirationDateChanged(date = it)
+            )
+        },
+        onCreateClicked = {
+            viewModel.onEvent(
+                IFridgeViewModel.Event.Editing.OnActionClicked
+            )
+        }
+    )
 }

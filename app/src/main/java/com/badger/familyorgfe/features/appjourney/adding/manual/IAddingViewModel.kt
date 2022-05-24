@@ -112,7 +112,7 @@ interface IAddingViewModel : IBaseViewModel<IAddingViewModel.Event> {
                 }
             }
 
-            data class onActionClicked(
+            data class OnActionClicked(
                 override val creating: Boolean = true
             ) : ProductEvent() {
                 override fun copyWithTarget(creating: Boolean): ProductEvent {

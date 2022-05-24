@@ -106,7 +106,7 @@ fun AddingScreen(
         },
         onCreateClicked = {
             viewModel.onEvent(
-                IAddingViewModel.Event.ProductEvent.onActionClicked().asCreating()
+                IAddingViewModel.Event.ProductEvent.OnActionClicked().asCreating()
             )
         }
     )
@@ -143,7 +143,7 @@ fun AddingScreen(
         },
         onCreateClicked = {
             viewModel.onEvent(
-                IAddingViewModel.Event.ProductEvent.onActionClicked().asEditing()
+                IAddingViewModel.Event.ProductEvent.OnActionClicked().asEditing()
             )
         }
     )

@@ -1,12 +1,15 @@
 package com.badger.familyorgfe.data.source.products.json
 
+import com.badger.familyorgfe.data.model.Product
+
 class UpdateProductsJson {
 
-    class Form(
-
+    data class Form(
+        val familyId: Long,
+        val product: Product
     )
 
-    class Response(
-
+    data class Response(
+        val success: Boolean
     )
 }
