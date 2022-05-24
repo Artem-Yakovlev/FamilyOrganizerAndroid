@@ -10,6 +10,7 @@ import androidx.camera.view.PreviewView
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -113,14 +114,56 @@ private fun PermissionScreen(
 
 @Composable
 private fun Screen() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        CameraScreen()
 
+        Column {
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                color = FamilyOrganizerTheme.colors.blackPrimary.copy(alpha = 0.35f),
+                content = { }
+            )
+
+            Row(modifier = Modifier.weight(1f)) {
+                Surface(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f),
+                    color = FamilyOrganizerTheme.colors.blackPrimary.copy(alpha = 0.35f),
+                    content = { }
+                )
+                Spacer(modifier = Modifier.weight(3f))
+
+                Surface(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .weight(1f),
+                    color = FamilyOrganizerTheme.colors.blackPrimary.copy(alpha = 0.35f),
+                    content = { }
+                )
+            }
+
+            Surface(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                color = FamilyOrganizerTheme.colors.blackPrimary.copy(alpha = 0.35f),
+                content = { }
+            )
+        }
+    }
+}
+
+@Composable
+private fun CameraScreen() {
     val localContext = LocalContext.current
     val localLifecycleOwner = LocalLifecycleOwner.current
 
     val cameraProviderFuture = remember {
         ProcessCameraProvider.getInstance(localContext)
     }
-
     var code by remember {
         mutableStateOf("")
     }
