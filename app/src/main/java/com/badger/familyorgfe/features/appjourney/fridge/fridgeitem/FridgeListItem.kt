@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.badger.familyorgfe.R
 import com.badger.familyorgfe.data.model.Product
+import com.badger.familyorgfe.ext.hasFractionalPart
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 import kotlin.math.roundToInt
 
@@ -205,8 +206,11 @@ private fun ProductListItemCardContent(
 
             if (item.hasMeasureAndQuantity) {
                 Row {
+                    val quantity = item.quantity?.takeIf(Double::hasFractionalPart)
+                        ?: item.quantity?.toInt()
+
                     Text(
-                        text = item.quantity?.toInt().toString(),
+                        text = quantity.toString(),
                         style = FamilyOrganizerTheme.textStyle.body,
                         color = FamilyOrganizerTheme.colors.blackPrimary,
                         maxLines = 1
