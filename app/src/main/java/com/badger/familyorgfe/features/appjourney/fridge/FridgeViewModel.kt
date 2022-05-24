@@ -29,7 +29,7 @@ class FridgeViewModel @Inject constructor(
     override val searchQuery = MutableStateFlow("")
 
     private val rawItems = refreshProductsCrutch
-        .flatMapLatest { getAllFridgeItemsUseCase(Unit) }
+        .flatMapLatest { flow { emit(getAllFridgeItemsUseCase(Unit)) } }
         .map { items -> items.sortedBy(FridgeItem::name) }
 
     override val items = combine(
@@ -41,6 +41,7 @@ class FridgeViewModel @Inject constructor(
         started = SharingStarted.Lazily,
         initialValue = emptyList()
     )
+
 
     override val expandedItemId = MutableStateFlow<Long?>(null)
 
