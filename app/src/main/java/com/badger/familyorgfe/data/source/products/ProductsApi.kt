@@ -1,10 +1,7 @@
 package com.badger.familyorgfe.data.source.products
 
 import com.badger.familyorgfe.base.BaseResponse
-import com.badger.familyorgfe.data.source.products.json.AddProductsJson
-import com.badger.familyorgfe.data.source.products.json.DeleteProductsJson
-import com.badger.familyorgfe.data.source.products.json.GetProductsJson
-import com.badger.familyorgfe.data.source.products.json.UpdateProductsJson
+import com.badger.familyorgfe.data.source.products.json.*
 import retrofit2.http.Body
 import retrofit2.http.POST
 
@@ -15,6 +12,7 @@ interface ProductsApi {
         private const val ADD_PRODUCTS = "$API/addProducts"
         private const val UPDATE_PRODUCTS = "$API/updateProducts"
         private const val DELETE_PRODUCTS = "$API/deleteProduct"
+        private const val GET_PRODUCTS_BY_CODE = "$API/getProductsByCode"
     }
 
     @POST(GET_PRODUCTS)
@@ -36,4 +34,9 @@ interface ProductsApi {
     suspend fun deleteProducts(
         @Body form: DeleteProductsJson.Form
     ): BaseResponse<DeleteProductsJson.Response>
+
+    @POST(GET_PRODUCTS_BY_CODE)
+    suspend fun getProductsByCode(
+        @Body form: GetProductsByCodeJson.Form
+    ): BaseResponse<GetProductsJson.Response>
 }

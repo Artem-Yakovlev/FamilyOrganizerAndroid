@@ -23,19 +23,20 @@ class ScannerViewModel @Inject constructor(
     override fun onEvent(event: IScannerViewModel.Event) {
         when (event) {
             is IScannerViewModel.Event.CodeScanned -> longRunning {
-                loading.value = true
-                val result = getProductsByCodeUseCase(event.code)
-                if (result.isNotEmpty()) {
-                    productsReceivedAction.emit(result)
-                } else {
-                    loading.value = false
-                    failed.value = true
+                if (!loading.value) {
+                    loading.value = true
+                    val result = getProductsByCodeUseCase(event.code)
+                    if (result.isNotEmpty()) {
+                        productsReceivedAction.emit(result)
+                    } else {
+                        loading.value = false
+                        failed.value = true
+                    }
                 }
                 Unit
             }
             is IScannerViewModel.Event.RetryScanning -> {
-                loading.value = false
-                failed.value = false
+                clearData()
             }
             IScannerViewModel.Event.Close -> {
                 clearData()

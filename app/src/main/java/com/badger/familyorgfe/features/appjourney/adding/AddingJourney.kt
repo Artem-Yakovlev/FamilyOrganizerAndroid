@@ -24,7 +24,10 @@ fun AddingJourney(
             modifier = modifier,
             navOnBack = navOnBack,
             viewModel = addingViewModel,
-            openQrScanner = { manual = false }
+            openQrScanner = {
+                scannerViewModel.onEvent(IScannerViewModel.Event.Close)
+                manual = false
+            }
         )
     } else {
         ScannerScreen(
