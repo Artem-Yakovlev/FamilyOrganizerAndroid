@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "984566654775",
+    "project_id": "family-organiser-a58aa",
+    "storage_bucket": "family-organiser-a58aa.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:984566654775:android:1f2380b6f1a8ee87de9cb2",
+        "android_client_info": {
+          "package_name": "com.badger.familyorgfe"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "984566654775-sj76ehp0phqanj6c7ojsme7l66ae2kas.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzoh8jMXiah1YrZD4QBj-mjzg8Tx5v-pI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "984566654775-sj76ehp0phqanj6c7ojsme7l66ae2kas.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

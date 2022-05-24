@@ -4,6 +4,9 @@ import androidx.lifecycle.viewModelScope
 import com.badger.familyorgfe.base.BaseViewModel
 import com.badger.familyorgfe.commoninteractors.HasFamilyUseCase
 import com.badger.familyorgfe.commoninteractors.IsAuthedUseCase
+import com.badger.familyorgfe.ext.longRunning
+import com.badger.familyorgfe.features.fcm.domain.SendFcmTokenUseCase
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -12,6 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    private val sendFcmTokenUseCase: SendFcmTokenUseCase,
     isAuthedUseCase: IsAuthedUseCase,
     hasFamilyUseCase: HasFamilyUseCase
 ) : BaseViewModel(), IMainViewModel {
@@ -27,6 +31,21 @@ class MainViewModel @Inject constructor(
         started = SharingStarted.Lazily,
         initialValue = null
     )
+
+    override fun onEvent(event: IMainViewModel.Event) {
+        when (event) {
+            IMainViewModel.Event.Init -> updateFcmToken()
+        }
+    }
+
+    private fun updateFcmToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
+            val token = task.result
+            longRunning {
+                sendFcmTokenUseCase(token)
+            }
+        }
+    }
 
     override fun clearData() = Unit
 }

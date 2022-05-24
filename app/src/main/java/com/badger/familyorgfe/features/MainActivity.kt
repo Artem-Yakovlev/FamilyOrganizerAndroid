@@ -26,6 +26,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         AndroidThreeTen.init(application)
         ProcessCameraProvider.getInstance(this)
+
+        viewModel.onEvent(IMainViewModel.Event.Init)
+
         setContent {
             FamilyOrganizerTheme {
                 JourneyScreen()
