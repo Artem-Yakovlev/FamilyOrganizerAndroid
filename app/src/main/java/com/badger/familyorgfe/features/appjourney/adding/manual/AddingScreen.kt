@@ -207,17 +207,17 @@ private fun Screen(
             fabOffsetHeightPx = fabOffsetHeightPx.value,
             autoMode = autoMode,
             onClick = { longClicked ->
-                if (longClicked) {
-                    val event = IAddingViewModel.Event.Ordinal.OnAddLongClicked
-                    viewModel.onEvent(event)
+                val event = if (longClicked) {
+                    IAddingViewModel.Event.Ordinal.OnAddLongClicked
                 } else {
                     if (autoMode) {
                         openQrScanner()
+                        IAddingViewModel.Event.Ordinal.OnAddLongClicked
                     } else {
-                        val event = IAddingViewModel.Event.Ordinal.OnAddClicked
-                        viewModel.onEvent(event)
+                        IAddingViewModel.Event.Ordinal.OnAddClicked
                     }
                 }
+                viewModel.onEvent(event)
             }
         )
     }

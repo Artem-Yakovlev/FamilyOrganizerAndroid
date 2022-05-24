@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.features.appjourney.adding.manual
+package com.badger.familyorgfe.features.appjourney.adding
 
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -6,6 +6,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.badger.familyorgfe.features.appjourney.adding.auto.IScannerViewModel
 import com.badger.familyorgfe.features.appjourney.adding.auto.ScannerScreen
 import com.badger.familyorgfe.features.appjourney.adding.auto.ScannerViewModel
+import com.badger.familyorgfe.features.appjourney.adding.manual.AddingScreen
+import com.badger.familyorgfe.features.appjourney.adding.manual.AddingViewModel
+import com.badger.familyorgfe.features.appjourney.adding.manual.IAddingViewModel
 
 @Composable
 fun AddingJourney(

@@ -49,17 +49,21 @@ fun ScannerScreen(
         cameraPermissionState.launchPermissionRequest()
     }
 
-    when (cameraPermissionState.status) {
-        is PermissionStatus.Granted -> {
-            Screen()
-        }
-        is PermissionStatus.Denied -> {
-            PermissionScreen(
-                status = cameraPermissionState.status,
-                onPermissionButtonClicked = { cameraPermissionState.launchPermissionRequest() }
-            )
-        }
-    }
+//    when (cameraPermissionState.status) {
+//        is PermissionStatus.Granted -> {
+//            Screen()
+//        }
+//        is PermissionStatus.Denied -> {
+//            PermissionScreen(
+//                status = cameraPermissionState.status,
+//                onPermissionButtonClicked = { cameraPermissionState.launchPermissionRequest() }
+//            )
+//        }
+//    }
+    PermissionScreen(
+        status = cameraPermissionState.status,
+        onPermissionButtonClicked = { cameraPermissionState.launchPermissionRequest() }
+    )
 }
 
 @Composable
