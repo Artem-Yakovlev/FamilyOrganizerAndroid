@@ -5,7 +5,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.data.model.User
 import com.badger.familyorgfe.data.model.UserStatus
 import dagger.hilt.EntryPoint
@@ -44,22 +43,9 @@ class PrepopulateCallback(applicationContext: Context) : RoomDatabase.Callback()
                 imageUrl = "",
                 status = UserStatus.UNDEFINED
             )
-
-            val products = List(5) { id -> productMock(id.toLong()) }
-
             database.userDao().insertAll(user)
-            database.productDao().insertAll(*products.toTypedArray())
         }
     }
-
-    private fun productMock(id: Long) = Product(
-        id = id,
-        name = "Шоколадный батончик",
-        quantity = 1.0,
-        measure = Product.Measure.THINGS,
-        category = Product.Category.HEALTHY,
-        expiryMillis = null
-    )
 }
 
 @DelicateCoroutinesApi

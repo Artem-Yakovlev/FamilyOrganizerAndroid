@@ -7,6 +7,7 @@ import com.badger.familyorgfe.ext.longRunning
 import com.badger.familyorgfe.ext.toFridgeItem
 import com.badger.familyorgfe.ext.viewModelScope
 import com.badger.familyorgfe.features.appjourney.adding.manual.domain.AddProductUseCase
+import com.badger.familyorgfe.features.appjourney.common.productbottomsheet.ProductBottomSheetState
 import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
@@ -30,14 +31,14 @@ class AddingViewModel @Inject constructor(
 
     override val expandedItemId = MutableStateFlow<Long?>(null)
     override val deleteItemDialog = MutableStateFlow<FridgeItem?>(null)
-    override val manualAddingState = MutableStateFlow<IAddingViewModel.ManualAddingState?>(null)
+    override val manualAddingState = MutableStateFlow<ProductBottomSheetState?>(null)
     override val doneEnabled = items.map(List<FridgeItem>::isNotEmpty)
         .stateIn(viewModelScope(), started = SharingStarted.Lazily, initialValue = false)
 
     override fun onEvent(event: IAddingViewModel.Event) {
         when (event) {
             is IAddingViewModel.Event.OnAddClicked -> {
-                manualAddingState.value = IAddingViewModel.ManualAddingState.createEmpty()
+                manualAddingState.value = ProductBottomSheetState.createEmpty()
             }
             is IAddingViewModel.Event.OnDoneClicked -> longRunning {
                 if (!isLoading.value) {

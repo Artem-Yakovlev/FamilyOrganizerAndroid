@@ -78,6 +78,7 @@
     <!-- Adding   -->
     <string name="adding_toolbar_title">Добавить продукты</string>
     <string name="bottom_sheet_adding_title">Добавление продукта</string>
+    <string name="bottom_sheet_editing_title">Изменение продукта</string>
     <string name="bottom_sheet_adding_info">Информация</string>
     <string name="bottom_sheet_adding_hint_title">Название</string>
     <string name="bottom_sheet_adding_hint_quantity">Количество</string>
@@ -86,6 +87,7 @@
     <string name="bottom_sheet_adding_expiration_and">или</string>
     <string name="bottom_sheet_adding_expiration_date">Точная дата</string>
     <string name="bottom_sheet_adding_button">Создать</string>
+    <string name="bottom_sheet_editing_button">Создать</string>
 
     <string name="adding_measure_kg">Кг</string>
     <string name="adding_measure_litter">Литры</string>
