@@ -14,6 +14,7 @@ import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 @Composable
 fun FullScreenLoading(
     modifier: Modifier,
+    backgroundAlpha: Float = 0.2f,
     content: @Composable () -> Unit
 ) {
     Box(modifier = modifier) {
@@ -21,8 +22,10 @@ fun FullScreenLoading(
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = FamilyOrganizerTheme.colors.blackPrimary.copy(alpha = 0.2f))
-                .alpha(alpha = 0.2f),
+                .background(
+                    color = FamilyOrganizerTheme.colors.blackPrimary.copy(alpha = backgroundAlpha)
+                )
+                .alpha(alpha = backgroundAlpha),
             content = {}
         )
         CircularProgressIndicator(

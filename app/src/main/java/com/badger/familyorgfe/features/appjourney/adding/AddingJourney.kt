@@ -30,7 +30,8 @@ fun AddingJourney(
         ScannerScreen(
             modifier = modifier,
             navOnBack = { manual = true },
-            viewModel = scannerViewModel
+            viewModel = scannerViewModel,
+            productsReceived = { manual = true }
         )
     }
 }

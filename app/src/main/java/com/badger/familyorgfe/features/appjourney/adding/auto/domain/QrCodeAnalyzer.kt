@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.features.appjourney.adding.auto
+package com.badger.familyorgfe.features.appjourney.adding.auto.domain
 
 import android.graphics.ImageFormat
 import androidx.camera.core.ImageAnalysis

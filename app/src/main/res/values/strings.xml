@@ -127,5 +127,12 @@
     <string name="qr_scanning_permission_description_denied">К сожалению мы не сможем сосканировать QR с вашего чека, если вы не дадите нашему приложению доступ к камере</string>
     <string name="qr_scanning_permission_button">Разрешить доступ к камере</string>
 
+    <string name="qr_scanning_loading_title">Идет загрузка</string>
+    <string name="qr_scanning_loading_description">Мы обрабатываем данные из вашего чека</string>
+
+    <string name="qr_scanning_failed_title">При обработке чека произошла ошибка</string>
+    <string name="qr_scanning_failed_description">Поробуем сосканировать QR еще раз?</string>
+    <string name="qr_scanning_failed_button">Повторить</string>
+
 
 </resources>
