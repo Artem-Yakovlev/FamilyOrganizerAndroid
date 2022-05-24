@@ -2,18 +2,12 @@ package com.badger.familyorgfe.features.appjourney.adding.manual
 
 import com.badger.familyorgfe.base.BaseViewModel
 import com.badger.familyorgfe.data.model.Product
-import com.badger.familyorgfe.ext.convertToRealFutureDate
-import com.badger.familyorgfe.ext.longRunning
-import com.badger.familyorgfe.ext.toFridgeItem
-import com.badger.familyorgfe.ext.viewModelScope
+import com.badger.familyorgfe.ext.*
 import com.badger.familyorgfe.features.appjourney.adding.manual.domain.AddProductUseCase
 import com.badger.familyorgfe.features.appjourney.common.productbottomsheet.ProductBottomSheetState
 import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
-import org.threeten.bp.Duration
-import org.threeten.bp.LocalDate
-import org.threeten.bp.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -31,16 +25,49 @@ class AddingViewModel @Inject constructor(
 
     override val expandedItemId = MutableStateFlow<Long?>(null)
     override val deleteItemDialog = MutableStateFlow<FridgeItem?>(null)
+
     override val manualAddingState = MutableStateFlow<ProductBottomSheetState?>(null)
     override val doneEnabled = items.map(List<FridgeItem>::isNotEmpty)
         .stateIn(viewModelScope(), started = SharingStarted.Lazily, initialValue = false)
 
+    override val editingState = MutableStateFlow<ProductBottomSheetState?>(null)
+
     override fun onEvent(event: IAddingViewModel.Event) {
         when (event) {
-            is IAddingViewModel.Event.OnAddClicked -> {
+            is IAddingViewModel.Event.Ordinal -> {
+                onOrdinalEvent(event)
+            }
+            is IAddingViewModel.Event.ProductEvent -> {
+                onBottomSheetEvent(
+                    state = if (event.creating) {
+                        manualAddingState
+                    } else {
+                        editingState
+                    },
+                    onAction = { product ->
+                        if (event.creating) {
+                            products.value = (products.value + product).sortedBy(Product::name)
+                        } else {
+                            products.value = products.value.map { item ->
+                                item.takeIf { it.id == product.id }?.let { product } ?: item
+                            }.sortedBy(Product::name)
+                        }
+                    },
+                    event = event
+                )
+            }
+        }
+    }
+
+    private fun onOrdinalEvent(event: IAddingViewModel.Event.Ordinal) {
+        when (event) {
+            is IAddingViewModel.Event.Ordinal.OnAddClicked -> {
                 manualAddingState.value = ProductBottomSheetState.createEmpty()
             }
-            is IAddingViewModel.Event.OnDoneClicked -> longRunning {
+            is IAddingViewModel.Event.Ordinal.OnEditClicked -> {
+                editingState.value = ProductBottomSheetState.createFromFridgeItem(event.item)
+            }
+            is IAddingViewModel.Event.Ordinal.OnDoneClicked -> longRunning {
                 if (!isLoading.value) {
                     isLoading.value = true
                     val success = addProductUseCase(products.value)
@@ -48,86 +75,79 @@ class AddingViewModel @Inject constructor(
                     successAdded.value = success
                 }
             }
-            is IAddingViewModel.Event.OnItemCollapsed -> {
+            is IAddingViewModel.Event.Ordinal.OnItemCollapsed -> {
                 expandedItemId.value = null
             }
-            is IAddingViewModel.Event.OnItemExpanded -> {
+            is IAddingViewModel.Event.Ordinal.OnItemExpanded -> {
                 expandedItemId.value = event.id
             }
-            is IAddingViewModel.Event.DeleteItem -> {
+            is IAddingViewModel.Event.Ordinal.DeleteItem -> {
                 products.value = products.value.filter { it.id != event.item.id }
                 deleteItemDialog.value = null
             }
-            is IAddingViewModel.Event.DismissDeleteDialog -> {
+            is IAddingViewModel.Event.Ordinal.DismissDeleteDialog -> {
                 deleteItemDialog.value = null
             }
-            is IAddingViewModel.Event.RequestDeleteItemDialog -> {
+            is IAddingViewModel.Event.Ordinal.RequestDeleteItemDialog -> {
                 deleteItemDialog.value = event.item
             }
-            is IAddingViewModel.Event.OnBackClicked -> {
+            is IAddingViewModel.Event.Ordinal.OnBackClicked -> {
                 clearData()
             }
-            is IAddingViewModel.Event.OnBottomSheetClose -> {
-                manualAddingState.value = null
+        }
+    }
+
+    private fun onBottomSheetEvent(
+        state: MutableStateFlow<ProductBottomSheetState?>,
+        onAction: (Product) -> Unit,
+        event: IAddingViewModel.Event.ProductEvent
+    ) {
+        when (event) {
+            is IAddingViewModel.Event.ProductEvent.OnBottomSheetClose -> {
+                state.value = null
             }
-            is IAddingViewModel.Event.OnManualAddingTitleChanged -> {
-                manualAddingState.value = manualAddingState.value?.copy(
+            is IAddingViewModel.Event.ProductEvent.OnTitleChanged -> {
+                state.value = state.value?.copy(
                     title = event.title
                 )
             }
-            is IAddingViewModel.Event.OnManualAddingQuantityChanged -> {
+            is IAddingViewModel.Event.ProductEvent.OnQuantityChanged -> {
                 event.quantity.toDoubleOrNull()?.let { quantity ->
-                    manualAddingState.value = manualAddingState.value?.copy(
+                    state.value = state.value?.copy(
                         quantity = quantity
                     )
                 }
             }
-            is IAddingViewModel.Event.OnManualAddingMeasureChanged -> {
-                manualAddingState.value = manualAddingState.value?.copy(
+            is IAddingViewModel.Event.ProductEvent.OnMeasureChanged -> {
+                state.value = state.value?.copy(
                     measure = event.measure
                 )
             }
-            is IAddingViewModel.Event.OnManualAddingExpirationDateChanged -> {
+            is IAddingViewModel.Event.ProductEvent.OnExpirationDateChanged -> {
                 val expirationDate = event.date.convertToRealFutureDate()
-                val expirationDays = try {
-                    if (LocalDate.now() == expirationDate) {
-                        ZERO
-                    } else {
-                        Duration.between(
-                            LocalDate.now().atStartOfDay(),
-                            expirationDate?.atStartOfDay()
-                        ).toDays().toString()
-                    }
-                } catch (e: Exception) {
-                    null
-                }
-                manualAddingState.value = manualAddingState.value?.copy(
+                val expirationDays = expirationDate.toExpirationDays()
+
+                state.value = state.value?.copy(
                     expirationDateString = event.date,
                     expirationDate = expirationDate,
                     expirationDaysString = expirationDays
                 )
             }
-            is IAddingViewModel.Event.OnManualAddingExpirationDaysChanged -> {
+            is IAddingViewModel.Event.ProductEvent.OnExpirationDaysChanged -> {
                 val expirationDays = event.days.toIntOrNull()?.takeIf { it >= 0 }
-                val expirationDate = expirationDays?.let { expDays ->
-                    LocalDate.now().plusDays(expDays.toLong())
-                }
-                val expirationDateString = try {
-                    expirationDate?.format(dateFormat).orEmpty()
-                } catch (e: Exception) {
-                    ""
-                }
+                val expirationDate = expirationDays?.toExpirationDate()
+                val expirationDateString = expirationDate?.toExpirationDateString().orEmpty()
 
-                manualAddingState.value = manualAddingState.value?.copy(
+                state.value = state.value?.copy(
                     expirationDateString = expirationDateString,
                     expirationDate = expirationDate,
                     expirationDaysString = expirationDays?.toString().orEmpty()
                 )
             }
-            is IAddingViewModel.Event.OnCreateClicked -> {
-                val product = manualAddingState.value?.createProduct() ?: return
-                manualAddingState.value = null
-                products.value = (products.value + product).sortedBy(Product::name)
+            is IAddingViewModel.Event.ProductEvent.onActionClicked -> {
+                val product = state.value?.createProduct() ?: return
+                state.value = null
+                onAction(product)
             }
         }
     }
@@ -138,11 +158,5 @@ class AddingViewModel @Inject constructor(
         deleteItemDialog.value = null
         manualAddingState.value = null
         isLoading.value = false
-    }
-
-    companion object {
-        private const val ZERO = "0"
-        private const val DATE_FORMAT = "dd.MM.yyyy"
-        private val dateFormat = DateTimeFormatter.ofPattern(DATE_FORMAT)
     }
 }

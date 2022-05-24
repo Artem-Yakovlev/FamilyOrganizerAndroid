@@ -39,14 +39,16 @@ fun AddingScreen(
     viewModel: IAddingViewModel
 ) {
     val manualAddingState by viewModel.manualAddingState.collectAsState()
+    val editingState by viewModel.editingState.collectAsState()
+
     val onBack: () -> Unit = {
         when {
             manualAddingState != null -> {
-                val event = IAddingViewModel.Event.OnBottomSheetClose
+                val event = IAddingViewModel.Event.ProductEvent.OnBottomSheetClose().asCreating()
                 viewModel.onEvent(event)
             }
             else -> {
-                val event = IAddingViewModel.Event.OnBackClicked
+                val event = IAddingViewModel.Event.Ordinal.OnBackClicked
                 viewModel.onEvent(event)
                 navOnBack()
             }
@@ -75,34 +77,69 @@ fun AddingScreen(
         productBottomSheetState = manualAddingState,
         onTitleChanged = {
             viewModel.onEvent(
-                IAddingViewModel.Event.OnManualAddingTitleChanged(it)
+                IAddingViewModel.Event.ProductEvent.OnTitleChanged(title = it).asCreating()
             )
         },
         onQuantityChanged = {
             viewModel.onEvent(
-                IAddingViewModel.Event.OnManualAddingQuantityChanged(it)
+                IAddingViewModel.Event.ProductEvent.OnQuantityChanged(quantity = it).asCreating()
             )
         },
         onMeasureChanged = {
             viewModel.onEvent(
-                IAddingViewModel.Event.OnManualAddingMeasureChanged(it)
+                IAddingViewModel.Event.ProductEvent.OnMeasureChanged(measure = it).asCreating()
             )
         },
         onExpirationDaysChanged = {
             viewModel.onEvent(
-                IAddingViewModel.Event
-                    .OnManualAddingExpirationDaysChanged(it)
+                IAddingViewModel.Event.ProductEvent.OnExpirationDaysChanged(days = it).asCreating()
             )
         },
         onExpirationDateChanged = {
             viewModel.onEvent(
-                IAddingViewModel.Event
-                    .OnManualAddingExpirationDateChanged(it)
+                IAddingViewModel.Event.ProductEvent.OnExpirationDateChanged(date = it).asCreating()
             )
         },
         onCreateClicked = {
             viewModel.onEvent(
-                IAddingViewModel.Event.OnCreateClicked
+                IAddingViewModel.Event.ProductEvent.onActionClicked().asCreating()
+            )
+        }
+    )
+
+    ProductBottomSheet(
+        modifier = modifier,
+        creating = false,
+        onBack = onBack,
+        productBottomSheetState = editingState,
+        onTitleChanged = {
+            viewModel.onEvent(
+                IAddingViewModel.Event.ProductEvent.OnTitleChanged(title = it).asEditing()
+            )
+        },
+        onQuantityChanged = {
+            viewModel.onEvent(
+                IAddingViewModel.Event.ProductEvent.OnQuantityChanged(quantity = it).asEditing()
+            )
+        },
+        onMeasureChanged = {
+            viewModel.onEvent(
+                IAddingViewModel.Event.ProductEvent.OnMeasureChanged(measure = it).asEditing()
+            )
+        },
+        onExpirationDaysChanged = {
+            viewModel.onEvent(
+                IAddingViewModel.Event.ProductEvent.OnExpirationDaysChanged(days = it).asEditing()
+            )
+        },
+        onExpirationDateChanged = {
+            viewModel.onEvent(
+                IAddingViewModel.Event.ProductEvent.OnExpirationDateChanged(date = it).asEditing()
+            )
+        },
+        onCreateClicked = {
+            viewModel.onEvent(
+                IAddingViewModel.Event.ProductEvent.onActionClicked().asEditing()
             )
         }
     )
@@ -144,7 +181,7 @@ private fun Screen(
                 onBackClicked = onBack,
                 doneEnabled = doneEnabled,
                 onDoneClicked = {
-                    val event = IAddingViewModel.Event.OnDoneClicked
+                    val event = IAddingViewModel.Event.Ordinal.OnDoneClicked
                     viewModel.onEvent(event)
                 }
             )
@@ -235,18 +272,19 @@ private fun ColumnScope.Listing(
                 item = item,
                 isExpanded = item.id == expandedItemId,
                 onExpand = {
-                    val event = IAddingViewModel.Event.OnItemExpanded(item.id)
+                    val event = IAddingViewModel.Event.Ordinal.OnItemExpanded(item.id)
                     viewModel.onEvent(event)
                 },
                 onCollapse = {
-                    val event = IAddingViewModel.Event.OnItemCollapsed
+                    val event = IAddingViewModel.Event.Ordinal.OnItemCollapsed
                     viewModel.onEvent(event)
                 },
                 onEdit = {
-
+                    val event = IAddingViewModel.Event.Ordinal.OnEditClicked(it)
+                    viewModel.onEvent(event)
                 },
                 onDelete = { deletedItem ->
-                    val event = IAddingViewModel.Event.RequestDeleteItemDialog(deletedItem)
+                    val event = IAddingViewModel.Event.Ordinal.RequestDeleteItemDialog(deletedItem)
                     viewModel.onEvent(event)
                 }
             )
@@ -267,11 +305,11 @@ private fun ColumnScope.Listing(
             dismissText = stringResource(id = R.string.fridge_delete_product_dismiss),
             actionText = stringResource(id = R.string.fridge_delete_product_action),
             onDismissClicked = {
-                val event = IAddingViewModel.Event.DismissDeleteDialog
+                val event = IAddingViewModel.Event.Ordinal.DismissDeleteDialog
                 viewModel.onEvent(event)
             },
             onActionClicked = {
-                val event = IAddingViewModel.Event.DeleteItem(fridgeItem)
+                val event = IAddingViewModel.Event.Ordinal.DeleteItem(fridgeItem)
                 viewModel.onEvent(event)
             })
 
@@ -290,7 +328,7 @@ private fun BoxScope.Fab(
             .offset { IntOffset(x = 0, y = -fabOffsetHeightPx.roundToInt()) },
         backgroundColor = FamilyOrganizerTheme.colors.primary,
         onClick = {
-            val event = IAddingViewModel.Event.OnAddClicked
+            val event = IAddingViewModel.Event.Ordinal.OnAddClicked
             viewModel.onEvent(event)
         }
     ) {

@@ -87,7 +87,7 @@
     <string name="bottom_sheet_adding_expiration_and">или</string>
     <string name="bottom_sheet_adding_expiration_date">Точная дата</string>
     <string name="bottom_sheet_adding_button">Создать</string>
-    <string name="bottom_sheet_editing_button">Создать</string>
+    <string name="bottom_sheet_editing_button">Изменить</string>
 
     <string name="adding_measure_kg">Кг</string>
     <string name="adding_measure_litter">Литры</string>

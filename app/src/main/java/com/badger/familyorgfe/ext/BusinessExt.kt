@@ -2,10 +2,8 @@ package com.badger.familyorgfe.ext
 
 import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeItem
-import org.threeten.bp.Duration
-import org.threeten.bp.Instant
-import org.threeten.bp.LocalDateTime
-import org.threeten.bp.ZoneId
+import org.threeten.bp.*
+import org.threeten.bp.format.DateTimeFormatter
 
 fun Product.toFridgeItem(): FridgeItem {
     val expDaysLeft = expiryMillis?.let { expiryMillis ->
@@ -37,4 +35,37 @@ fun getExpirationStatusFor(expDaysLeft: Int) = when {
     expDaysLeft < 0 -> Product.ExpirationStatus.SPOILED
     expDaysLeft <= 3 -> Product.ExpirationStatus.BAD_SOON
     else -> Product.ExpirationStatus.NORMAL
+}
+
+
+/**
+ * Expiration operations
+ * */
+
+private const val ZERO = "0"
+private const val DATE_FORMAT = "dd.MM.yyyy"
+private val dateFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT)
+
+fun LocalDate?.toExpirationDays(): String? {
+    val expirationDays = try {
+        if (LocalDate.now() == this) {
+            ZERO
+        } else {
+            Duration.between(
+                LocalDate.now().atStartOfDay(),
+                this?.atStartOfDay()
+            ).toDays().toString()
+        }
+    } catch (e: Exception) {
+        null
+    }
+    return expirationDays
+}
+
+fun Int.toExpirationDate(): LocalDate = LocalDate.now().plusDays(toLong())
+
+fun LocalDate.toExpirationDateString() = try {
+    format(dateFormatter).orEmpty()
+} catch (e: Exception) {
+    null
 }

@@ -41,7 +41,7 @@ fun FridgeListItem(
     isExpanded: Boolean,
     onExpand: () -> Unit,
     onCollapse: () -> Unit,
-    onEdit: () -> Unit,
+    onEdit: (FridgeItem) -> Unit,
     onDelete: (FridgeItem) -> Unit
 ) {
     Box(
@@ -50,7 +50,7 @@ fun FridgeListItem(
             .fillMaxWidth()
     ) {
         ActionIconsLayout(
-            onEdit = onEdit,
+            onEdit = { onEdit(item) },
             onDelete = { onDelete(item) }
         )
 

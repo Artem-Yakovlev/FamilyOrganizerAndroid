@@ -32,24 +32,93 @@ interface IAddingViewModel : IBaseViewModel<IAddingViewModel.Event> {
 
     val manualAddingState: StateFlow<ProductBottomSheetState?>
 
+    val editingState: StateFlow<ProductBottomSheetState?>
+
     sealed class Event {
-        object OnBackClicked : Event()
-        object OnAddClicked : Event()
-        object OnDoneClicked : Event()
 
-        data class OnItemExpanded(val id: Long) : Event()
-        object OnItemCollapsed : Event()
+        sealed class Ordinal : Event() {
+            object OnBackClicked : Ordinal()
+            object OnAddClicked : Ordinal()
+            data class OnEditClicked(val item: FridgeItem) : Ordinal()
+            object OnDoneClicked : Ordinal()
 
-        data class RequestDeleteItemDialog(val item: FridgeItem) : Event()
-        data class DeleteItem(val item: FridgeItem) : Event()
-        object DismissDeleteDialog : Event()
+            data class OnItemExpanded(val id: Long) : Ordinal()
+            object OnItemCollapsed : Ordinal()
 
-        object OnBottomSheetClose : Event()
-        data class OnManualAddingTitleChanged(val title: String) : Event()
-        data class OnManualAddingQuantityChanged(val quantity: String) : Event()
-        data class OnManualAddingMeasureChanged(val measure: Product.Measure) : Event()
-        data class OnManualAddingExpirationDateChanged(val date: String) : Event()
-        data class OnManualAddingExpirationDaysChanged(val days: String) : Event()
-        object OnCreateClicked : Event()
+            data class RequestDeleteItemDialog(val item: FridgeItem) : Ordinal()
+            data class DeleteItem(val item: FridgeItem) : Ordinal()
+            object DismissDeleteDialog : Ordinal()
+        }
+
+        sealed class ProductEvent : Event() {
+            abstract val creating: Boolean
+
+            fun asCreating() = copyWithTarget(creating = true)
+
+            fun asEditing() = copyWithTarget(creating = false)
+
+            protected abstract fun copyWithTarget(creating: Boolean): ProductEvent
+
+            data class OnBottomSheetClose(
+                override val creating: Boolean = true
+            ) : ProductEvent() {
+                override fun copyWithTarget(creating: Boolean): ProductEvent {
+                    return copy(creating = creating)
+                }
+            }
+
+            data class OnTitleChanged(
+                override val creating: Boolean = true,
+                val title: String,
+            ) : ProductEvent() {
+                override fun copyWithTarget(creating: Boolean): ProductEvent {
+                    return copy(creating = creating)
+                }
+            }
+
+            data class OnQuantityChanged(
+                override val creating: Boolean = true,
+                val quantity: String
+            ) : ProductEvent() {
+                override fun copyWithTarget(creating: Boolean): ProductEvent {
+                    return copy(creating = creating)
+                }
+            }
+
+            data class OnMeasureChanged(
+                override val creating: Boolean = true,
+                val measure: Product.Measure
+            ) : ProductEvent() {
+                override fun copyWithTarget(creating: Boolean): ProductEvent {
+                    return copy(creating = creating)
+                }
+            }
+
+            data class OnExpirationDateChanged(
+                override val creating: Boolean = true,
+                val date: String
+            ) : ProductEvent() {
+                override fun copyWithTarget(creating: Boolean): ProductEvent {
+                    return copy(creating = creating)
+                }
+            }
+
+            data class OnExpirationDaysChanged(
+                override val creating: Boolean = true,
+                val days: String
+            ) : ProductEvent() {
+                override fun copyWithTarget(creating: Boolean): ProductEvent {
+                    return copy(creating = creating)
+                }
+            }
+
+            data class onActionClicked(
+                override val creating: Boolean = true
+            ) : ProductEvent() {
+                override fun copyWithTarget(creating: Boolean): ProductEvent {
+                    return copy(creating = creating)
+                }
+            }
+        }
     }
 }

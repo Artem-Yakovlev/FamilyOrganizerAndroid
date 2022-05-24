@@ -158,7 +158,9 @@ private fun ColumnScope.ProductBottomSheetContent(
             }
         ) {
             OutlinedTextField(
-                value = getMeasureString(productBottomSheetState.measure),
+                value = getMeasureString(
+                    productBottomSheetState.measure ?: Product.Measure.KILOGRAM
+                ),
                 onValueChange = {},
                 textStyle = FamilyOrganizerTheme.textStyle.input,
                 colors = outlinedTextFieldColors(),
