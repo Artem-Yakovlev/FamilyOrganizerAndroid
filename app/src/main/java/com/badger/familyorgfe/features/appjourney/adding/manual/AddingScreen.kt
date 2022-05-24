@@ -47,6 +47,10 @@ fun AddingScreen(
                 val event = IAddingViewModel.Event.ProductEvent.OnBottomSheetClose().asCreating()
                 viewModel.onEvent(event)
             }
+            editingState != null -> {
+                val event = IAddingViewModel.Event.ProductEvent.OnBottomSheetClose().asEditing()
+                viewModel.onEvent(event)
+            }
             else -> {
                 val event = IAddingViewModel.Event.Ordinal.OnBackClicked
                 viewModel.onEvent(event)

@@ -66,6 +66,7 @@ class AddingViewModel @Inject constructor(
             }
             is IAddingViewModel.Event.Ordinal.OnEditClicked -> {
                 editingState.value = ProductBottomSheetState.createFromFridgeItem(event.item)
+                expandedItemId.value = null
             }
             is IAddingViewModel.Event.Ordinal.OnDoneClicked -> longRunning {
                 if (!isLoading.value) {
@@ -157,6 +158,7 @@ class AddingViewModel @Inject constructor(
         expandedItemId.value = null
         deleteItemDialog.value = null
         manualAddingState.value = null
+        editingState.value = null
         isLoading.value = false
     }
 }
