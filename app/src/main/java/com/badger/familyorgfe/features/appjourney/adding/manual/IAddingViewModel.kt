@@ -17,12 +17,14 @@ interface IAddingViewModel : IBaseViewModel<IAddingViewModel.Event> {
     val successAdded: StateFlow<Boolean>
 
     /**
-     * Items
+     * Screen
      * */
 
     val items: StateFlow<List<FridgeItem>>
 
     val expandedItemId: StateFlow<Long?>
+
+    val isAutoAdding: StateFlow<Boolean>
 
     /**
      * Dialogs
@@ -44,6 +46,7 @@ interface IAddingViewModel : IBaseViewModel<IAddingViewModel.Event> {
 
             data class OnItemExpanded(val id: Long) : Ordinal()
             object OnItemCollapsed : Ordinal()
+            object OnAddLongClicked : Ordinal()
 
             data class RequestDeleteItemDialog(val item: FridgeItem) : Ordinal()
             data class DeleteItem(val item: FridgeItem) : Ordinal()

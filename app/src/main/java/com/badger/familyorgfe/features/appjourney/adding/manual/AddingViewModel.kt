@@ -24,6 +24,8 @@ class AddingViewModel @Inject constructor(
         .stateIn(viewModelScope(), started = SharingStarted.Lazily, initialValue = emptyList())
 
     override val expandedItemId = MutableStateFlow<Long?>(null)
+    override val isAutoAdding = MutableStateFlow(false)
+
     override val deleteItemDialog = MutableStateFlow<FridgeItem?>(null)
 
     override val manualAddingState = MutableStateFlow<ProductBottomSheetState?>(null)
@@ -94,6 +96,9 @@ class AddingViewModel @Inject constructor(
             }
             is IAddingViewModel.Event.Ordinal.OnBackClicked -> {
                 clearData()
+            }
+            is IAddingViewModel.Event.Ordinal.OnAddLongClicked -> {
+                isAutoAdding.value = !isAutoAdding.value
             }
         }
     }

@@ -14,20 +14,19 @@ fun AddingJourney(
     addingViewModel: IAddingViewModel = hiltViewModel<AddingViewModel>(),
     scannerViewModel: IScannerViewModel = hiltViewModel<ScannerViewModel>()
 ) {
-    var manual by remember { mutableStateOf(false) }
+    var manual by remember { mutableStateOf(true) }
 
     if (manual) {
         AddingScreen(
             modifier = modifier,
             navOnBack = navOnBack,
-            viewModel = addingViewModel
+            viewModel = addingViewModel,
+            openQrScanner = { manual = false }
         )
     } else {
         ScannerScreen(
             modifier = modifier,
-            navOnBack = {
-                manual = true
-            },
+            navOnBack = { manual = true },
             viewModel = scannerViewModel
         )
     }

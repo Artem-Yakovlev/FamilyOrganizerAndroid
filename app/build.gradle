@@ -48,6 +48,7 @@ android {
                 "-Xuse-experimental=androidx.compose.ui.ExperimentalComposeUiApi",
                 "-Xuse-experimental=androidx.compose.material.ExperimentalMaterialApi",
                 "-Xuse-experimental=com.google.accompanist.permissions.ExperimentalPermissionsApi",
+                "-Xuse-experimental=androidx.compose.foundation.ExperimentalFoundationApi",
         ]
     }
     buildFeatures {

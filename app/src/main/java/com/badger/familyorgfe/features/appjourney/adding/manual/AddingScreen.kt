@@ -2,7 +2,9 @@ package com.badger.familyorgfe.features.appjourney.adding.manual
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -29,6 +31,7 @@ import com.badger.familyorgfe.ui.elements.BaseDialog
 import com.badger.familyorgfe.ui.elements.BaseToolbar
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 import com.badger.familyorgfe.utils.BackHandler
+import kotlinx.coroutines.flow.collectLatest
 import kotlin.math.roundToInt
 
 
@@ -36,7 +39,8 @@ import kotlin.math.roundToInt
 fun AddingScreen(
     modifier: Modifier,
     navOnBack: () -> Unit,
-    viewModel: IAddingViewModel
+    viewModel: IAddingViewModel,
+    openQrScanner: () -> Unit
 ) {
     val manualAddingState by viewModel.manualAddingState.collectAsState()
     val editingState by viewModel.editingState.collectAsState()
@@ -71,6 +75,7 @@ fun AddingScreen(
     Screen(
         modifier = modifier,
         viewModel = viewModel,
+        openQrScanner = openQrScanner,
         onBack = onBack
     )
 
@@ -157,6 +162,7 @@ fun AddingScreen(
 private fun Screen(
     modifier: Modifier,
     viewModel: IAddingViewModel,
+    openQrScanner: () -> Unit,
     onBack: () -> Unit
 ) {
     val doneEnabled by viewModel.doneEnabled.collectAsState()
@@ -195,9 +201,24 @@ private fun Screen(
                 nestedScrollConnection = nestedScrollConnection
             )
         }
+
+        val autoMode by viewModel.isAutoAdding.collectAsState()
         Fab(
             fabOffsetHeightPx = fabOffsetHeightPx.value,
-            viewModel = viewModel
+            autoMode = autoMode,
+            onClick = { longClicked ->
+                if (longClicked) {
+                    val event = IAddingViewModel.Event.Ordinal.OnAddLongClicked
+                    viewModel.onEvent(event)
+                } else {
+                    if (autoMode) {
+                        openQrScanner()
+                    } else {
+                        val event = IAddingViewModel.Event.Ordinal.OnAddClicked
+                        viewModel.onEvent(event)
+                    }
+                }
+            }
         )
     }
 }
@@ -320,27 +341,51 @@ private fun ColumnScope.Listing(
     }
 }
 
+private const val LONG_CLICK_DELAY = 150L
+
 @Composable
 private fun BoxScope.Fab(
     fabOffsetHeightPx: Float,
-    viewModel: IAddingViewModel
+    autoMode: Boolean,
+    onClick: (Boolean) -> Unit
 ) {
+    val interactionSource = MutableInteractionSource()
+    var lastInteraction by remember { mutableStateOf<Pair<Interaction?, Long>>(null to 0L) }
+
+    LaunchedEffect(interactionSource) {
+        interactionSource.interactions.collectLatest { interaction ->
+            val currentMillis = System.currentTimeMillis()
+
+            if (interaction is PressInteraction.Release &&
+                lastInteraction.first is PressInteraction.Press
+            ) {
+                val longClick = currentMillis - lastInteraction.second >= LONG_CLICK_DELAY
+                onClick(longClick)
+            }
+            lastInteraction = interaction to currentMillis
+        }
+    }
+
     FloatingActionButton(
         modifier = Modifier
             .align(Alignment.BottomEnd)
             .padding(16.dp)
             .offset { IntOffset(x = 0, y = -fabOffsetHeightPx.roundToInt()) },
         backgroundColor = FamilyOrganizerTheme.colors.primary,
-        onClick = {
-            val event = IAddingViewModel.Event.Ordinal.OnAddClicked
-            viewModel.onEvent(event)
-        }
+        interactionSource = interactionSource,
+        onClick = {},
     ) {
         Icon(
             modifier = Modifier
                 .size(28.dp)
                 .align(Alignment.Center),
-            painter = painterResource(id = R.drawable.ic_add),
+            painter = painterResource(
+                id = if (autoMode) {
+                    R.drawable.ic_qr_code_scanner
+                } else {
+                    R.drawable.ic_add
+                }
+            ),
             contentDescription = null,
             tint = FamilyOrganizerTheme.colors.whitePrimary
         )
