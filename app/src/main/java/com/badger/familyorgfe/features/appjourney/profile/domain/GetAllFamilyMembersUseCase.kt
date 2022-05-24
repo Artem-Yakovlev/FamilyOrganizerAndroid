@@ -42,36 +42,6 @@ class GetAllFamilyMembersUseCase @Inject constructor(
         }
     }.flatMapLatest { it }
 
-//    override fun invoke(arg: Unit) = dataStore.familyId.firstOrNull()?.let { familyId ->
-//        val currentUserEmail = dataStore.userEmail.firstOrNull()
-//        try {
-//            combine(
-//                userRepository.getAllLocalNames(),
-//                flow { emit(getOnlineUsers(familyId)) }
-//            ) { localNames, onlineUsers ->
-//                onlineUsers.map { onlineUser ->
-//                    FamilyMember.createForOnlineUser(
-//                        name = localNames
-//                            .find { onlineUser.user.email == it.email }?.localName
-//                            ?: onlineUser.user.name,
-//                        onlineUser = onlineUser
-//                    )
-//                }.filter { it.email != currentUserEmail }.sortedBy(FamilyMember::email)
-//            }
-//
-////            getOnlineUsers(familyId).map { onlineUser ->
-////                FamilyMember.createForOnlineUser(
-////                    name = localNames
-////                        .find { onlineUser.user.email == it.email }?.localName
-////                        ?: onlineUser.user.name,
-////                    onlineUser = onlineUser
-////                )
-////            }.filter { it.email != currentUserEmail }.sortedBy(FamilyMember::email)
-//        } catch (e: Exception) {
-//            emptyList()
-//        }
-//    } ?: emptyList()
-
     private suspend fun getOnlineUsers(familyId: Long) = familyApi
         .getAllMembers(form = GetAllMembersJson.Form(familyId))
         .takeIf(BaseResponse<GetAllMembersJson.Response>::hasNoErrors)?.data?.onlineUsers
