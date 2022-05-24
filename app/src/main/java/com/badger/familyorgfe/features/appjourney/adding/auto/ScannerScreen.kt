@@ -22,7 +22,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import com.badger.familyorgfe.R
-import com.badger.familyorgfe.features.appjourney.scanner.QrCodeAnalyzer
 import com.badger.familyorgfe.ui.style.buttonColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 import com.badger.familyorgfe.utils.BackHandler
@@ -49,21 +48,17 @@ fun ScannerScreen(
         cameraPermissionState.launchPermissionRequest()
     }
 
-//    when (cameraPermissionState.status) {
-//        is PermissionStatus.Granted -> {
-//            Screen()
-//        }
-//        is PermissionStatus.Denied -> {
-//            PermissionScreen(
-//                status = cameraPermissionState.status,
-//                onPermissionButtonClicked = { cameraPermissionState.launchPermissionRequest() }
-//            )
-//        }
-//    }
-    PermissionScreen(
-        status = cameraPermissionState.status,
-        onPermissionButtonClicked = { cameraPermissionState.launchPermissionRequest() }
-    )
+    when (cameraPermissionState.status) {
+        is PermissionStatus.Granted -> {
+            Screen()
+        }
+        is PermissionStatus.Denied -> {
+            PermissionScreen(
+                status = cameraPermissionState.status,
+                onPermissionButtonClicked = { cameraPermissionState.launchPermissionRequest() }
+            )
+        }
+    }
 }
 
 @Composable
@@ -95,7 +90,7 @@ private fun PermissionScreen(
             )
         )
         Spacer(modifier = Modifier.height(16.dp))
-        
+
         if (status.shouldShowRationale) {
             Button(
                 onClick = onPermissionButtonClicked,
@@ -118,9 +113,6 @@ private fun PermissionScreen(
 
 @Composable
 private fun Screen() {
-    var code by remember {
-        mutableStateOf("")
-    }
 
     val localContext = LocalContext.current
     val localLifecycleOwner = LocalLifecycleOwner.current
@@ -129,47 +121,50 @@ private fun Screen() {
         ProcessCameraProvider.getInstance(localContext)
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
-
-        AndroidView(
-            factory = { context ->
-                PreviewView(context).apply {
-                    val preview = Preview.Builder().build()
-                    preview.setSurfaceProvider(surfaceProvider)
-
-
-                    val imageAnalysis = ImageAnalysis.Builder()
-                        .setTargetResolution(
-                            Size(
-                                this.width,
-                                this.height
-                            )
-                        )
-                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                        .build()
-
-                    imageAnalysis.setAnalyzer(
-                        ContextCompat.getMainExecutor(context),
-                        QrCodeAnalyzer { result ->
-                            code = result
-                        }
-                    )
-
-                    cameraProviderFuture.get()
-                        .bindToLifecycle(
-                            localLifecycleOwner,
-                            createBackCameraSelector(),
-                            preview,
-                            imageAnalysis
-                        )
-                }
-            }, modifier = Modifier.weight(1f)
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        Text(text = code)
+    var code by remember {
+        mutableStateOf("")
     }
+
+    AndroidView(
+        factory = { context ->
+
+            val previewView = PreviewView(context)
+            val executor = ContextCompat.getMainExecutor(context)
+
+            cameraProviderFuture.addListener({
+                val cameraProvider = cameraProviderFuture.get()
+                val preview = Preview.Builder().build().also { preview ->
+                    preview.setSurfaceProvider(previewView.surfaceProvider)
+                }
+
+                val imageAnalysis = ImageAnalysis.Builder()
+                    .setTargetResolution(
+                        Size(
+                            previewView.width,
+                            previewView.height
+                        )
+                    )
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .build()
+
+                imageAnalysis.setAnalyzer(
+                    ContextCompat.getMainExecutor(context),
+                    QrCodeAnalyzer { result ->
+                        code = result
+                    }
+                )
+
+                cameraProvider.unbindAll()
+                cameraProvider.bindToLifecycle(
+                    localLifecycleOwner,
+                    createBackCameraSelector(),
+                    preview,
+                    imageAnalysis
+                )
+            }, executor)
+            previewView
+        }, modifier = Modifier.fillMaxSize()
+    )
 }
 
 private fun createBackCameraSelector() = CameraSelector.Builder()
