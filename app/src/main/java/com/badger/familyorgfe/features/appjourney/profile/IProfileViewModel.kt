@@ -4,6 +4,7 @@ import com.badger.familyorgfe.base.IBaseViewModel
 import com.badger.familyorgfe.data.model.UserStatus
 import com.badger.familyorgfe.features.appjourney.profile.model.FamilyMember
 import kotlinx.coroutines.flow.StateFlow
+import java.io.File
 
 interface IProfileViewModel : IBaseViewModel<IProfileViewModel.Event> {
 
@@ -39,5 +40,7 @@ interface IProfileViewModel : IBaseViewModel<IProfileViewModel.Event> {
 
         data class ShowStatusMenu(val show: Boolean) : Event()
         data class ChangeStatus(val status: UserStatus) : Event()
+
+        data class OnProfileImageChanged(val file: File) : Event()
     }
 }

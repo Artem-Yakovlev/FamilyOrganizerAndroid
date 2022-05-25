@@ -1,5 +1,6 @@
 package com.badger.familyorgfe.features.appjourney.profile
 
+import android.util.Log
 import com.badger.familyorgfe.base.BaseViewModel
 import com.badger.familyorgfe.commoninteractors.GetMainUserUseCase
 import com.badger.familyorgfe.data.model.LocalName
@@ -20,6 +21,7 @@ class ProfileViewModel @Inject constructor(
     private val saveLocalNameUseCase: SaveLocalNameUseCase,
     private val excludeFamilyMemberUseCase: ExcludeFamilyMemberUseCase,
     private val updateStatusUseCase: UpdateStatusUseCase,
+    private val updateProfileImageUseCase: UpdateProfileImageUseCase,
     private val logoutUseCase: LogoutUseCase
 ) : BaseViewModel(), IProfileViewModel {
 
@@ -107,6 +109,10 @@ class ProfileViewModel @Inject constructor(
                 refreshAllMembersCrutch.value = System.currentTimeMillis()
                 changeStatusDialog.value = false
                 Unit
+            }
+            is IProfileViewModel.Event.OnProfileImageChanged -> longRunning {
+                Log.d("ASMR", "EVENT!!!")
+                updateProfileImageUseCase(event.file)
             }
         }
     }
