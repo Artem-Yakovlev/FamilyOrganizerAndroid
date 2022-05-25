@@ -4,7 +4,8 @@ enum class ResponseError {
     NONE,
     FAMILY_MEMBER_DOES_NOT_EXIST,
     INVALID_SCANNING_CODE,
-    FAMILY_DOES_NOT_EXISTS
+    FAMILY_DOES_NOT_EXISTS,
+    USER_ALREADY_IN_FAMILY
 }
 
 data class BaseResponse<T>(

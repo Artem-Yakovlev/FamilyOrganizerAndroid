@@ -1,6 +1,7 @@
 package com.badger.familyorgfe.features.appjourney.profile
 
 import android.Manifest
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -257,7 +258,7 @@ private fun Screen(
 
         val mainFamilyMember by viewModel.mainUser.collectAsState()
         val members by viewModel.members.collectAsState()
-
+        Log.d("ASMR", members.toString())
         MainUserItem(
             familyMember = mainFamilyMember,
             statusMenuShowed = statusMenuShowed,

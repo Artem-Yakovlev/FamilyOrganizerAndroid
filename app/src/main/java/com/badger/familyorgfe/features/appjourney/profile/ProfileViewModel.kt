@@ -1,5 +1,6 @@
 package com.badger.familyorgfe.features.appjourney.profile
 
+import android.util.Log
 import com.badger.familyorgfe.base.BaseViewModel
 import com.badger.familyorgfe.commoninteractors.GetMainUserUseCase
 import com.badger.familyorgfe.data.model.LocalName
@@ -16,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     getMainUserUseCase: GetMainUserUseCase,
-    private val getAllFamilyMembersUseCase: GetAllFamilyMembersUseCase,
+    getAllOnlineUsersForFamily: GetAllOnlineUsersForFamily,
+    private val getAllLocalNamesUseCase: GetAllLocalNamesUseCase,
     private val saveLocalNameUseCase: SaveLocalNameUseCase,
     private val excludeFamilyMemberUseCase: ExcludeFamilyMemberUseCase,
     private val updateStatusUseCase: UpdateStatusUseCase,
@@ -27,15 +29,16 @@ class ProfileViewModel @Inject constructor(
 
     private val refreshAllMembersCrutch: MutableStateFlow<Long> = MutableStateFlow(0L)
 
-    override val mainUser: StateFlow<FamilyMember> = refreshAllMembersCrutch
-        .flatMapLatest { flow { emit(getMainUserUseCase(Unit)) } }
-        .map(FamilyMember::createForMainUser)
-        .flowOn(Dispatchers.IO)
-        .stateIn(
-            scope = viewModelScope(),
-            started = SharingStarted.Lazily,
-            initialValue = FamilyMember.createEmpty()
-        )
+    override val mainUser: StateFlow<FamilyMember> =
+        refreshAllMembersCrutch
+            .flatMapLatest { flow { emit(getMainUserUseCase(Unit)) } }
+            .map(FamilyMember::createForMainUser)
+            .flowOn(Dispatchers.IO)
+            .stateIn(
+                scope = viewModelScope(),
+                started = SharingStarted.Lazily,
+                initialValue = FamilyMember.createEmpty()
+            )
 
     override val editFamilyMemberDialog: MutableStateFlow<FamilyMember?> =
         MutableStateFlow(null)
@@ -50,13 +53,49 @@ class ProfileViewModel @Inject constructor(
     override val addUserDialogState: MutableStateFlow<IProfileViewModel.Event.AddUserDialogState?> =
         MutableStateFlow(null)
 
-    override val members: StateFlow<List<FamilyMember>> = refreshAllMembersCrutch
-        .flatMapLatest { getAllFamilyMembersUseCase(Unit) }
+//    private val onlineUsers = refreshAllMembersCrutch
+//        .flatMapLatest { flow { emit(getAllOnlineUsersForFamily(Unit)) } }
+
+    private val onlineUsers = flow { emit(getAllOnlineUsersForFamily(Unit)) }
+
+    private val localNames = getAllLocalNamesUseCase(Unit)
+
+    override val members: StateFlow<List<FamilyMember>> = onlineUsers.map {
+        Log.d("ASMR1", it.toString())
+
+        val result = it.map { user ->
+//            resultList.add(
+                FamilyMember.createForOnlineUser(name = user.name, onlineUser = user)
+//                createForOnlineUser(name = user.name)
+//                FamilyMember.createEmpty()
+//            )
+        }
+
+        Log.d("ASMR2", result.toString())
+//        emptyList<FamilyMember>()
+        result
+    }
         .stateIn(
             scope = viewModelScope(),
             started = SharingStarted.Lazily,
             initialValue = emptyList()
         )
+
+//    override val members: StateFlow<List<FamilyMember>> =
+//        combine(onlineUsers, localNames) { onlineUsers, localNames ->
+//            onlineUsers.map { onlineUser ->
+//
+//                FamilyMember.createForOnlineUser(
+//                    name = localNames.find { it.email == onlineUser.email }?.localName
+//                        ?: onlineUser.name,
+//                    onlineUser = onlineUser
+//                )
+//            }
+//        }.stateIn(
+//            scope = viewModelScope(),
+//            started = SharingStarted.Lazily,
+//            initialValue = emptyList()
+//        )
 
     override val showLogoutDialog = MutableStateFlow(false)
 

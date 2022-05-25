@@ -5,7 +5,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface IUserRepository {
 
-    suspend fun getAllLocalNames(): Flow<List<LocalName>>
+    fun getAllLocalNames(): Flow<List<LocalName>>
 
     suspend fun saveLocalName(localName: LocalName)
 }

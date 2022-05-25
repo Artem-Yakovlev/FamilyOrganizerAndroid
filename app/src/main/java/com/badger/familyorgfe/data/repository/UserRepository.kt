@@ -11,7 +11,7 @@ class UserRepository @Inject constructor(
 
     private val localNameDao = database.localNamesDao()
 
-    override suspend fun getAllLocalNames(): Flow<List<LocalName>> {
+    override fun getAllLocalNames(): Flow<List<LocalName>> {
         return localNameDao.getAll()
     }
 
