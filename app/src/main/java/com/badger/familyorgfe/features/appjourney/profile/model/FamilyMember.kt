@@ -37,10 +37,7 @@ data class FamilyMember(
         fun createForOnlineUser(name: String, onlineUser: OnlineUser) = FamilyMember(
             name = name,
             online = System.currentTimeMillis() - onlineUser.lastRegisterTime <= ONLINE_DEBOUNCE,
-            onlineUser = OnlineUser(
-                user = User.createEmpty(),
-                lastRegisterTime = 0
-            )
+            onlineUser = onlineUser
         )
     }
 }

@@ -1,6 +1,5 @@
 package com.badger.familyorgfe.features.appjourney.profile
 
-import android.util.Log
 import com.badger.familyorgfe.base.BaseViewModel
 import com.badger.familyorgfe.commoninteractors.GetMainUserUseCase
 import com.badger.familyorgfe.data.model.LocalName
@@ -57,47 +56,23 @@ class ProfileViewModel @Inject constructor(
         .flatMapLatest { flow { emit(getAllOnlineUsersForFamily(Unit)) } }
         .stateIn(viewModelScope(), SharingStarted.Lazily, emptyList())
 
-//    private val onlineUsers = flow { emit(getAllOnlineUsersForFamily(Unit)) }
-
     private val localNames = getAllLocalNamesUseCase(Unit)
         .stateIn(viewModelScope(), SharingStarted.Lazily, emptyList())
 
     override val members: StateFlow<List<FamilyMember>> =
         combine(onlineUsers, localNames) { onlineUsers, localNames ->
-            Log.d("ASMR", localNames.toString())
             onlineUsers.map { onlineUser ->
                 FamilyMember.createForOnlineUser(
-                    name = localNames.random().localName,
+                    name = localNames.find { it.email == onlineUser.realEmail() }?.localName
+                        ?: onlineUser.realName(),
                     onlineUser = onlineUser
                 )
             }
-
-//        Log.d("ASMR2", result.toString())
-//        emptyList<FamilyMember>()
-//        result
-
-        }
-            .stateIn(
+        }.stateIn(
                 scope = viewModelScope(),
                 started = SharingStarted.Lazily,
                 initialValue = emptyList()
             )
-
-//    override val members: StateFlow<List<FamilyMember>> =
-//        combine(onlineUsers, localNames) { onlineUsers, localNames ->
-//            onlineUsers.map { onlineUser ->
-//
-//                FamilyMember.createForOnlineUser(
-//                    name = localNames.find { it.email == onlineUser.email }?.localName
-//                        ?: onlineUser.name,
-//                    onlineUser = onlineUser
-//                )
-//            }
-//        }.stateIn(
-//            scope = viewModelScope(),
-//            started = SharingStarted.Lazily,
-//            initialValue = emptyList()
-//        )
 
     override val showLogoutDialog = MutableStateFlow(false)
 

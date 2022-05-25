@@ -258,7 +258,7 @@ private fun Screen(
 
         val mainFamilyMember by viewModel.mainUser.collectAsState()
         val members by viewModel.members.collectAsState()
-        Log.d("ASMR", members.toString())
+
         MainUserItem(
             familyMember = mainFamilyMember,
             statusMenuShowed = statusMenuShowed,
@@ -340,10 +340,11 @@ private fun Screen(
                                     )
                                 )
                             },
-                            onSaveClicked = {
+                            onSaveClicked = { localName ->
+                                Log.d("KEK", familyMember.toString())
                                 viewModel.onEvent(
                                     IProfileViewModel.Event.Ordinal.OnMemberLocalNameSaved(
-                                        email = editFamilyMemberDialog?.email.orEmpty(),
+                                        email = familyMember.email,
                                         localName = localName
                                     )
                                 )
