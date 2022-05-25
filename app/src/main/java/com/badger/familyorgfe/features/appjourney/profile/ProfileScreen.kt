@@ -488,8 +488,7 @@ private fun DropdownItem(status: UserStatus, changeStatus: (UserStatus) -> Unit)
     )
 }
 
-private const val imageUrl =
-    "https://st.depositphotos.com/1144472/2003/i/600/depositphotos_20030237-stock-photo-cheerful-young-man-over-white.jpg"
+private const val imageUrl = "http://10.0.2.2:8080/user-photos/profile.jpg"
 
 @Composable
 private fun EditFamilyMemberDialog(
