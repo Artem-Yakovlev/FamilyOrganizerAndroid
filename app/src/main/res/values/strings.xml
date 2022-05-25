@@ -117,6 +117,8 @@
     <string name="invite_member_dialog_title">Пригласить пользователя</string>
     <string name="invite_member_dialog_desc">Введите email вашего родственника</string>
     <string name="invite_member_dialog_not_found_error">Пользователя с этим email не существует</string>
+    <string name="invite_member_dialog_already_in_family">Пользователь уже в семье</string>
+    <string name="invite_member_dialog_already_invited">Пользователь уже приглашен</string>
     <string name="invite_member_dialog_unexpected_error">Произошла непредвиденная ошибка</string>
     <string name="invite_member_dialog_action">Отправить приглашение</string>
 

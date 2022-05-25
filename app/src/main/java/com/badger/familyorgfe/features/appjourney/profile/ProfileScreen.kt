@@ -1,7 +1,6 @@
 package com.badger.familyorgfe.features.appjourney.profile
 
 import android.Manifest
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -22,6 +21,7 @@ import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -174,6 +174,20 @@ private fun InviteFamilyMemberDialog(
                     .fillMaxWidth()
                     .padding(top = 16.dp)
             )
+
+            state.error?.let { error ->
+                Text(
+                    text = stringResource(error.messageResId),
+                    style = FamilyOrganizerTheme.textStyle.subtitle2.copy(
+                        fontSize = 14.sp,
+                        color = Color.Red
+                    ),
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+
+            } ?: kotlin.run {
+                Spacer(modifier = Modifier.height(20.dp))
+            }
 
             Button(
                 onClick = { onInviteClicked(state.textInput) },
@@ -341,7 +355,6 @@ private fun Screen(
                                 )
                             },
                             onSaveClicked = { localName ->
-                                Log.d("KEK", familyMember.toString())
                                 viewModel.onEvent(
                                     IProfileViewModel.Event.Ordinal.OnMemberLocalNameSaved(
                                         email = familyMember.email,

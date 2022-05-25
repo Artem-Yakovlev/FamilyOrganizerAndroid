@@ -1,5 +1,6 @@
 package com.badger.familyorgfe.features.appjourney.profile
 
+import com.badger.familyorgfe.R
 import com.badger.familyorgfe.base.IBaseViewModel
 import com.badger.familyorgfe.data.model.UserStatus
 import com.badger.familyorgfe.ext.isValidMail
@@ -66,6 +67,8 @@ interface IProfileViewModel : IBaseViewModel<IProfileViewModel.Event> {
             val loading: Boolean,
             val error: ErrorType? = null
         ) {
+            val hasNoErrors = error == null
+
             val actionEnabled = textInput.isValidMail() && error == null
 
             companion object {
@@ -78,8 +81,10 @@ interface IProfileViewModel : IBaseViewModel<IProfileViewModel.Event> {
         }
     }
 
-    enum class ErrorType {
-        USER_DOES_NOT_EXIST,
-        UNEXPECTED
+    enum class ErrorType(val messageResId: Int) {
+        USER_DOES_NOT_EXIST(R.string.invite_member_dialog_not_found_error),
+        USER_ALREADY_IN_FAMILY(R.string.invite_member_dialog_already_in_family),
+        USER_ALREADY_INVITED(R.string.invite_member_dialog_already_invited),
+        UNEXPECTED(R.string.invite_member_dialog_unexpected_error)
     }
 }

@@ -28,6 +28,10 @@ class InviteFamilyMemberUseCase @Inject constructor(
                             null
                         ResponseError.FAMILY_MEMBER_DOES_NOT_EXIST ->
                             IProfileViewModel.ErrorType.USER_DOES_NOT_EXIST
+                        ResponseError.USER_ALREADY_IN_FAMILY ->
+                            IProfileViewModel.ErrorType.USER_ALREADY_IN_FAMILY
+                        ResponseError.USER_ALREADY_INVITED ->
+                            IProfileViewModel.ErrorType.USER_ALREADY_INVITED
                         else ->
                             IProfileViewModel.ErrorType.UNEXPECTED
                     }
