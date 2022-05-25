@@ -1,26 +1,13 @@
 package com.badger.familyorgfe.data.model
 
 import androidx.compose.ui.graphics.Color
-import androidx.room.ColumnInfo
-import androidx.room.Entity
-import androidx.room.PrimaryKey
 import com.badger.familyorgfe.R
 import com.badger.familyorgfe.ui.theme.*
 
-@Entity(tableName = "users")
 data class User(
-
-    @PrimaryKey
-    @ColumnInfo(name = "email")
     val email: String,
-
-    @ColumnInfo(name = "name")
     val name: String,
-
-    @ColumnInfo(name = "image_url")
-    val imageUrl: String?,
-
-    @ColumnInfo(name = "status")
+    val imagePath: String?,
     val status: UserStatus
 ) {
 
@@ -28,7 +15,7 @@ data class User(
         fun createEmpty() = User(
             name = "",
             email = "",
-            imageUrl = "",
+            imagePath = "",
             status = UserStatus.UNDEFINED
         )
     }
