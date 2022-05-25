@@ -6,8 +6,6 @@ data class OnlineUser(
     val user: User,
     val lastRegisterTime: Long
 ) {
-    val name1 = user.name
-    val email = user.email
 
     companion object {
         fun createEmpty() = OnlineUser(

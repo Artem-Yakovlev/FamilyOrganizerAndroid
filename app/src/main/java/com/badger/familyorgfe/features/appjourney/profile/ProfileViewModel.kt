@@ -18,7 +18,7 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     getMainUserUseCase: GetMainUserUseCase,
     getAllOnlineUsersForFamily: GetAllOnlineUsersForFamily,
-    private val getAllLocalNamesUseCase: GetAllLocalNamesUseCase,
+    getAllLocalNamesUseCase: GetAllLocalNamesUseCase,
     private val saveLocalNameUseCase: SaveLocalNameUseCase,
     private val excludeFamilyMemberUseCase: ExcludeFamilyMemberUseCase,
     private val updateStatusUseCase: UpdateStatusUseCase,
@@ -53,53 +53,35 @@ class ProfileViewModel @Inject constructor(
     override val addUserDialogState: MutableStateFlow<IProfileViewModel.Event.AddUserDialogState?> =
         MutableStateFlow(null)
 
-//    private val onlineUsers = refreshAllMembersCrutch
-//        .flatMapLatest { flow { emit(getAllOnlineUsersForFamily(Unit)) } }
+    private val onlineUsers = refreshAllMembersCrutch
+        .flatMapLatest { flow { emit(getAllOnlineUsersForFamily(Unit)) } }
+        .stateIn(viewModelScope(), SharingStarted.Lazily, emptyList())
 
-    private val onlineUsers = flow { emit(getAllOnlineUsersForFamily(Unit)) }
+//    private val onlineUsers = flow { emit(getAllOnlineUsersForFamily(Unit)) }
 
     private val localNames = getAllLocalNamesUseCase(Unit)
+        .stateIn(viewModelScope(), SharingStarted.Lazily, emptyList())
 
-    private val test = onlineUsers.map {
-        Log.d("ASMR1", it.toString())
-        val result = it.map { user ->
-            Log.d("ASMRM1", user.toString())
-//            val fam = FamilyMember.createForOnlineUser(name = user.name, onlineUser = user)
-
-            val fam = FamilyMember(
-                name = user.name1,
-                online = System.currentTimeMillis() - user.lastRegisterTime <= FamilyMember.ONLINE_DEBOUNCE,
-                onlineUser = user
-            )
-
-            Log.d("ASMRM2", user.toString())
-            fam
-        }
-        Log.d("ASMR2", result.toString())
-        result
-    }
-
-    override val members: StateFlow<List<FamilyMember>> = test.map {
-        Log.d("ASMR3", it.toString())
-
-//        val result = it.map { user ->
-//            resultList.add(
-//                FamilyMember.createForOnlineUser(name = user.name, onlineUser = user)
-//                createForOnlineUser(name = user.name)
-//                FamilyMember.createEmpty()
-//            )
-//        }
+    override val members: StateFlow<List<FamilyMember>> =
+        combine(onlineUsers, localNames) { onlineUsers, localNames ->
+            Log.d("ASMR", localNames.toString())
+            onlineUsers.map { onlineUser ->
+                FamilyMember.createForOnlineUser(
+                    name = localNames.random().localName,
+                    onlineUser = onlineUser
+                )
+            }
 
 //        Log.d("ASMR2", result.toString())
 //        emptyList<FamilyMember>()
 //        result
-        it
-    }
-        .stateIn(
-            scope = viewModelScope(),
-            started = SharingStarted.Lazily,
-            initialValue = emptyList()
-        )
+
+        }
+            .stateIn(
+                scope = viewModelScope(),
+                started = SharingStarted.Lazily,
+                initialValue = emptyList()
+            )
 
 //    override val members: StateFlow<List<FamilyMember>> =
 //        combine(onlineUsers, localNames) { onlineUsers, localNames ->
