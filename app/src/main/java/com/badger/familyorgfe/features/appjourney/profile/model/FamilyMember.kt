@@ -13,6 +13,8 @@ data class FamilyMember(
 
     val email = onlineUser.user.email
 
+    val imageUrl = onlineUser.user.getImageUrl()
+
     companion object {
 
         private const val ONLINE_DEBOUNCE = 5000L

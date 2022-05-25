@@ -320,7 +320,7 @@ private fun MainUserItem(
                             modifier = Modifier
                                 .size(57.dp)
                                 .clip(CircleShape),
-                            painter = rememberAsyncImagePainter(imageUrl),
+                            painter = rememberAsyncImagePainter(familyMember.imageUrl),
                             contentDescription = null,
                             contentScale = ContentScale.Crop,
                         )
@@ -428,7 +428,7 @@ private fun FamilyMemberItem(
                 modifier = Modifier
                     .size(57.dp)
                     .clip(CircleShape),
-                painter = rememberAsyncImagePainter(imageUrl),
+                painter = rememberAsyncImagePainter(familyMember.imageUrl),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
             )
@@ -578,8 +578,6 @@ private fun DropdownItem(status: UserStatus, changeStatus: (UserStatus) -> Unit)
         maxLines = 1
     )
 }
-
-private const val imageUrl = "http://10.0.2.2:8080/user-photos/profile.jpg"
 
 @Composable
 private fun EditFamilyMemberDialog(

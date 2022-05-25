@@ -1,6 +1,5 @@
 package com.badger.familyorgfe.features.appjourney.profile
 
-import android.util.Log
 import com.badger.familyorgfe.base.BaseViewModel
 import com.badger.familyorgfe.commoninteractors.GetMainUserUseCase
 import com.badger.familyorgfe.data.model.LocalName
@@ -93,7 +92,7 @@ class ProfileViewModel @Inject constructor(
             }
             is IProfileViewModel.Event.OnExcludeFamilyMemberAccepted -> longRunning {
                 excludeFamilyMemberUseCase(event.familyMember)
-                refreshAllMembersCrutch.value = System.currentTimeMillis()
+                updateCrutch()
                 closeEditMemberDialog()
                 excludeFamilyMemberDialog.value = null
                 Unit
@@ -106,15 +105,19 @@ class ProfileViewModel @Inject constructor(
             }
             is IProfileViewModel.Event.ChangeStatus -> longRunning {
                 updateStatusUseCase(event.status)
-                refreshAllMembersCrutch.value = System.currentTimeMillis()
+                updateCrutch()
                 changeStatusDialog.value = false
                 Unit
             }
             is IProfileViewModel.Event.OnProfileImageChanged -> longRunning {
-                Log.d("ASMR", "EVENT!!!")
                 updateProfileImageUseCase(event.file)
+                updateCrutch()
             }
         }
+    }
+
+    private fun updateCrutch() {
+        refreshAllMembersCrutch.value = System.currentTimeMillis()
     }
 
     private fun closeEditMemberDialog() {

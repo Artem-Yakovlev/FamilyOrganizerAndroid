@@ -29,7 +29,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import javax.inject.Singleton
 
-
+const val BASE_URL = "http://10.0.2.2:8080/"
 private const val DATASTORE_NAME = "family-organizer-datastore"
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = DATASTORE_NAME)
 
@@ -40,7 +40,6 @@ class SourceModule {
 
     companion object {
         //        private const val BASE_URL = "https://family-organizer.com/"
-        private const val BASE_URL = "http://10.0.2.2:8080/"
         private const val DATABASE_NAME = "family-organizer-db"
 
         private const val AUTHORIZATION = "Authorization"

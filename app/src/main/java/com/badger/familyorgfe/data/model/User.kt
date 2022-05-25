@@ -2,14 +2,17 @@ package com.badger.familyorgfe.data.model
 
 import androidx.compose.ui.graphics.Color
 import com.badger.familyorgfe.R
+import com.badger.familyorgfe.di.BASE_URL
 import com.badger.familyorgfe.ui.theme.*
 
 data class User(
     val email: String,
     val name: String,
-    val imagePath: String?,
+    private val imagePath: String?,
     val status: UserStatus
 ) {
+
+    fun getImageUrl() = "$BASE_URL$imagePath"
 
     companion object {
         fun createEmpty() = User(
