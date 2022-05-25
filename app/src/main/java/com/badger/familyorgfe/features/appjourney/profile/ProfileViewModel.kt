@@ -60,20 +60,40 @@ class ProfileViewModel @Inject constructor(
 
     private val localNames = getAllLocalNamesUseCase(Unit)
 
-    override val members: StateFlow<List<FamilyMember>> = onlineUsers.map {
+    private val test = onlineUsers.map {
         Log.d("ASMR1", it.toString())
-
         val result = it.map { user ->
+            Log.d("ASMRM1", user.toString())
+//            val fam = FamilyMember.createForOnlineUser(name = user.name, onlineUser = user)
+
+            val fam = FamilyMember(
+                name = user.name1,
+                online = System.currentTimeMillis() - user.lastRegisterTime <= FamilyMember.ONLINE_DEBOUNCE,
+                onlineUser = user
+            )
+
+            Log.d("ASMRM2", user.toString())
+            fam
+        }
+        Log.d("ASMR2", result.toString())
+        result
+    }
+
+    override val members: StateFlow<List<FamilyMember>> = test.map {
+        Log.d("ASMR3", it.toString())
+
+//        val result = it.map { user ->
 //            resultList.add(
-                FamilyMember.createForOnlineUser(name = user.name, onlineUser = user)
+//                FamilyMember.createForOnlineUser(name = user.name, onlineUser = user)
 //                createForOnlineUser(name = user.name)
 //                FamilyMember.createEmpty()
 //            )
-        }
+//        }
 
-        Log.d("ASMR2", result.toString())
+//        Log.d("ASMR2", result.toString())
 //        emptyList<FamilyMember>()
-        result
+//        result
+        it
     }
         .stateIn(
             scope = viewModelScope(),

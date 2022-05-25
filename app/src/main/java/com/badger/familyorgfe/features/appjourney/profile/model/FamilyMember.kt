@@ -17,7 +17,7 @@ data class FamilyMember(
 
     companion object {
 
-        private const val ONLINE_DEBOUNCE = 5000L
+        const val ONLINE_DEBOUNCE = 5000L
 
         fun createEmpty() = FamilyMember(
             name = "",
