@@ -68,6 +68,8 @@ fun ProfileScreen(
     val excludeFamilyMemberDialog by viewModel.excludeFamilyMemberDialog.collectAsState()
     val statusMenuShowed by viewModel.changeStatusDialog.collectAsState()
 
+
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -96,7 +98,7 @@ fun ProfileScreen(
                 f.createNewFile()
 
                 val bos = ByteArrayOutputStream()
-                bitmap.compress(CompressFormat.JPEG, 0 /*ignored for PNG*/, bos)
+                bitmap.compress(CompressFormat.JPEG, 100 , bos)
                 val bitmapdata: ByteArray = bos.toByteArray()
 
                 var fos: FileOutputStream? = null
