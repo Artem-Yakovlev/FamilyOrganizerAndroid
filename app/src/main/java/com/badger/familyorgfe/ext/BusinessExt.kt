@@ -1,9 +1,18 @@
 package com.badger.familyorgfe.ext
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeItem
 import org.threeten.bp.*
 import org.threeten.bp.format.DateTimeFormatter
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileOutputStream
 
 fun Product.toFridgeItem(): FridgeItem {
     val expDaysLeft = expiryMillis?.let { expiryMillis ->
@@ -68,4 +77,46 @@ fun LocalDate.toExpirationDateString() = try {
     format(dateFormatter).orEmpty()
 } catch (e: Exception) {
     null
+}
+
+/**
+ * Image
+ * */
+
+private const val FILE_NAME = "filename"
+
+fun Uri.toImageFile(context: Context) : File {
+    val bitmap = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+        MediaStore.Images
+            .Media.getBitmap(context.contentResolver, this)
+
+    } else {
+        ImageDecoder.decodeBitmap(
+            ImageDecoder
+                .createSource(context.contentResolver, this)
+        )
+    }
+
+    val file = File(context.cacheDir, FILE_NAME)
+    file.createNewFile()
+
+    val bos = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, bos)
+    val bitmapData: ByteArray = bos.toByteArray()
+
+    var fos: FileOutputStream? = null
+    try {
+        fos = FileOutputStream(file)
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+    try {
+        fos?.write(bitmapData)
+        fos?.flush()
+        fos?.close()
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+
+    return file
 }

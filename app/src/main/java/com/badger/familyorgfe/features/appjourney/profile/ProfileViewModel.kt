@@ -21,6 +21,7 @@ class ProfileViewModel @Inject constructor(
     private val excludeFamilyMemberUseCase: ExcludeFamilyMemberUseCase,
     private val updateStatusUseCase: UpdateStatusUseCase,
     private val updateProfileImageUseCase: UpdateProfileImageUseCase,
+    private val inviteFamilyMemberUseCase: InviteFamilyMemberUseCase,
     private val logoutUseCase: LogoutUseCase
 ) : BaseViewModel(), IProfileViewModel {
 
@@ -46,6 +47,8 @@ class ProfileViewModel @Inject constructor(
         MutableStateFlow(null)
     override val changeStatusDialog: MutableStateFlow<Boolean> =
         MutableStateFlow(false)
+    override val addUserDialogState: MutableStateFlow<IProfileViewModel.Event.AddUserDialogState?> =
+        MutableStateFlow(null)
 
     override val members: StateFlow<List<FamilyMember>> = refreshAllMembersCrutch
         .flatMapLatest { getAllFamilyMembersUseCase(Unit) }
@@ -59,61 +62,106 @@ class ProfileViewModel @Inject constructor(
 
     override fun onEvent(event: IProfileViewModel.Event) {
         when (event) {
-            is IProfileViewModel.Event.OnLogoutClick -> {
+            is IProfileViewModel.Event.Ordinal -> onOrdinalEvent(event)
+            is IProfileViewModel.Event.AddUserDialog -> onAddUserDialogEvent(event)
+        }
+    }
+
+    private fun onOrdinalEvent(event: IProfileViewModel.Event.Ordinal) {
+        when (event) {
+            is IProfileViewModel.Event.Ordinal.OnLogoutClick -> {
                 showLogoutDialog.value = true
             }
-            is IProfileViewModel.Event.OnLogoutAccepted -> longRunning {
+            is IProfileViewModel.Event.Ordinal.OnLogoutAccepted -> longRunning {
                 logoutUseCase(Unit)
                 showLogoutDialog.value = false
                 Unit
             }
-            is IProfileViewModel.Event.OnLogoutDismiss -> {
+            is IProfileViewModel.Event.Ordinal.OnLogoutDismiss -> {
                 showLogoutDialog.value = false
             }
-            is IProfileViewModel.Event.OnEditMemberClicked -> {
+            is IProfileViewModel.Event.Ordinal.OnEditMemberClicked -> {
                 editFamilyMemberText.value = event.familyMember.name
                 editFamilyMemberSaveEnabled.value = event.familyMember.name.isValidUserName()
                 editFamilyMemberDialog.value = event.familyMember
             }
-            is IProfileViewModel.Event.OnEditMemberDismiss -> longRunning {
+            is IProfileViewModel.Event.Ordinal.OnEditMemberDismiss -> longRunning {
                 closeEditMemberDialog()
             }
-            is IProfileViewModel.Event.OnEditMemberTextChanged -> longRunning {
+            is IProfileViewModel.Event.Ordinal.OnEditMemberTextChanged -> longRunning {
                 editFamilyMemberText.value = event.text
                 editFamilyMemberSaveEnabled.value = event.text.isValidUserName()
                 Unit
             }
-            is IProfileViewModel.Event.OnMemberLocalNameSaved -> longRunning {
+            is IProfileViewModel.Event.Ordinal.OnMemberLocalNameSaved -> longRunning {
                 saveLocalNameUseCase(LocalName(event.email, event.localName))
                 closeEditMemberDialog()
             }
-            is IProfileViewModel.Event.OnExcludeDismiss -> {
+            is IProfileViewModel.Event.Ordinal.OnExcludeDismiss -> {
                 excludeFamilyMemberDialog.value = null
             }
-            is IProfileViewModel.Event.OnExcludeFamilyMemberAccepted -> longRunning {
+            is IProfileViewModel.Event.Ordinal.OnExcludeFamilyMemberAccepted -> longRunning {
                 excludeFamilyMemberUseCase(event.familyMember)
                 updateCrutch()
                 closeEditMemberDialog()
                 excludeFamilyMemberDialog.value = null
                 Unit
             }
-            is IProfileViewModel.Event.OnExcludeFamilyMemberClick -> {
+            is IProfileViewModel.Event.Ordinal.OnExcludeFamilyMemberClick -> {
                 excludeFamilyMemberDialog.value = event.familyMember
             }
-            is IProfileViewModel.Event.ShowStatusMenu -> {
+            is IProfileViewModel.Event.Ordinal.ShowStatusMenu -> {
                 changeStatusDialog.value = event.show
             }
-            is IProfileViewModel.Event.ChangeStatus -> longRunning {
+            is IProfileViewModel.Event.Ordinal.ChangeStatus -> longRunning {
                 updateStatusUseCase(event.status)
                 updateCrutch()
                 changeStatusDialog.value = false
                 Unit
             }
-            is IProfileViewModel.Event.OnProfileImageChanged -> longRunning {
+            is IProfileViewModel.Event.Ordinal.OnProfileImageChanged -> longRunning {
                 updateProfileImageUseCase(event.file)
                 updateCrutch()
             }
+            IProfileViewModel.Event.Ordinal.OnInviteFamilyMemberClicked -> {
+                addUserDialogState.value = IProfileViewModel.Event.AddUserDialogState.createEmpty()
+            }
         }
+    }
+
+    private fun onAddUserDialogEvent(event: IProfileViewModel.Event.AddUserDialog) {
+        when (event) {
+            is IProfileViewModel.Event.AddUserDialog.Close -> {
+                addUserDialogState.value = null
+            }
+            is IProfileViewModel.Event.AddUserDialog.OnInputTextChanged -> {
+                addUserDialogState.value = addUserDialogState.value?.copy(
+                    textInput = event.text,
+                    error = null
+                )
+            }
+            is IProfileViewModel.Event.AddUserDialog.SendInvite -> longRunning {
+                if (addUserDialogState.value?.loading == false) {
+
+                    setAddUserDialogLoading(true)
+                    val error = inviteFamilyMemberUseCase(event.email)
+                    if (error == null) {
+                        addUserDialogState.value = null
+                    } else {
+                        addUserDialogState.value = addUserDialogState.value?.copy(
+                            loading = false,
+                            error = error
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun setAddUserDialogLoading(loading: Boolean) {
+        addUserDialogState.value = addUserDialogState.value?.copy(
+            loading = loading
+        )
     }
 
     private fun updateCrutch() {

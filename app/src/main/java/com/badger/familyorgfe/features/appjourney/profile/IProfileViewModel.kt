@@ -2,6 +2,7 @@ package com.badger.familyorgfe.features.appjourney.profile
 
 import com.badger.familyorgfe.base.IBaseViewModel
 import com.badger.familyorgfe.data.model.UserStatus
+import com.badger.familyorgfe.ext.isValidMail
 import com.badger.familyorgfe.features.appjourney.profile.model.FamilyMember
 import kotlinx.coroutines.flow.StateFlow
 import java.io.File
@@ -24,23 +25,61 @@ interface IProfileViewModel : IBaseViewModel<IProfileViewModel.Event> {
 
     val changeStatusDialog: StateFlow<Boolean>
 
+    val addUserDialogState: StateFlow<Event.AddUserDialogState?>
+
     sealed class Event {
-        object OnLogoutClick : Event()
-        object OnLogoutDismiss : Event()
-        object OnLogoutAccepted : Event()
+        sealed class Ordinal : Event() {
+            object OnLogoutClick : Ordinal()
+            object OnLogoutDismiss : Ordinal()
+            object OnLogoutAccepted : Ordinal()
 
-        data class OnEditMemberClicked(val familyMember: FamilyMember) : Event()
-        data class OnEditMemberTextChanged(val text: String) : Event()
-        data class OnMemberLocalNameSaved(val email: String, val localName: String) : Event()
-        object OnEditMemberDismiss : Event()
+            data class OnEditMemberClicked(val familyMember: FamilyMember) : Ordinal()
+            data class OnEditMemberTextChanged(val text: String) : Ordinal()
+            data class OnMemberLocalNameSaved(val email: String, val localName: String) : Ordinal()
+            object OnEditMemberDismiss : Ordinal()
 
-        data class OnExcludeFamilyMemberClick(val familyMember: FamilyMember) : Event()
-        object OnExcludeDismiss : Event()
-        data class OnExcludeFamilyMemberAccepted(val familyMember: FamilyMember) : Event()
+            data class OnExcludeFamilyMemberClick(val familyMember: FamilyMember) : Ordinal()
+            object OnExcludeDismiss : Ordinal()
+            data class OnExcludeFamilyMemberAccepted(val familyMember: FamilyMember) : Ordinal()
 
-        data class ShowStatusMenu(val show: Boolean) : Event()
-        data class ChangeStatus(val status: UserStatus) : Event()
+            data class ShowStatusMenu(val show: Boolean) : Ordinal()
+            data class ChangeStatus(val status: UserStatus) : Ordinal()
 
-        data class OnProfileImageChanged(val file: File) : Event()
+            data class OnProfileImageChanged(val file: File) : Ordinal()
+            object OnInviteFamilyMemberClicked : Ordinal()
+        }
+
+        sealed class AddUserDialog : Event() {
+            data class OnInputTextChanged(
+                val text: String
+            ) : AddUserDialog()
+
+            data class SendInvite(
+                val email: String
+            ) : AddUserDialog()
+
+            object Close : AddUserDialog()
+        }
+
+        data class AddUserDialogState(
+            val textInput: String,
+            val loading: Boolean,
+            val error: ErrorType? = null
+        ) {
+            val actionEnabled = textInput.isValidMail() && error == null
+
+            companion object {
+                fun createEmpty() = AddUserDialogState(
+                    textInput = "",
+                    loading = false,
+                    error = null
+                )
+            }
+        }
+    }
+
+    enum class ErrorType {
+        USER_DOES_NOT_EXIST,
+        UNEXPECTED
     }
 }

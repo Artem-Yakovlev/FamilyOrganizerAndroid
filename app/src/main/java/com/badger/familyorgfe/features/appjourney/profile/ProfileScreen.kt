@@ -1,10 +1,6 @@
 package com.badger.familyorgfe.features.appjourney.profile
 
 import android.Manifest
-import android.graphics.Bitmap.CompressFormat
-import android.graphics.ImageDecoder
-import android.os.Build
-import android.provider.MediaStore
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -19,19 +15,22 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
@@ -40,6 +39,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.badger.familyorgfe.R
 import com.badger.familyorgfe.data.model.UserStatus
 import com.badger.familyorgfe.ext.clickableWithoutIndication
+import com.badger.familyorgfe.ext.toImageFile
 import com.badger.familyorgfe.features.appjourney.profile.model.FamilyMember
 import com.badger.familyorgfe.ui.elements.BaseDialog
 import com.badger.familyorgfe.ui.elements.BaseToolbar
@@ -48,11 +48,10 @@ import com.badger.familyorgfe.ui.style.outlinedTextFieldColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 import com.badger.familyorgfe.ui.theme.StatusAtHomeColor
 import com.badger.familyorgfe.ui.theme.WhitePrimary
+import com.badger.familyorgfe.utils.BackHandler
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
-import java.io.ByteArrayOutputStream
-import java.io.File
-import java.io.FileOutputStream
+import kotlin.math.roundToInt
 
 
 private const val EXTERNAL_STORAGE_PERMISSION = Manifest.permission.READ_EXTERNAL_STORAGE
@@ -63,192 +62,136 @@ fun ProfileScreen(
     modifier: Modifier,
     viewModel: IProfileViewModel = hiltViewModel<ProfileViewModel>()
 ) {
-    val showLogoutDialog by viewModel.showLogoutDialog.collectAsState()
-    val editFamilyMemberDialog by viewModel.editFamilyMemberDialog.collectAsState()
-    val excludeFamilyMemberDialog by viewModel.excludeFamilyMemberDialog.collectAsState()
-    val statusMenuShowed by viewModel.changeStatusDialog.collectAsState()
+    val addUserDialogState by viewModel.addUserDialogState.collectAsState()
 
+    val onBack = {
+        val event = IProfileViewModel.Event.AddUserDialog.Close
+        viewModel.onEvent(event)
+    }
 
+    BackHandler(onBack = onBack, enabled = addUserDialogState != null)
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-    ) {
-        Toolbar(onLogoutClicked = { viewModel.onEvent(IProfileViewModel.Event.OnLogoutClick) })
+    Box(modifier = Modifier.fillMaxSize()) {
 
-        val externalStoragePermissionState = rememberPermissionState(EXTERNAL_STORAGE_PERMISSION)
+        val fabHeightPx = with(LocalDensity.current) { 72.dp.roundToPx().toFloat() }
+        val fabOffsetHeightPx = remember { mutableStateOf(0f) }
+        val nestedScrollConnection = remember {
+            object : NestedScrollConnection {
+                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
 
-        val context = LocalContext.current
-        val launcher = rememberLauncherForActivityResult(
-            ActivityResultContracts.GetContent()
-        ) {
-            it?.let { uri ->
-                val bitmap = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-                    MediaStore.Images
-                        .Media.getBitmap(context.contentResolver, uri)
+                    val delta = available.y
+                    val newOffset = fabOffsetHeightPx.value + delta
+                    fabOffsetHeightPx.value = newOffset.coerceIn(-fabHeightPx, 0f)
 
-                } else {
-                    ImageDecoder.decodeBitmap(
-                        ImageDecoder
-                            .createSource(context.contentResolver, uri)
-                    )
+                    return Offset.Zero
                 }
-
-                val f = File(context.cacheDir, "filename")
-                f.createNewFile()
-
-                val bos = ByteArrayOutputStream()
-                bitmap.compress(CompressFormat.JPEG, 100 , bos)
-                val bitmapdata: ByteArray = bos.toByteArray()
-
-                var fos: FileOutputStream? = null
-                try {
-                    fos = FileOutputStream(f)
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-                try {
-                    fos?.write(bitmapdata)
-                    fos?.flush()
-                    fos?.close()
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-
-                viewModel.onEvent(
-                    IProfileViewModel.Event.OnProfileImageChanged(f)
-                )
             }
         }
 
-        val mainFamilyMember by viewModel.mainUser.collectAsState()
-        val members by viewModel.members.collectAsState()
-
-        MainUserItem(
-            familyMember = mainFamilyMember,
-            statusMenuShowed = statusMenuShowed,
-            showStatusMenu = { show ->
-                viewModel.onEvent(
-                    IProfileViewModel.Event.ShowStatusMenu(show)
-                )
-            },
-            onImageChangeClicked = {
-                if (externalStoragePermissionState.status.isGranted) {
-                    launcher.launch(LAUNCHER_PATH)
-                } else {
-                    externalStoragePermissionState.launchPermissionRequest()
-                }
-            }
+        Screen(
+            modifier = modifier,
+            nestedScrollConnection = nestedScrollConnection,
+            viewModel = viewModel
         )
-        Spacer(modifier = Modifier.height(10.dp))
-        LazyColumn(
-            modifier = modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .padding(start = 16.dp, end = 16.dp)
-        ) {
-            item {
-                Spacer(modifier = Modifier.height(10.dp))
-            }
-            items(members) { item ->
-                FamilyMemberItem(
-                    familyMember = item,
-                    onEditMemberClicked = { familyMember ->
-                        viewModel.onEvent(
-                            IProfileViewModel.Event.OnEditMemberClicked(familyMember)
-                        )
-                    }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-        }
 
-        excludeFamilyMemberDialog?.let { familyMember ->
-            BaseDialog(
-                titleText = stringResource(id = R.string.exclude_family_member_title),
-                descriptionText = stringResource(
-                    id = R.string.exclude_family_member_description,
-                    excludeFamilyMemberDialog?.name.orEmpty()
-                ),
-                dismissText = stringResource(id = R.string.exclude_family_member_dismiss),
-                actionText = stringResource(id = R.string.exclude_family_member_action),
-                onActionClicked = {
-                    viewModel.onEvent(
-                        IProfileViewModel.Event.OnExcludeFamilyMemberAccepted(
-                            familyMember
-                        )
-                    )
-                },
-                onDismissClicked = { viewModel.onEvent(IProfileViewModel.Event.OnExcludeDismiss) }
-            )
-        } ?: editFamilyMemberDialog?.let { familyMember ->
-            val localName by viewModel.editFamilyMemberText.collectAsState()
-            val saveEnabled by viewModel.editFamilyMemberSaveEnabled.collectAsState()
-
-            Dialog(
-                onDismissRequest = {
-                    val event = IProfileViewModel.Event.OnEditMemberDismiss
-                    viewModel.onEvent(event)
-                }
-            ) {
-                Box(
-                    contentAlignment = Alignment.Center,
-                    content = {
-                        EditFamilyMemberDialog(
-                            localName = localName,
-                            saveEnabled = saveEnabled,
-                            onTextChanged = { text ->
-                                viewModel.onEvent(
-                                    IProfileViewModel.Event.OnEditMemberTextChanged(
-                                        text = text
-                                    )
-                                )
-                            },
-                            onSaveClicked = {
-                                viewModel.onEvent(
-                                    IProfileViewModel.Event.OnMemberLocalNameSaved(
-                                        email = editFamilyMemberDialog?.email.orEmpty(),
-                                        localName = localName
-                                    )
-                                )
-                            },
-                            onExcludeFamilyMemberClick = {
-                                viewModel.onEvent(
-                                    IProfileViewModel.Event.OnExcludeFamilyMemberClick(
-                                        familyMember
-                                    )
-                                )
-                            }
-                        )
-                    }
-                )
-            }
-        } ?: if (showLogoutDialog) {
-            BaseDialog(
-                titleText = stringResource(id = R.string.profile_logout_title),
-                descriptionText = stringResource(id = R.string.profile_logout_description),
-                dismissText = stringResource(id = R.string.profile_logout_dismiss),
-                actionText = stringResource(id = R.string.profile_logout_action),
-                onActionClicked = { viewModel.onEvent(IProfileViewModel.Event.OnLogoutAccepted) },
-                onDismissClicked = { viewModel.onEvent(IProfileViewModel.Event.OnLogoutDismiss) }
-            )
-        } else if (statusMenuShowed) {
-
-            val dismissStatusDialog = {
-                val event = IProfileViewModel.Event.ShowStatusMenu(false)
+        Fab(
+            fabOffsetHeightPx = fabOffsetHeightPx.value,
+            onClick = {
+                val event = IProfileViewModel.Event.Ordinal.OnInviteFamilyMemberClicked
                 viewModel.onEvent(event)
             }
-            Dialog(
-                onDismissRequest = dismissStatusDialog
-            ) {
-                Dropdown(
-                    dismiss = dismissStatusDialog
-                ) { status ->
-                    val event = IProfileViewModel.Event.ChangeStatus(status)
-                    viewModel.onEvent(event)
+        )
+    }
+
+
+    addUserDialogState?.let { state ->
+
+        Dialog(
+            onDismissRequest = onBack
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                content = {
+                    InviteFamilyMemberDialog(
+                        state = state,
+                        onTextChanged = {
+                            val event = IProfileViewModel.Event.AddUserDialog.OnInputTextChanged(it)
+                            viewModel.onEvent(event)
+                        },
+                        onInviteClicked = {
+                            val event = IProfileViewModel.Event.AddUserDialog.SendInvite(it)
+                            viewModel.onEvent(event)
+                        }
+                    )
                 }
+            )
+        }
+    }
+}
+
+@Composable
+private fun InviteFamilyMemberDialog(
+    state: IProfileViewModel.Event.AddUserDialogState,
+    onTextChanged: (String) -> Unit,
+    onInviteClicked: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .wrapContentHeight()
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(size = 16.dp))
+            .background(color = FamilyOrganizerTheme.colors.whitePrimary)
+            .padding(start = 16.dp, end = 16.dp)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.Start
+        ) {
+
+            Text(
+                text = stringResource(R.string.invite_member_dialog_title),
+                style = FamilyOrganizerTheme.textStyle.headline2,
+                lineHeight = 26.sp,
+                modifier = Modifier.padding(top = 16.dp)
+            )
+
+            Text(
+                text = stringResource(R.string.invite_member_dialog_desc),
+                style = FamilyOrganizerTheme.textStyle.subtitle2.copy(
+                    fontSize = 14.sp,
+                    color = FamilyOrganizerTheme.colors.darkClay
+                ),
+                modifier = Modifier.padding(top = 8.dp)
+            )
+
+            OutlinedTextField(
+                value = state.textInput,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                onValueChange = { onTextChanged(it) },
+                textStyle = FamilyOrganizerTheme.textStyle.input,
+                colors = outlinedTextFieldColors(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+            )
+
+            Button(
+                onClick = { onInviteClicked(state.textInput) },
+                enabled = state.actionEnabled && !state.loading,
+                colors = buttonColors(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp)
+                    .clip(RoundedCornerShape(8.dp))
+            ) {
+                Text(
+                    text = stringResource(R.string.invite_member_dialog_action).uppercase(),
+                    color = FamilyOrganizerTheme.colors.whitePrimary,
+                    style = FamilyOrganizerTheme.textStyle.button,
+                    modifier = Modifier.padding(vertical = 10.dp)
+                )
             }
         }
+        Spacer(modifier = Modifier.height(16.dp))
     }
 }
 
@@ -277,6 +220,196 @@ private fun Toolbar(onLogoutClicked: () -> Unit) {
         )
 
         Spacer(modifier = Modifier.width(16.dp))
+    }
+}
+
+@Composable
+private fun Screen(
+    modifier: Modifier,
+    nestedScrollConnection: NestedScrollConnection,
+    viewModel: IProfileViewModel
+) {
+    val showLogoutDialog by viewModel.showLogoutDialog.collectAsState()
+    val editFamilyMemberDialog by viewModel.editFamilyMemberDialog.collectAsState()
+    val excludeFamilyMemberDialog by viewModel.excludeFamilyMemberDialog.collectAsState()
+    val statusMenuShowed by viewModel.changeStatusDialog.collectAsState()
+
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+    ) {
+        Toolbar(onLogoutClicked = { viewModel.onEvent(IProfileViewModel.Event.Ordinal.OnLogoutClick) })
+
+        val externalStoragePermissionState = rememberPermissionState(EXTERNAL_STORAGE_PERMISSION)
+
+        val context = LocalContext.current
+        val launcher = rememberLauncherForActivityResult(
+            ActivityResultContracts.GetContent()
+        ) {
+            it?.let { uri ->
+                viewModel.onEvent(
+                    IProfileViewModel.Event.Ordinal.OnProfileImageChanged(
+                        file = uri.toImageFile(context)
+                    )
+                )
+            }
+        }
+
+        val mainFamilyMember by viewModel.mainUser.collectAsState()
+        val members by viewModel.members.collectAsState()
+
+        MainUserItem(
+            familyMember = mainFamilyMember,
+            statusMenuShowed = statusMenuShowed,
+            showStatusMenu = { show ->
+                viewModel.onEvent(
+                    IProfileViewModel.Event.Ordinal.ShowStatusMenu(show)
+                )
+            },
+            onImageChangeClicked = {
+                if (externalStoragePermissionState.status.isGranted) {
+                    launcher.launch(LAUNCHER_PATH)
+                } else {
+                    externalStoragePermissionState.launchPermissionRequest()
+                }
+            }
+        )
+        Spacer(modifier = Modifier.height(10.dp))
+        LazyColumn(
+            modifier = modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .padding(start = 16.dp, end = 16.dp)
+                .nestedScroll(nestedScrollConnection)
+        ) {
+            item {
+                Spacer(modifier = Modifier.height(10.dp))
+            }
+            items(members) { item ->
+                FamilyMemberItem(
+                    familyMember = item,
+                    onEditMemberClicked = { familyMember ->
+                        viewModel.onEvent(
+                            IProfileViewModel.Event.Ordinal.OnEditMemberClicked(familyMember)
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+
+        excludeFamilyMemberDialog?.let { familyMember ->
+            BaseDialog(
+                titleText = stringResource(id = R.string.exclude_family_member_title),
+                descriptionText = stringResource(
+                    id = R.string.exclude_family_member_description,
+                    excludeFamilyMemberDialog?.name.orEmpty()
+                ),
+                dismissText = stringResource(id = R.string.exclude_family_member_dismiss),
+                actionText = stringResource(id = R.string.exclude_family_member_action),
+                onActionClicked = {
+                    viewModel.onEvent(
+                        IProfileViewModel.Event.Ordinal.OnExcludeFamilyMemberAccepted(
+                            familyMember
+                        )
+                    )
+                },
+                onDismissClicked = { viewModel.onEvent(IProfileViewModel.Event.Ordinal.OnExcludeDismiss) }
+            )
+        } ?: editFamilyMemberDialog?.let { familyMember ->
+            val localName by viewModel.editFamilyMemberText.collectAsState()
+            val saveEnabled by viewModel.editFamilyMemberSaveEnabled.collectAsState()
+
+            Dialog(
+                onDismissRequest = {
+                    val event = IProfileViewModel.Event.Ordinal.OnEditMemberDismiss
+                    viewModel.onEvent(event)
+                }
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    content = {
+                        EditFamilyMemberDialog(
+                            localName = localName,
+                            saveEnabled = saveEnabled,
+                            onTextChanged = { text ->
+                                viewModel.onEvent(
+                                    IProfileViewModel.Event.Ordinal.OnEditMemberTextChanged(
+                                        text = text
+                                    )
+                                )
+                            },
+                            onSaveClicked = {
+                                viewModel.onEvent(
+                                    IProfileViewModel.Event.Ordinal.OnMemberLocalNameSaved(
+                                        email = editFamilyMemberDialog?.email.orEmpty(),
+                                        localName = localName
+                                    )
+                                )
+                            },
+                            onExcludeFamilyMemberClick = {
+                                viewModel.onEvent(
+                                    IProfileViewModel.Event.Ordinal.OnExcludeFamilyMemberClick(
+                                        familyMember
+                                    )
+                                )
+                            }
+                        )
+                    }
+                )
+            }
+        } ?: if (showLogoutDialog) {
+            BaseDialog(
+                titleText = stringResource(id = R.string.profile_logout_title),
+                descriptionText = stringResource(id = R.string.profile_logout_description),
+                dismissText = stringResource(id = R.string.profile_logout_dismiss),
+                actionText = stringResource(id = R.string.profile_logout_action),
+                onActionClicked = { viewModel.onEvent(IProfileViewModel.Event.Ordinal.OnLogoutAccepted) },
+                onDismissClicked = { viewModel.onEvent(IProfileViewModel.Event.Ordinal.OnLogoutDismiss) }
+            )
+        } else if (statusMenuShowed) {
+
+            val dismissStatusDialog = {
+                val event = IProfileViewModel.Event.Ordinal.ShowStatusMenu(false)
+                viewModel.onEvent(event)
+            }
+            Dialog(
+                onDismissRequest = dismissStatusDialog
+            ) {
+                Dropdown(
+                    dismiss = dismissStatusDialog
+                ) { status ->
+                    val event = IProfileViewModel.Event.Ordinal.ChangeStatus(status)
+                    viewModel.onEvent(event)
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun BoxScope.Fab(
+    fabOffsetHeightPx: Float,
+    onClick: () -> Unit
+) {
+    FloatingActionButton(
+        modifier = Modifier
+            .align(Alignment.BottomEnd)
+            .padding(16.dp)
+            .offset { IntOffset(x = 0, y = -fabOffsetHeightPx.roundToInt()) },
+        backgroundColor = FamilyOrganizerTheme.colors.primary,
+        onClick = onClick,
+    ) {
+        Icon(
+            modifier = Modifier
+                .size(28.dp)
+                .align(Alignment.Center),
+            painter = painterResource(
+                id = R.drawable.ic_person_add
+            ),
+            contentDescription = null,
+            tint = FamilyOrganizerTheme.colors.whitePrimary
+        )
     }
 }
 

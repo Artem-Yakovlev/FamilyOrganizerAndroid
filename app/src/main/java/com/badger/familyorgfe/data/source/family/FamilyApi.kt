@@ -4,6 +4,7 @@ import com.badger.familyorgfe.base.BaseResponse
 import com.badger.familyorgfe.data.source.family.json.ExcludeFamilyMemberJson
 import com.badger.familyorgfe.data.source.family.json.GetAllMembersJson
 import com.badger.familyorgfe.data.source.family.json.GetFamilyJson
+import com.badger.familyorgfe.data.source.family.json.InviteFamilyMemberJson
 import retrofit2.http.Body
 import retrofit2.http.POST
 
@@ -14,6 +15,7 @@ interface FamilyApi {
         private const val GET_FAMILY = "$API/getFamily"
         private const val GET_ALL_MEMBERS = "$API/getAllMembers"
         private const val EXCLUDE_FAMILY_MEMBER = "$API/excludeFamilyMember"
+        private const val INVITE_FAMILY_MEMBER = "$API/inviteFamilyMember"
     }
 
     @POST(GET_ALL_MEMBERS)
@@ -24,4 +26,7 @@ interface FamilyApi {
 
     @POST(EXCLUDE_FAMILY_MEMBER)
     suspend fun excludeFamilyMember(@Body form: ExcludeFamilyMemberJson.Form): BaseResponse<ExcludeFamilyMemberJson.Response>
+
+    @POST(INVITE_FAMILY_MEMBER)
+    suspend fun inviteFamilyMember(@Body form: InviteFamilyMemberJson.Form): BaseResponse<InviteFamilyMemberJson.Response>
 }

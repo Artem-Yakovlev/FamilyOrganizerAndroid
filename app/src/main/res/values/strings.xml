@@ -113,6 +113,13 @@
     <string name="exclude_family_member_dismiss">Отмена</string>
     <string name="exclude_family_member_action">Выйти</string>
 
+
+    <string name="invite_member_dialog_title">Пригласить пользователя</string>
+    <string name="invite_member_dialog_desc">Введите email вашего родственника</string>
+    <string name="invite_member_dialog_not_found_error">Пользователя с этим email не существует</string>
+    <string name="invite_member_dialog_unexpected_error">Произошла непредвиденная ошибка</string>
+    <string name="invite_member_dialog_action">Отправить приглашение</string>
+
     <!-- Status -->
     <string name="status_undefined">Неизвестно</string>
     <string name="status_at_home">Дома</string>
