@@ -11,6 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.badger.familyorgfe.R
 import com.badger.familyorgfe.features.appjourney.common.ProductBottomSheet
 import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeListItem
@@ -20,6 +21,7 @@ import com.badger.familyorgfe.utils.BackHandler
 @Composable
 fun FridgeScreen(
     modifier: Modifier,
+    navController: NavController,
     viewModel: IFridgeViewModel = hiltViewModel<FridgeViewModel>()
 ) {
     val editingState by viewModel.editingState.collectAsState()

@@ -22,13 +22,12 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.badger.familyorgfe.ext.hideKeyboard
-import com.badger.familyorgfe.features.appjourney.adding.AddingJourney
-import com.badger.familyorgfe.features.appjourney.fridge.FridgeScreen
-import com.badger.familyorgfe.features.appjourney.profile.ProfileScreen
+import com.badger.familyorgfe.features.appjourney.products.productsNavGraph
+import com.badger.familyorgfe.features.appjourney.products.profileNavGraph
+import com.badger.familyorgfe.features.appjourney.products.tasksNavGraph
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 
 @Composable
@@ -59,20 +58,20 @@ private fun Content(modifier: Modifier, navController: NavHostController) {
     NavHost(
         modifier = modifier,
         navController = navController,
-        startDestination = BottomNavigationType.FRIDGE.route
+        startDestination = BottomNavigationType.FRIDGE_ROUTE.route
     ) {
-        composable(route = BottomNavigationType.FRIDGE.route) {
-            FridgeScreen(modifier)
-        }
-        composable(route = BottomNavigationType.ADDING.route) {
-            AddingJourney(
-                modifier = modifier,
-                navOnBack = { navController.popBackStack() }
-            )
-        }
-        composable(route = BottomNavigationType.PROFILE.route) {
-            ProfileScreen(modifier)
-        }
+        productsNavGraph(
+            modifier = modifier,
+            navController = navController
+        )
+        tasksNavGraph(
+            modifier = modifier,
+            navController = navController
+        )
+        profileNavGraph(
+            modifier = modifier,
+            navController = navController
+        )
     }
 }
 
@@ -88,7 +87,7 @@ private fun BottomNavigation(
 
     AnimatedVisibility(
         visible = currentDestination?.hierarchy
-            ?.all { dest -> dest.route != BottomNavigationType.ADDING.route } == true,
+            ?.all { dest -> dest.route != BottomNavigationType.ADDING_ROUTE.route } == true,
         enter = slideInVertically { (VISIBILITY_ANIMATION_MULTIPLIER * it).toInt() } + fadeIn(),
         exit = slideOutVertically { (VISIBILITY_ANIMATION_MULTIPLIER * it).toInt() } + fadeOut(),
     ) {
@@ -112,21 +111,21 @@ private fun BottomNavigation(
                 ) {
 
                     BottomNavigationItem(
-                        type = BottomNavigationType.FRIDGE,
+                        type = BottomNavigationType.FRIDGE_ROUTE,
                         currentDestination = currentDestination,
                         navController = navController
                     )
                     Spacer(modifier = Modifier.width(62.dp))
 
                     BottomNavigationItem(
-                        type = BottomNavigationType.ADDING,
+                        type = BottomNavigationType.ADDING_ROUTE,
                         currentDestination = currentDestination,
                         navController = navController
                     )
                     Spacer(modifier = Modifier.width(62.dp))
 
                     BottomNavigationItem(
-                        type = BottomNavigationType.PROFILE,
+                        type = BottomNavigationType.PROFILE_ROUTE,
                         currentDestination = currentDestination,
                         navController = navController
                     )

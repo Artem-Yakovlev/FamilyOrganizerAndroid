@@ -36,6 +36,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.badger.familyorgfe.R
 import com.badger.familyorgfe.data.model.UserStatus
@@ -61,6 +62,7 @@ private const val LAUNCHER_PATH = "image/*"
 @Composable
 fun ProfileScreen(
     modifier: Modifier,
+    navController: NavController,
     viewModel: IProfileViewModel = hiltViewModel<ProfileViewModel>()
 ) {
     val addUserDialogState by viewModel.addUserDialogState.collectAsState()
