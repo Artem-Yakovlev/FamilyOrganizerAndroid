@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.features.appjourney.fridge
+package com.badger.familyorgfe.features.appjourney.products.fridge
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility

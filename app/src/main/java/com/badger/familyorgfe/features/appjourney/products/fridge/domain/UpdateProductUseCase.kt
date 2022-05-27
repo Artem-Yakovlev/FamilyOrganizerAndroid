@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.features.appjourney.fridge.domain
+package com.badger.familyorgfe.features.appjourney.products.fridge.domain
 
 import com.badger.familyorgfe.base.SyncUseCase
 import com.badger.familyorgfe.data.model.Product

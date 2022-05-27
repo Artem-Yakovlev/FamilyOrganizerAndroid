@@ -1,9 +1,9 @@
-package com.badger.familyorgfe.features.appjourney.fridge
+package com.badger.familyorgfe.features.appjourney.products.fridge
 
 import com.badger.familyorgfe.base.IBaseViewModel
 import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.features.appjourney.common.productbottomsheet.ProductBottomSheetState
-import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeItem
+import com.badger.familyorgfe.features.appjourney.products.fridge.fridgeitem.FridgeItem
 import kotlinx.coroutines.flow.StateFlow
 
 interface IFridgeViewModel : IBaseViewModel<IFridgeViewModel.Event> {
@@ -49,6 +49,7 @@ interface IFridgeViewModel : IBaseViewModel<IFridgeViewModel.Event> {
             object DismissDialogs : Ordinal()
 
             data class OnEditClicked(val item: FridgeItem) : Ordinal()
+            object AddNewProducts : Ordinal()
         }
 
         sealed class Editing : Event() {

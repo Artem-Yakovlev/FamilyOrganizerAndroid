@@ -20,10 +20,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -51,6 +49,7 @@ import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 import com.badger.familyorgfe.ui.theme.StatusAtHomeColor
 import com.badger.familyorgfe.ui.theme.WhitePrimary
 import com.badger.familyorgfe.utils.BackHandler
+import com.badger.familyorgfe.utils.fabNestedScroll
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberPermissionState
 import kotlin.math.roundToInt
@@ -75,28 +74,19 @@ fun ProfileScreen(
     BackHandler(onBack = onBack, enabled = addUserDialogState != null)
 
     Box(modifier = Modifier.fillMaxSize()) {
-
         val fabHeightPx = with(LocalDensity.current) { 72.dp.roundToPx().toFloat() }
         val fabOffsetHeightPx = remember { mutableStateOf(0f) }
         val nestedScrollConnection = remember {
-            object : NestedScrollConnection {
-                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-
-                    val delta = available.y
-                    val newOffset = fabOffsetHeightPx.value + delta
-                    fabOffsetHeightPx.value = newOffset.coerceIn(-fabHeightPx, 0f)
-
-                    return Offset.Zero
-                }
-            }
+            fabNestedScroll(
+                fabHeightPx = fabHeightPx,
+                fabOffsetHeightPx = fabOffsetHeightPx
+            )
         }
-
         Screen(
             modifier = modifier,
             nestedScrollConnection = nestedScrollConnection,
             viewModel = viewModel
         )
-
         Fab(
             fabOffsetHeightPx = fabOffsetHeightPx.value,
             onClick = {

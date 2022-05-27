@@ -4,7 +4,7 @@ import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.ext.isValidProductName
 import com.badger.familyorgfe.ext.toExpirationDate
 import com.badger.familyorgfe.ext.toExpirationDateString
-import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeItem
+import com.badger.familyorgfe.features.appjourney.products.fridge.fridgeitem.FridgeItem
 import org.threeten.bp.LocalDate
 import org.threeten.bp.ZoneOffset
 import kotlin.random.Random

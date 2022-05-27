@@ -1,10 +1,10 @@
-package com.badger.familyorgfe.features.appjourney.fridge.domain
+package com.badger.familyorgfe.features.appjourney.products.fridge.domain
 
 import com.badger.familyorgfe.base.SyncUseCase
 import com.badger.familyorgfe.data.repository.IDataStoreRepository
 import com.badger.familyorgfe.data.source.products.ProductsApi
 import com.badger.familyorgfe.data.source.products.json.DeleteProductsJson
-import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeItem
+import com.badger.familyorgfe.features.appjourney.products.fridge.fridgeitem.FridgeItem
 import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 

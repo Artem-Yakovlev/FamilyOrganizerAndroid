@@ -7,7 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import com.badger.familyorgfe.data.model.Product
-import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeItem
+import com.badger.familyorgfe.features.appjourney.products.fridge.fridgeitem.FridgeItem
 import org.threeten.bp.*
 import org.threeten.bp.format.DateTimeFormatter
 import java.io.ByteArrayOutputStream

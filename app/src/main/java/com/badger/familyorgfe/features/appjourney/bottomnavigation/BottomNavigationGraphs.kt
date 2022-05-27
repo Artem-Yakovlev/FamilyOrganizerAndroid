@@ -9,7 +9,9 @@ import com.badger.familyorgfe.features.appjourney.BottomNavigationType
 import com.badger.familyorgfe.features.appjourney.ProductsNavigationType
 import com.badger.familyorgfe.features.appjourney.ProfileNavigationType
 import com.badger.familyorgfe.features.appjourney.TasksNavigationType
-import com.badger.familyorgfe.features.appjourney.fridge.FridgeScreen
+import com.badger.familyorgfe.features.appjourney.products.adding.AddingScreen
+import com.badger.familyorgfe.features.appjourney.products.fridge.FridgeScreen
+import com.badger.familyorgfe.features.appjourney.products.scanner.ScannerScreen
 import com.badger.familyorgfe.features.appjourney.profile.ProfileScreen
 import com.badger.familyorgfe.features.appjourney.tasks.AllTasksScreen
 
@@ -28,10 +30,16 @@ fun NavGraphBuilder.productsNavGraph(
             )
         }
         composable(ProductsNavigationType.MANUAL_ADDING_SCREEN.route) {
-
+            AddingScreen(
+                modifier = modifier,
+                navController = navController
+            )
         }
         composable(ProductsNavigationType.AUTO_ADDING_SCREEN.route) {
-
+            ScannerScreen(
+                modifier = modifier,
+                navController = navController
+            )
         }
     }
 }

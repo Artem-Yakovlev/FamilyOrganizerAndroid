@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.features.appjourney.fridge.fridgeitem
+package com.badger.familyorgfe.features.appjourney.products.fridge.fridgeitem
 
 import android.annotation.SuppressLint
 import androidx.compose.animation.core.MutableTransitionState

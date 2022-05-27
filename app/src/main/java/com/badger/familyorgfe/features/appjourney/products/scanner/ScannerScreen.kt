@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.features.appjourney.adding.auto
+package com.badger.familyorgfe.features.appjourney.products.scanner
 
 import android.Manifest
 import android.util.Size
@@ -24,9 +24,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.badger.familyorgfe.R
-import com.badger.familyorgfe.data.model.Product
-import com.badger.familyorgfe.features.appjourney.adding.auto.domain.QrCodeAnalyzer
+import com.badger.familyorgfe.features.appjourney.products.scanner.domain.QrCodeAnalyzer
 import com.badger.familyorgfe.ui.elements.FullScreenLoading
 import com.badger.familyorgfe.ui.style.buttonColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
@@ -41,12 +42,11 @@ private const val CAMERA_PERMISSION = Manifest.permission.CAMERA
 @Composable
 fun ScannerScreen(
     modifier: Modifier,
-    navOnBack: () -> Unit,
-    productsReceived: (List<Product>) -> Unit,
-    viewModel: IScannerViewModel
+    navController: NavController,
+    viewModel: IScannerViewModel = hiltViewModel<ScannerViewModel>()
 ) {
     val onBack: () -> Unit = {
-        navOnBack()
+        navController.popBackStack()
         viewModel.onEvent(IScannerViewModel.Event.RetryScanning)
     }
     BackHandler(onBack = onBack)
@@ -54,8 +54,8 @@ fun ScannerScreen(
     val cameraPermissionState = rememberPermissionState(CAMERA_PERMISSION)
     LaunchedEffect(Unit) {
         cameraPermissionState.launchPermissionRequest()
-        viewModel.productsReceivedAction.collectLatest { products ->
-            productsReceived(products)
+        viewModel.productsReceivedAction.collectLatest {
+            navController.popBackStack()
             viewModel.onEvent(IScannerViewModel.Event.RetryScanning)
         }
     }
@@ -267,7 +267,9 @@ private fun Screen(
 }
 
 @Composable
-private fun BlackoutLine(modifier: Modifier) {
+private fun BlackoutLine(
+    modifier: Modifier
+) {
     Surface(
         modifier = modifier,
         color = FamilyOrganizerTheme.colors.blackPrimary.copy(alpha = 0.35f),

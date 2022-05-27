@@ -77,6 +77,17 @@ private fun Content(modifier: Modifier, navController: NavHostController) {
 
 private const val VISIBILITY_ANIMATION_MULTIPLIER = 0.7
 
+private fun Sequence<NavDestination>.bottomNavigationVisibility(): Boolean {
+    return all { dest ->
+        dest.route !in listOf(
+            ProductsNavigationType.AUTO_ADDING_SCREEN.route,
+            ProductsNavigationType.MANUAL_ADDING_SCREEN.route,
+
+            BottomNavigationType.ADDING_ROUTE.route
+        )
+    }
+}
+
 @Composable
 private fun BottomNavigation(
     modifier: Modifier,
@@ -86,8 +97,7 @@ private fun BottomNavigation(
     val currentDestination = navBackStackEntry?.destination
 
     AnimatedVisibility(
-        visible = currentDestination?.hierarchy
-            ?.all { dest -> dest.route != BottomNavigationType.ADDING_ROUTE.route } == true,
+        visible = currentDestination?.hierarchy?.bottomNavigationVisibility() == true,
         enter = slideInVertically { (VISIBILITY_ANIMATION_MULTIPLIER * it).toInt() } + fadeIn(),
         exit = slideOutVertically { (VISIBILITY_ANIMATION_MULTIPLIER * it).toInt() } + fadeOut(),
     ) {

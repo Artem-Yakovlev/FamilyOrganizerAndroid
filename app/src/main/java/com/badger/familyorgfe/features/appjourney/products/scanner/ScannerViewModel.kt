@@ -1,9 +1,9 @@
-package com.badger.familyorgfe.features.appjourney.adding.auto
+package com.badger.familyorgfe.features.appjourney.products.scanner
 
 import com.badger.familyorgfe.base.BaseViewModel
-import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.ext.longRunning
-import com.badger.familyorgfe.features.appjourney.adding.auto.domain.GetProductsByCodeUseCase
+import com.badger.familyorgfe.features.appjourney.products.adding.repository.IAddingRepository
+import com.badger.familyorgfe.features.appjourney.products.scanner.domain.GetProductsByCodeUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,6 +11,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ScannerViewModel @Inject constructor(
+    private val addingRepository: IAddingRepository,
     private val getProductsByCodeUseCase: GetProductsByCodeUseCase
 ) : BaseViewModel(), IScannerViewModel {
 
@@ -18,7 +19,7 @@ class ScannerViewModel @Inject constructor(
 
     override val failed = MutableStateFlow(false)
 
-    override val productsReceivedAction = MutableSharedFlow<List<Product>>(replay = 0)
+    override val productsReceivedAction = MutableSharedFlow<Unit>(replay = 0)
 
     override fun onEvent(event: IScannerViewModel.Event) {
         when (event) {
@@ -27,7 +28,8 @@ class ScannerViewModel @Inject constructor(
                     loading.value = true
                     val result = getProductsByCodeUseCase(event.code)
                     if (result.isNotEmpty()) {
-                        productsReceivedAction.emit(result)
+                        addingRepository.addProducts(*result.toTypedArray())
+                        productsReceivedAction.emit(Unit)
                     } else {
                         loading.value = false
                         failed.value = true

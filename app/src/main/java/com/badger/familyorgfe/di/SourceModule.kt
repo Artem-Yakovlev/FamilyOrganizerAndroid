@@ -14,6 +14,8 @@ import com.badger.familyorgfe.data.source.familyauth.FamilyAuthApi
 import com.badger.familyorgfe.data.source.getPrepopulateCallback
 import com.badger.familyorgfe.data.source.products.ProductsApi
 import com.badger.familyorgfe.data.source.user.UserApi
+import com.badger.familyorgfe.features.appjourney.products.adding.repository.AddingRepository
+import com.badger.familyorgfe.features.appjourney.products.adding.repository.IAddingRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -132,4 +134,10 @@ class SourceModule {
     @Singleton
     fun provideFamilyApi(retrofit: Retrofit): FamilyApi =
         retrofit.create(FamilyApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideAddingRepository(): IAddingRepository {
+        return AddingRepository()
+    }
 }

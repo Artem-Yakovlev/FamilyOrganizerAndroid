@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.features.appjourney.fridge.fridgeitem
+package com.badger.familyorgfe.features.appjourney.products.fridge.fridgeitem
 
 import com.badger.familyorgfe.data.model.Product
 

@@ -1,7 +1,7 @@
-package com.badger.familyorgfe.features.appjourney.fridge.domain
+package com.badger.familyorgfe.features.appjourney.products.fridge.domain
 
 import com.badger.familyorgfe.base.SyncUseCase
-import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeItem
+import com.badger.familyorgfe.features.appjourney.products.fridge.fridgeitem.FridgeItem
 import javax.inject.Inject
 
 class SearchInFridgeItemsUseCase @Inject constructor(

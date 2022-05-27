@@ -1,13 +1,13 @@
-package com.badger.familyorgfe.features.appjourney.fridge
+package com.badger.familyorgfe.features.appjourney.products.fridge
 
 import com.badger.familyorgfe.base.BaseViewModel
 import com.badger.familyorgfe.ext.*
 import com.badger.familyorgfe.features.appjourney.common.productbottomsheet.ProductBottomSheetState
-import com.badger.familyorgfe.features.appjourney.fridge.domain.DeleteFridgeItemUseCase
-import com.badger.familyorgfe.features.appjourney.fridge.domain.GetAllFridgeItemsUseCase
-import com.badger.familyorgfe.features.appjourney.fridge.domain.SearchInFridgeItemsUseCase
-import com.badger.familyorgfe.features.appjourney.fridge.domain.UpdateProductUseCase
-import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeItem
+import com.badger.familyorgfe.features.appjourney.products.fridge.domain.DeleteFridgeItemUseCase
+import com.badger.familyorgfe.features.appjourney.products.fridge.domain.GetAllFridgeItemsUseCase
+import com.badger.familyorgfe.features.appjourney.products.fridge.domain.SearchInFridgeItemsUseCase
+import com.badger.familyorgfe.features.appjourney.products.fridge.domain.UpdateProductUseCase
+import com.badger.familyorgfe.features.appjourney.products.fridge.fridgeitem.FridgeItem
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*

@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.features.appjourney.adding.auto.domain
+package com.badger.familyorgfe.features.appjourney.products.scanner.domain
 
 import com.badger.familyorgfe.base.BaseUseCase
 import com.badger.familyorgfe.data.model.Product

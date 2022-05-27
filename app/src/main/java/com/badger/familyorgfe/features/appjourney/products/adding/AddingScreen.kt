@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.features.appjourney.adding.manual
+package com.badger.familyorgfe.features.appjourney.products.adding
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.clickable
@@ -14,9 +14,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
@@ -24,13 +22,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.badger.familyorgfe.R
+import com.badger.familyorgfe.features.appjourney.ProductsNavigationType
 import com.badger.familyorgfe.features.appjourney.common.ProductBottomSheet
-import com.badger.familyorgfe.features.appjourney.fridge.fridgeitem.FridgeListItem
+import com.badger.familyorgfe.features.appjourney.products.fridge.fridgeitem.FridgeListItem
 import com.badger.familyorgfe.ui.elements.BaseDialog
 import com.badger.familyorgfe.ui.elements.BaseToolbar
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 import com.badger.familyorgfe.utils.BackHandler
+import com.badger.familyorgfe.utils.fabNestedScroll
 import kotlinx.coroutines.flow.collectLatest
 import kotlin.math.roundToInt
 
@@ -38,9 +40,8 @@ import kotlin.math.roundToInt
 @Composable
 fun AddingScreen(
     modifier: Modifier,
-    navOnBack: () -> Unit,
-    viewModel: IAddingViewModel,
-    openQrScanner: () -> Unit
+    navController: NavController,
+    viewModel: IAddingViewModel = hiltViewModel<AddingViewModel>()
 ) {
     val manualAddingState by viewModel.manualAddingState.collectAsState()
     val editingState by viewModel.editingState.collectAsState()
@@ -58,7 +59,7 @@ fun AddingScreen(
             else -> {
                 val event = IAddingViewModel.Event.Ordinal.OnBackClicked
                 viewModel.onEvent(event)
-                navOnBack()
+                navController.popBackStack()
             }
         }
     }
@@ -75,7 +76,9 @@ fun AddingScreen(
     Screen(
         modifier = modifier,
         viewModel = viewModel,
-        openQrScanner = openQrScanner,
+        openQrScanner = {
+            navController.navigate(ProductsNavigationType.AUTO_ADDING_SCREEN.route)
+        },
         onBack = onBack
     )
 
@@ -171,16 +174,10 @@ private fun Screen(
         val fabHeightPx = with(LocalDensity.current) { 72.dp.roundToPx().toFloat() }
         val fabOffsetHeightPx = remember { mutableStateOf(0f) }
         val nestedScrollConnection = remember {
-            object : NestedScrollConnection {
-                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-
-                    val delta = available.y
-                    val newOffset = fabOffsetHeightPx.value + delta
-                    fabOffsetHeightPx.value = newOffset.coerceIn(-fabHeightPx, 0f)
-
-                    return Offset.Zero
-                }
-            }
+            fabNestedScroll(
+                fabHeightPx = fabHeightPx,
+                fabOffsetHeightPx = fabOffsetHeightPx
+            )
         }
 
         Column(
