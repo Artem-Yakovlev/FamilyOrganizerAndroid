@@ -25,7 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.badger.familyorgfe.R
-import com.badger.familyorgfe.features.appjourney.ProductsNavigationType
+import com.badger.familyorgfe.features.appjourney.bottomnavigation.ProductsNavigationType
 import com.badger.familyorgfe.features.appjourney.common.ProductBottomSheet
 import com.badger.familyorgfe.features.appjourney.products.fridge.fridgeitem.FridgeListItem
 import com.badger.familyorgfe.ui.elements.BaseDialog

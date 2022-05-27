@@ -1,19 +1,17 @@
-package com.badger.familyorgfe.features.appjourney.products
+package com.badger.familyorgfe.features.appjourney.bottomnavigation
 
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.badger.familyorgfe.features.appjourney.BottomNavigationType
-import com.badger.familyorgfe.features.appjourney.ProductsNavigationType
-import com.badger.familyorgfe.features.appjourney.ProfileNavigationType
-import com.badger.familyorgfe.features.appjourney.TasksNavigationType
 import com.badger.familyorgfe.features.appjourney.products.adding.AddingScreen
 import com.badger.familyorgfe.features.appjourney.products.fridge.FridgeScreen
 import com.badger.familyorgfe.features.appjourney.products.scanner.ScannerScreen
 import com.badger.familyorgfe.features.appjourney.profile.ProfileScreen
-import com.badger.familyorgfe.features.appjourney.tasks.AllTasksScreen
+import com.badger.familyorgfe.features.appjourney.tasks.alltasks.AllTasksScreen
+import com.badger.familyorgfe.features.appjourney.tasks.createtask.CreateTaskScreen
+import com.badger.familyorgfe.features.appjourney.tasks.taskdetails.TaskDetailsScreen
 
 fun NavGraphBuilder.productsNavGraph(
     modifier: Modifier,
@@ -54,6 +52,18 @@ fun NavGraphBuilder.tasksNavGraph(
     ) {
         composable(TasksNavigationType.ALL_TASKS_SCREEN.route) {
             AllTasksScreen(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+        composable(TasksNavigationType.CREATE_TASK_SCREEN.route) {
+            CreateTaskScreen(
+                modifier = modifier,
+                navController = navController
+            )
+        }
+        composable(TasksNavigationType.TASK_DETAILS_SCREEN.route) {
+            TaskDetailsScreen(
                 modifier = modifier,
                 navController = navController
             )

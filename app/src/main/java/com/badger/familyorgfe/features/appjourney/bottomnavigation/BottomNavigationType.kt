@@ -1,4 +1,4 @@
-package com.badger.familyorgfe.features.appjourney
+package com.badger.familyorgfe.features.appjourney.bottomnavigation
 
 import com.badger.familyorgfe.R
 
@@ -15,7 +15,7 @@ enum class BottomNavigationType(
     ),
 
     ADDING_ROUTE(
-        resourceId = R.drawable.ic_bottom_navigation_plus
+        resourceId = R.drawable.ic_bottom_navigation_tasks
     ),
 
     PROFILE_ROUTE(
@@ -36,7 +36,9 @@ enum class ProductsNavigationType : IRouteType {
 
 enum class TasksNavigationType : IRouteType {
 
-    ALL_TASKS_SCREEN;
+    ALL_TASKS_SCREEN,
+    CREATE_TASK_SCREEN,
+    TASK_DETAILS_SCREEN;
 
     override val route: String = name
 }

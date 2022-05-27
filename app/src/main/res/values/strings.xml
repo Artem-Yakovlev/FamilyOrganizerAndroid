@@ -130,6 +130,9 @@
     <string name="status_at_work">На работе</string>
     <string name="status_in_road">В дороге</string>
 
+    <!-- Tasks -->
+    <string name="all_tasks_toolbar_title">Список задач</string>
+    
     <!-- QR scanning -->
     <string name="qr_scanning_permission_title">Разрешите нам использовать камеру</string>
     <string name="qr_scanning_permission_description_ration">Это необходимо для того, чтобы мы могли сосканировать QR с вашего чека</string>

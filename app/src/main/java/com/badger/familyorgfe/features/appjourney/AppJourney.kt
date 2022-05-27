@@ -25,9 +25,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.badger.familyorgfe.ext.hideKeyboard
-import com.badger.familyorgfe.features.appjourney.products.productsNavGraph
-import com.badger.familyorgfe.features.appjourney.products.profileNavGraph
-import com.badger.familyorgfe.features.appjourney.products.tasksNavGraph
+import com.badger.familyorgfe.features.appjourney.bottomnavigation.BottomNavigationType
+import com.badger.familyorgfe.features.appjourney.bottomnavigation.ProductsNavigationType
+import com.badger.familyorgfe.features.appjourney.bottomnavigation.productsNavGraph
+import com.badger.familyorgfe.features.appjourney.bottomnavigation.profileNavGraph
+import com.badger.familyorgfe.features.appjourney.bottomnavigation.tasksNavGraph
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 
 @Composable
