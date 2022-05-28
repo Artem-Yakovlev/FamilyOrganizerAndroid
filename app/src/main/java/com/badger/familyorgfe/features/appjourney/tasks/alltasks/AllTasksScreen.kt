@@ -29,6 +29,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.badger.familyorgfe.R
 import com.badger.familyorgfe.data.model.FamilyTask
+import com.badger.familyorgfe.data.model.TaskCategory
+import com.badger.familyorgfe.data.model.TaskStatus
 import com.badger.familyorgfe.features.appjourney.bottomnavigation.TasksNavigationType
 import com.badger.familyorgfe.ui.elements.BaseToolbar
 import com.badger.familyorgfe.ui.theme.*
@@ -191,7 +193,7 @@ private fun Toolbar(
 @Composable
 private fun CategoryItem(
     selected: Boolean,
-    category: FamilyTask.Category,
+    category: TaskCategory,
     onClick: () -> Unit
 ) {
     Card(
@@ -221,8 +223,11 @@ private fun CategoryItem(
     }
 }
 
-private const val LOCAL_DATE_FORMAT = "hh:mm dd.MM"
-private val formatter = DateTimeFormatter.ofPattern(LOCAL_DATE_FORMAT)
+private const val LOCAL_DATE_TIME_FORMAT = "hh:mm dd.MM"
+private val localDateTimeFormatter = DateTimeFormatter.ofPattern(LOCAL_DATE_TIME_FORMAT)
+
+private const val LOCAL_DATE_FORMAT = "dd.MM"
+private val localDateFormatter = DateTimeFormatter.ofPattern(LOCAL_DATE_FORMAT)
 
 @Composable
 private fun FamilyTaskGridItem(
@@ -277,9 +282,15 @@ private fun FamilyTaskGridItem(
                     Spacer(modifier = Modifier.width(8.dp))
                 }
 
-                familyTask.localDateTime?.let { localDateTime ->
+                familyTask.previewLocalDateTime?.let { localDateTime ->
+                    val dateTimeString = if (familyTask.category.isTimeImportant) {
+                        localDateTime.format(localDateTimeFormatter)
+                    } else {
+                        localDateTime.toLocalDate().format(localDateFormatter)
+                    }
+
                     Text(
-                        text = localDateTime.format(formatter),
+                        text = dateTimeString,
                         style = FamilyOrganizerTheme.textStyle.body.copy(fontSize = 12.sp),
                         color = FamilyOrganizerTheme.colors.blackPrimary
                     )
@@ -294,7 +305,7 @@ private fun FamilyTaskGridItem(
             )
         }
 
-        if (familyTask.status != FamilyTask.Status.ACTIVE) {
+        if (familyTask.status != TaskStatus.ACTIVE) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -305,9 +316,9 @@ private fun FamilyTaskGridItem(
                     text = stringResource(id = familyTask.status.textResourceId),
                     style = FamilyOrganizerTheme.textStyle.button.copy(fontWeight = FontWeight.Medium),
                     color = when (familyTask.status) {
-                        FamilyTask.Status.ACTIVE -> FamilyOrganizerTheme.colors.whitePrimary
-                        FamilyTask.Status.FAILED -> TasksClosedFailed
-                        FamilyTask.Status.FINISHED -> TasksClosedFinished
+                        TaskStatus.ACTIVE -> FamilyOrganizerTheme.colors.whitePrimary
+                        TaskStatus.FAILED -> TasksClosedFailed
+                        TaskStatus.FINISHED -> TasksClosedFinished
                     }
                 )
             }

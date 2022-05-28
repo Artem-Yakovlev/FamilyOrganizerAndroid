@@ -1,11 +1,12 @@
 package com.badger.familyorgfe.features.appjourney.tasks.alltasks.repository
 
 import com.badger.familyorgfe.data.model.FamilyTask
+import com.badger.familyorgfe.data.model.TaskCategory
 import kotlinx.coroutines.flow.Flow
 
 interface IAllTasksRepository {
 
-    val currentCategory: Flow<FamilyTask.Category>
+    val currentCategory: Flow<TaskCategory>
 
     val openTasks: Flow<List<FamilyTask>>
 
@@ -13,5 +14,5 @@ interface IAllTasksRepository {
 
     suspend fun updateData()
 
-    suspend fun changeCategory(category: FamilyTask.Category)
+    suspend fun changeCategory(category: TaskCategory)
 }

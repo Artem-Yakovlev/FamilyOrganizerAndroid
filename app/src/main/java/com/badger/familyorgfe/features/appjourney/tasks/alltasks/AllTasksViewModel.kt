@@ -1,7 +1,7 @@
 package com.badger.familyorgfe.features.appjourney.tasks.alltasks
 
 import com.badger.familyorgfe.base.BaseViewModel
-import com.badger.familyorgfe.data.model.FamilyTask
+import com.badger.familyorgfe.data.model.TaskCategory
 import com.badger.familyorgfe.ext.longRunning
 import com.badger.familyorgfe.ext.viewModelScope
 import com.badger.familyorgfe.features.appjourney.tasks.alltasks.repository.IAllTasksRepository
@@ -16,11 +16,11 @@ class AllTasksViewModel @Inject constructor(
     private val allTasksRepository: IAllTasksRepository
 ) : BaseViewModel(), IAllTasksViewModel {
 
-    override val categories = MutableStateFlow(FamilyTask.Category.values().toList())
+    override val categories = MutableStateFlow(TaskCategory.getAllCategories())
     override val currentCategory = allTasksRepository.currentCategory.stateIn(
         viewModelScope(),
         started = SharingStarted.Lazily,
-        initialValue = FamilyTask.Category.ALL_CATEGORY
+        initialValue = TaskCategory.All
     )
 
     override val openTasks = allTasksRepository.openTasks.stateIn(
