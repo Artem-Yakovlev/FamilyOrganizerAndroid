@@ -5,9 +5,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
@@ -27,6 +30,8 @@ import com.badger.familyorgfe.ui.elements.BaseToolbar
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 import com.badger.familyorgfe.utils.fabNestedScroll
 
+private const val GRID_CELLS_COUNT = 2
+
 @Composable
 fun AllTasksScreen(
     modifier: Modifier,
@@ -34,26 +39,31 @@ fun AllTasksScreen(
     viewModel: IAllTasksViewModel = hiltViewModel<AllTasksViewModel>()
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        Column(modifier = Modifier.fillMaxSize()) {
-            Toolbar(
-                onBackClicked = {
-                    navController.popBackStack()
-                }
+
+        val fabHeightPx = with(LocalDensity.current) { 72.dp.roundToPx().toFloat() }
+        val fabOffsetHeightPx = remember { mutableStateOf(0f) }
+        val nestedScrollConnection = remember {
+            fabNestedScroll(
+                fabHeightPx = fabHeightPx,
+                fabOffsetHeightPx = fabOffsetHeightPx
             )
-            val fabHeightPx = with(LocalDensity.current) { 72.dp.roundToPx().toFloat() }
-            val fabOffsetHeightPx = remember { mutableStateOf(0f) }
-            val nestedScrollConnection = remember {
-                fabNestedScroll(
-                    fabHeightPx = fabHeightPx,
-                    fabOffsetHeightPx = fabOffsetHeightPx
-                )
-            }
+        }
+
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+        ) {
+            Toolbar(onBackClicked = { navController.popBackStack() })
+            Spacer(modifier = Modifier.height(16.dp))
 
             val categories by viewModel.categories.collectAsState()
             val currentCategory by viewModel.currentCategory.collectAsState()
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(modifier.fillMaxWidth()) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+            ) {
                 categories.forEach { category ->
                     Spacer(modifier = Modifier.width(16.dp))
                     CategoryItem(
@@ -66,12 +76,38 @@ fun AllTasksScreen(
                         })
                 }
             }
+
             Spacer(modifier = Modifier.height(16.dp))
 
-            LazyVerticalGrid(columns = GridCells.Fixed(2)) {
+            val activeTasks by viewModel.openTasks.collectAsState()
+            val closedTasks by viewModel.closedTasks.collectAsState()
 
+            LazyVerticalGrid(
+                contentPadding = PaddingValues(all = 16.dp),
+                columns = GridCells.Fixed(GRID_CELLS_COUNT),
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                items(activeTasks) { task ->
+                    FamilyTaskGridItem(familyTask = task)
+                }
+                if (closedTasks.isNotEmpty()) {
+                    item(span = { GridItemSpan(GRID_CELLS_COUNT) }) {
+                        Divider(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(3.dp),
+                            color = FamilyOrganizerTheme.colors.blackPrimary
+                        )
+                    }
+                }
+                items(closedTasks) { task ->
+                    FamilyTaskGridItem(familyTask = task)
+                }
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
             }
-
         }
     }
 }
@@ -142,10 +178,17 @@ private fun CategoryItem(
 }
 
 @Composable
-private fun TaskGridItem(
+private fun FamilyTaskGridItem(
     familyTask: FamilyTask
 ) {
-    Card {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .size(156.dp)
+            .background(FamilyOrganizerTheme.colors.whitePrimary),
+        elevation = 3.dp,
+        shape = RoundedCornerShape(16.dp)
+    ) {
 
     }
 }

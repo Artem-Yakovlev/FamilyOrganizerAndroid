@@ -13,7 +13,7 @@ interface IAllTasksViewModel : IBaseViewModel<IAllTasksViewModel.Event> {
 
     val openTasks: StateFlow<List<FamilyTask>>
 
-    val closeTasks: StateFlow<List<FamilyTask>>
+    val closedTasks: StateFlow<List<FamilyTask>>
 
     sealed class Event {
         data class OnCategorySelected(val category: Category) : Event()

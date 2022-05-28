@@ -12,8 +12,18 @@ class AllTasksViewModel @Inject constructor() : BaseViewModel(), IAllTasksViewMo
     override val categories = MutableStateFlow(IAllTasksViewModel.Category.values().toList())
     override val currentCategory = MutableStateFlow(IAllTasksViewModel.Category.ALL_CATEGORY)
 
-    override val openTasks = MutableStateFlow<List<FamilyTask>>(emptyList())
-    override val closeTasks = MutableStateFlow<List<FamilyTask>>(emptyList())
+    override val openTasks = MutableStateFlow(
+        listOf(
+            FamilyTask.createMock(),
+            FamilyTask.createMock(),
+            FamilyTask.createMock(),
+        )
+    )
+    override val closedTasks = MutableStateFlow(
+        listOf(
+            FamilyTask.createMock()
+        )
+    )
 
     override fun onEvent(event: IAllTasksViewModel.Event) {
         when (event) {
