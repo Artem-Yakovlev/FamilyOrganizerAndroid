@@ -16,6 +16,8 @@ import com.badger.familyorgfe.data.source.products.ProductsApi
 import com.badger.familyorgfe.data.source.user.UserApi
 import com.badger.familyorgfe.features.appjourney.products.adding.repository.AddingRepository
 import com.badger.familyorgfe.features.appjourney.products.adding.repository.IAddingRepository
+import com.badger.familyorgfe.features.appjourney.tasks.alltasks.repository.AllTasksRepository
+import com.badger.familyorgfe.features.appjourney.tasks.alltasks.repository.IAllTasksRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -140,4 +142,11 @@ class SourceModule {
     fun provideAddingRepository(): IAddingRepository {
         return AddingRepository()
     }
+
+    @Provides
+    @Singleton
+    fun provideAllTasksRepository(): IAllTasksRepository {
+        return AllTasksRepository()
+    }
+
 }

@@ -17,18 +17,24 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.badger.familyorgfe.R
 import com.badger.familyorgfe.data.model.FamilyTask
+import com.badger.familyorgfe.features.appjourney.bottomnavigation.TasksNavigationType
 import com.badger.familyorgfe.ui.elements.BaseToolbar
-import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
+import com.badger.familyorgfe.ui.theme.*
+import com.badger.familyorgfe.utils.Fab
 import com.badger.familyorgfe.utils.fabNestedScroll
+import org.threeten.bp.format.DateTimeFormatter
 
 private const val GRID_CELLS_COUNT = 2
 
@@ -38,6 +44,11 @@ fun AllTasksScreen(
     navController: NavController,
     viewModel: IAllTasksViewModel = hiltViewModel<AllTasksViewModel>()
 ) {
+
+    LaunchedEffect(Unit) {
+        viewModel.onEvent(IAllTasksViewModel.Event.Init)
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
 
         val fabHeightPx = with(LocalDensity.current) { 72.dp.roundToPx().toFloat() }
@@ -83,13 +94,19 @@ fun AllTasksScreen(
             val closedTasks by viewModel.closedTasks.collectAsState()
 
             LazyVerticalGrid(
+                modifier = Modifier.nestedScroll(nestedScrollConnection),
                 contentPadding = PaddingValues(all = 16.dp),
                 columns = GridCells.Fixed(GRID_CELLS_COUNT),
                 horizontalArrangement = Arrangement.spacedBy(16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
                 items(activeTasks) { task ->
-                    FamilyTaskGridItem(familyTask = task)
+                    FamilyTaskGridItem(
+                        familyTask = task,
+                        onClick = {
+                            navController.navigate(TasksNavigationType.TASK_DETAILS_SCREEN.route)
+                        }
+                    )
                 }
                 if (closedTasks.isNotEmpty()) {
                     item(span = { GridItemSpan(GRID_CELLS_COUNT) }) {
@@ -99,16 +116,43 @@ fun AllTasksScreen(
                                 .height(3.dp),
                             color = FamilyOrganizerTheme.colors.blackPrimary
                         )
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .background(TasksDividerBackgroundColor)
+                        ) {
+                            Text(
+                                modifier = Modifier.align(Alignment.Center),
+                                text = stringResource(id = R.string.all_tasks_divider_text),
+                                style = FamilyOrganizerTheme.textStyle.label,
+                                color = TasksDividerTextColor
+                            )
+                        }
+
                     }
                 }
                 items(closedTasks) { task ->
-                    FamilyTaskGridItem(familyTask = task)
+                    FamilyTaskGridItem(
+                        familyTask = task,
+                        onClick = {
+                            navController.navigate(TasksNavigationType.TASK_DETAILS_SCREEN.route)
+                        }
+                    )
                 }
                 item {
                     Spacer(modifier = Modifier.height(16.dp))
                 }
             }
         }
+
+        Fab(
+            fabOffsetHeightPx = fabOffsetHeightPx.value,
+            resourceId = R.drawable.ic_add,
+            onClick = {
+                navController.navigate(TasksNavigationType.CREATE_TASK_SCREEN.route)
+            }
+        )
     }
 }
 
@@ -147,7 +191,7 @@ private fun Toolbar(
 @Composable
 private fun CategoryItem(
     selected: Boolean,
-    category: IAllTasksViewModel.Category,
+    category: FamilyTask.Category,
     onClick: () -> Unit
 ) {
     Card(
@@ -177,18 +221,96 @@ private fun CategoryItem(
     }
 }
 
+private const val LOCAL_DATE_FORMAT = "hh:mm dd.MM"
+private val formatter = DateTimeFormatter.ofPattern(LOCAL_DATE_FORMAT)
+
 @Composable
 private fun FamilyTaskGridItem(
-    familyTask: FamilyTask
+    familyTask: FamilyTask,
+    onClick: () -> Unit
 ) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .size(156.dp)
-            .background(FamilyOrganizerTheme.colors.whitePrimary),
+            .background(FamilyOrganizerTheme.colors.whitePrimary)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(bounded = true),
+                onClick = onClick
+            ),
         elevation = 3.dp,
         shape = RoundedCornerShape(16.dp)
     ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+        ) {
+            Text(
+                text = familyTask.title,
+                style = FamilyOrganizerTheme.textStyle.body.copy(fontWeight = FontWeight.Medium),
+                color = FamilyOrganizerTheme.colors.blackPrimary,
+                maxLines = 1
+            )
 
+            Spacer(modifier = Modifier.height(8.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+            ) {
+                Icon(
+                    modifier = Modifier.size(16.dp),
+                    painter = painterResource(id = familyTask.category.resourceId),
+                    contentDescription = null,
+                    tint = FamilyOrganizerTheme.colors.blackPrimary
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                if (familyTask.hasProducts) {
+                    Icon(
+                        modifier = Modifier.size(16.dp),
+                        painter = painterResource(id = R.drawable.ic_fridge),
+                        contentDescription = null,
+                        tint = FamilyOrganizerTheme.colors.blackPrimary
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                }
+
+                familyTask.localDateTime?.let { localDateTime ->
+                    Text(
+                        text = localDateTime.format(formatter),
+                        style = FamilyOrganizerTheme.textStyle.body.copy(fontSize = 12.sp),
+                        color = FamilyOrganizerTheme.colors.blackPrimary
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = familyTask.desc,
+                style = FamilyOrganizerTheme.textStyle.body.copy(fontSize = 12.sp),
+                color = FamilyOrganizerTheme.colors.darkClay
+            )
+        }
+
+        if (familyTask.status != FamilyTask.Status.ACTIVE) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(FamilyOrganizerTheme.colors.lightGray.copy(alpha = 0.90f)),
+            ) {
+                Text(
+                    modifier = Modifier.align(Alignment.Center),
+                    text = stringResource(id = familyTask.status.textResourceId),
+                    style = FamilyOrganizerTheme.textStyle.button.copy(fontWeight = FontWeight.Medium),
+                    color = when (familyTask.status) {
+                        FamilyTask.Status.ACTIVE -> FamilyOrganizerTheme.colors.whitePrimary
+                        FamilyTask.Status.FAILED -> TasksClosedFailed
+                        FamilyTask.Status.FINISHED -> TasksClosedFinished
+                    }
+                )
+            }
+        }
     }
 }

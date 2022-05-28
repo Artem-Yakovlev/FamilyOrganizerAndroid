@@ -132,7 +132,11 @@
 
     <!-- Tasks -->
     <string name="all_tasks_toolbar_title">Список задач</string>
-    
+    <string name="all_tasks_divider_text">Закрытые задачи</string>
+    <string name="all_tasks_active_status_text">В процессе</string>
+    <string name="all_tasks_finished_status_text">Завершено</string>
+    <string name="all_tasks_failed_status_text">Провалено</string>
+
     <!-- QR scanning -->
     <string name="qr_scanning_permission_title">Разрешите нам использовать камеру</string>
     <string name="qr_scanning_permission_description_ration">Это необходимо для того, чтобы мы могли сосканировать QR с вашего чека</string>

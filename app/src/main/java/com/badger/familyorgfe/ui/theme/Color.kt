@@ -37,3 +37,11 @@ val StatusAtShopColor = Color(0xFF2D9CDB)
 val StatusAtWalkColor = Color(0xFFF2C94C)
 val StatusAtWorkColor = Color(0xFFEB5757)
 val StatusInRoadColor = Color(0xFFF2C94C)
+
+/**
+ * Tasks
+ * */
+val TasksDividerBackgroundColor = Color(0xFFFAFAFA)
+val TasksDividerTextColor = Color(0xFFBDBDBD)
+val TasksClosedFinished = Color(0xFF219653)
+val TasksClosedFailed = Color(0xFFE71D1D)
