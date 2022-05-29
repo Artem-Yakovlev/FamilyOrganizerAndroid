@@ -212,7 +212,7 @@ private fun CategoryItem(
             ) { onClick() }) {
             Icon(
                 modifier = Modifier.align(Alignment.Center),
-                painter = painterResource(id = category.resourceId),
+                painter = painterResource(id = category.imageResId),
                 contentDescription = null,
                 tint = if (selected) {
                     FamilyOrganizerTheme.colors.primary
@@ -268,7 +268,7 @@ private fun FamilyTaskGridItem(
             ) {
                 Icon(
                     modifier = Modifier.size(16.dp),
-                    painter = painterResource(id = familyTask.category.resourceId),
+                    painter = painterResource(id = familyTask.category.imageResId),
                     contentDescription = null,
                     tint = FamilyOrganizerTheme.colors.blackPrimary
                 )

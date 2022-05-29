@@ -94,16 +94,16 @@ data class FamilyTask(
 
 sealed class TaskCategory {
 
-    abstract val resourceId: Int
+    abstract val imageResId: Int
     abstract val isTimeImportant: Boolean
 
     object All : TaskCategory() {
-        override val resourceId get() = R.drawable.ic_all_categories
+        override val imageResId get() = R.drawable.ic_all_categories
         override val isTimeImportant = false
     }
 
     object OneShot : TaskCategory() {
-        override val resourceId get() = R.drawable.ic_one_shot
+        override val imageResId get() = R.drawable.ic_one_shot
         override val isTimeImportant = false
     }
 
@@ -111,7 +111,7 @@ sealed class TaskCategory {
         val localDateTime: LocalDateTime,
         override val isTimeImportant: Boolean
     ) : TaskCategory() {
-        override val resourceId: Int = R.drawable.ic_one_time
+        override val imageResId: Int = R.drawable.ic_one_time
 
         companion object {
             val mock = OneTime(
@@ -122,7 +122,7 @@ sealed class TaskCategory {
     }
 
     sealed class Recurring : TaskCategory() {
-        override val resourceId: Int = R.drawable.ic_recurring
+        override val imageResId: Int = R.drawable.ic_recurring
 
         data class DaysOfWeek(
             val days: List<DayOfWeek>,
