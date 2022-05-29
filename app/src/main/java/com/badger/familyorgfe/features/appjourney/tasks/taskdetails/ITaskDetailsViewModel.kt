@@ -13,5 +13,7 @@ interface ITaskDetailsViewModel : IBaseViewModel<ITaskDetailsViewModel.Event> {
 
     sealed class Event {
         object OpenEditing : Event()
+        data class OnSubtaskChecked(val id: Long, val checked: Boolean) : Event()
+        data class OnProductChecked(val id: Long, val checked: Boolean) : Event()
     }
 }

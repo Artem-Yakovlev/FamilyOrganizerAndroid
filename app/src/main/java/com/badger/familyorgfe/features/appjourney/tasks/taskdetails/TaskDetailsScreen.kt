@@ -5,12 +5,14 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
+import androidx.compose.material.Checkbox
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -23,6 +25,7 @@ import com.badger.familyorgfe.R
 import com.badger.familyorgfe.data.model.*
 import com.badger.familyorgfe.features.appjourney.bottomnavigation.TasksNavigationType
 import com.badger.familyorgfe.ui.elements.BaseToolbar
+import com.badger.familyorgfe.ui.style.checkBoxColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 
 @Composable
@@ -83,11 +86,25 @@ fun TaskDetailsScreen(
             }
             item {
                 Spacer(modifier = Modifier.height(32.dp))
-                SubtasksBlock(subtasks = familyTask.subtasks)
+                SubtasksBlock(
+                    subtasks = familyTask.subtasks,
+                    onCheckedChanged = { id, checked ->
+                        viewModel.onEvent(
+                            ITaskDetailsViewModel.Event.OnSubtaskChecked(id, checked)
+                        )
+                    }
+                )
             }
             item {
                 Spacer(modifier = Modifier.height(32.dp))
-                ProductsBlock(products = familyTask.products)
+                ProductsBlock(
+                    products = familyTask.products,
+                    onCheckedChanged = { id, checked ->
+                        viewModel.onEvent(
+                            ITaskDetailsViewModel.Event.OnProductChecked(id, checked)
+                        )
+                    }
+                )
             }
 
         }
@@ -207,16 +224,64 @@ private fun LazyItemScope.NotificationsBlock(
 
 @Composable
 private fun LazyItemScope.SubtasksBlock(
-    subtasks: List<Subtask>
+    subtasks: List<Subtask>,
+    onCheckedChanged: (Long, Boolean) -> Unit
+) {
+    if (subtasks.isNotEmpty()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.task_desc_title),
+                style = FamilyOrganizerTheme.textStyle.body.copy(fontWeight = FontWeight.Medium),
+                color = FamilyOrganizerTheme.colors.blackPrimary,
+                maxLines = 1
+            )
+            subtasks.forEach { item ->
+                SubtaskListItem(
+                    task = item,
+                    onCheckedChanged = { checked -> onCheckedChanged(item.id, checked) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun LazyItemScope.ProductsBlock(
+    products: List<TaskProduct>,
+    onCheckedChanged: (Long, Boolean) -> Unit
 ) {
 
 }
 
 @Composable
-private fun LazyItemScope.ProductsBlock(
-    products: List<TaskProduct>
+private fun SubtaskListItem(
+    task: Subtask,
+    onCheckedChanged: (Boolean) -> Unit
 ) {
-    if (products.isNotEmpty()) {
-
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(start = 4.dp)
+    ) {
+        Checkbox(
+            checked = task.checked,
+            onCheckedChange = onCheckedChanged,
+            colors = checkBoxColors()
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+        Text(
+            modifier = Modifier.align(Alignment.CenterVertically),
+            text = task.text,
+            style = FamilyOrganizerTheme.textStyle.body,
+            color = if (task.checked) {
+                FamilyOrganizerTheme.colors.darkClay
+            } else {
+                FamilyOrganizerTheme.colors.darkGray
+            }
+        )
     }
 }

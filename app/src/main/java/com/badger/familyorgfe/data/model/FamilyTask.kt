@@ -6,6 +6,7 @@ import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
 import kotlin.random.Random
+import kotlin.random.nextInt
 
 data class FamilyTask(
     val id: Long,
@@ -86,8 +87,16 @@ data class FamilyTask(
             title = "Заголовок",
             desc = "Описание",
             notificationEmails = emptyList(),
-            products = emptyList(),
-            subtasks = emptyList()
+            products = List(Random.nextInt(0..5)) {
+                TaskProduct("Предмет $it", .0, Product.Measure.KILOGRAM)
+            },
+            subtasks = List(Random.nextInt(0..10)) {
+                Subtask(
+                    id = it.toLong(),
+                    text = "Предмет $it",
+                    checked = Random.nextBoolean()
+                )
+            }
         )
     }
 }
