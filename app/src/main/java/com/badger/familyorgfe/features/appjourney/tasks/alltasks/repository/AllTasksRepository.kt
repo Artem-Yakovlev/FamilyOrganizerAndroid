@@ -46,7 +46,7 @@ class AllTasksRepository @Inject constructor() : IAllTasksRepository {
         tasks: List<FamilyTask>
     ): List<FamilyTask> {
         return if (category != TaskCategory.All) {
-            tasks.filter { task -> task.category == category }
+            tasks.filter { task -> task.category.ordinal == category.ordinal }
         } else {
             tasks
         }

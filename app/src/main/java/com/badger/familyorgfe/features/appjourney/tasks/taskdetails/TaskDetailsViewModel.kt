@@ -32,9 +32,9 @@ class TaskDetailsViewModel @Inject constructor(
 
     override fun onEvent(event: ITaskDetailsViewModel.Event) {
         when (event) {
-            ITaskDetailsViewModel.Event.OpenEditing -> {
-
-            }
+            is ITaskDetailsViewModel.Event.OpenEditing -> TODO()
+            is ITaskDetailsViewModel.Event.OnProductChecked -> TODO()
+            is ITaskDetailsViewModel.Event.OnSubtaskChecked -> TODO()
         }
     }
 

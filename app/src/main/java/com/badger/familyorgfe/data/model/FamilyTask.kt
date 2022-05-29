@@ -121,15 +121,18 @@ sealed class TaskCategory {
 
     abstract val imageResId: Int
     abstract val isTimeImportant: Boolean
+    abstract val ordinal: Int
 
     object All : TaskCategory() {
         override val imageResId get() = R.drawable.ic_all_categories
         override val isTimeImportant = false
+        override val ordinal: Int = 0
     }
 
     object OneShot : TaskCategory() {
         override val imageResId get() = R.drawable.ic_one_shot
         override val isTimeImportant = false
+        override val ordinal: Int = 1
     }
 
     data class OneTime(
@@ -137,6 +140,7 @@ sealed class TaskCategory {
         override val isTimeImportant: Boolean
     ) : TaskCategory() {
         override val imageResId: Int = R.drawable.ic_one_time
+        override val ordinal: Int = 2
 
         companion object {
             val mock = OneTime(
@@ -148,6 +152,7 @@ sealed class TaskCategory {
 
     sealed class Recurring : TaskCategory() {
         override val imageResId: Int = R.drawable.ic_recurring
+        override val ordinal: Int = 3
 
         data class DaysOfWeek(
             val days: List<DayOfWeek>,
