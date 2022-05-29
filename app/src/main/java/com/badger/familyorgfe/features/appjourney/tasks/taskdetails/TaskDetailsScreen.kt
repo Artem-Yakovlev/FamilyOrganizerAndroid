@@ -24,6 +24,7 @@ import androidx.navigation.NavController
 import com.badger.familyorgfe.R
 import com.badger.familyorgfe.data.model.*
 import com.badger.familyorgfe.features.appjourney.bottomnavigation.TasksNavigationType
+import com.badger.familyorgfe.features.appjourney.products.fridge.fridgeitem.getMeasureString
 import com.badger.familyorgfe.ui.elements.BaseToolbar
 import com.badger.familyorgfe.ui.style.checkBoxColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
@@ -107,6 +108,10 @@ fun TaskDetailsScreen(
                 )
             }
 
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
         }
     }
 }
@@ -182,8 +187,8 @@ private fun LazyItemScope.NotificationsBlock(
     notifications: List<String>,
     localNames: List<LocalName>
 ) {
-    val notificationLocalNames = notifications.mapNotNull { email ->
-        localNames.find { it.email == email }
+    val notificationLocalNames = notifications.map { email ->
+        localNames.find { it.email == email } ?: email
     }.joinToString(separator = ", ", postfix = ".")
 
     Row(
@@ -223,7 +228,7 @@ private fun LazyItemScope.NotificationsBlock(
 }
 
 @Composable
-private fun LazyItemScope.SubtasksBlock(
+private fun SubtasksBlock(
     subtasks: List<Subtask>,
     onCheckedChanged: (Long, Boolean) -> Unit
 ) {
@@ -234,7 +239,7 @@ private fun LazyItemScope.SubtasksBlock(
                 .padding(horizontal = 16.dp)
         ) {
             Text(
-                text = stringResource(id = R.string.task_desc_title),
+                text = stringResource(id = R.string.task_desc_subtasks_title),
                 style = FamilyOrganizerTheme.textStyle.body.copy(fontWeight = FontWeight.Medium),
                 color = FamilyOrganizerTheme.colors.blackPrimary,
                 maxLines = 1
@@ -247,14 +252,6 @@ private fun LazyItemScope.SubtasksBlock(
             }
         }
     }
-}
-
-@Composable
-private fun LazyItemScope.ProductsBlock(
-    products: List<TaskProduct>,
-    onCheckedChanged: (Long, Boolean) -> Unit
-) {
-
 }
 
 @Composable
@@ -283,5 +280,71 @@ private fun SubtaskListItem(
                 FamilyOrganizerTheme.colors.darkGray
             }
         )
+    }
+}
+
+@Composable
+private fun LazyItemScope.ProductsBlock(
+    products: List<TaskProduct>,
+    onCheckedChanged: (Long, Boolean) -> Unit
+) {
+    if (products.isNotEmpty()) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            Text(
+                text = stringResource(id = R.string.task_desc_products_title),
+                style = FamilyOrganizerTheme.textStyle.body.copy(fontWeight = FontWeight.Medium),
+                color = FamilyOrganizerTheme.colors.blackPrimary,
+                maxLines = 1
+            )
+            products.forEach { item ->
+                ProductListItem(
+                    product = item,
+                    onCheckedChanged = { checked -> onCheckedChanged(item.id, checked) }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ProductListItem(
+    product: TaskProduct,
+    onCheckedChanged: (Boolean) -> Unit
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(start = 4.dp)
+    ) {
+        Checkbox(
+            checked = product.checked,
+            onCheckedChange = onCheckedChanged,
+            colors = checkBoxColors()
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+
+        Column(modifier = Modifier.align(Alignment.CenterVertically)) {
+            Text(
+                text = product.title,
+                style = FamilyOrganizerTheme.textStyle.body,
+                color = if (product.checked) {
+                    FamilyOrganizerTheme.colors.darkClay
+                } else {
+                    FamilyOrganizerTheme.colors.darkGray
+                },
+                maxLines = 1
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            Text(
+                text = getMeasureString(quantity = product.amount, measure = product.measure),
+                style = FamilyOrganizerTheme.textStyle.label.copy(fontWeight = FontWeight.Light),
+                color = FamilyOrganizerTheme.colors.darkClay,
+                maxLines = 1
+            )
+        }
     }
 }

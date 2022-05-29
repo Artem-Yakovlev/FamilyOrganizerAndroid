@@ -284,7 +284,7 @@ private fun ProductListItemCardContent(
 private const val THOUSAND = 1000
 
 @Composable
-private fun getMeasureString(
+fun getMeasureString(
     quantity: Double,
     measure: Product.Measure
 ): String {

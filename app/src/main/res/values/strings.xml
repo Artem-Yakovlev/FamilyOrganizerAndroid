@@ -140,7 +140,8 @@
     <string name="tasks_notifications_on">Уведомления включены для: </string>
     <string name="tasks_notifications_off">Уведомления отключены</string>
 
-    <string name="task_desc_title">Подзадачи:</string>
+    <string name="task_desc_subtasks_title">Подзадачи:</string>
+    <string name="task_desc_products_title">Список покупок:</string>
 
     <!-- QR scanning -->
     <string name="qr_scanning_permission_title">Разрешите нам использовать камеру</string>

@@ -86,9 +86,15 @@ data class FamilyTask(
             status = TaskStatus.values().random(),
             title = "Заголовок",
             desc = "Описание",
-            notificationEmails = emptyList(),
+            notificationEmails = listOf("gleb_you@gmail.com", "maria_you@gmail.com"),
             products = List(Random.nextInt(0..5)) {
-                TaskProduct("Предмет $it", .0, Product.Measure.KILOGRAM)
+                TaskProduct(
+                    it.toLong(),
+                    Random.nextBoolean(),
+                    "Предмет $it",
+                    .0,
+                    Product.Measure.KILOGRAM
+                )
             },
             subtasks = List(Random.nextInt(0..10)) {
                 Subtask(
@@ -173,6 +179,8 @@ enum class TaskStatus(val textResourceId: Int) {
 }
 
 data class TaskProduct(
+    val id: Long,
+    val checked: Boolean,
     val title: String,
     val amount: Double,
     val measure: Product.Measure
