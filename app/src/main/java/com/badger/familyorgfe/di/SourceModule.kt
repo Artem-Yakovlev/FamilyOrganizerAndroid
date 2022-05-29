@@ -18,6 +18,8 @@ import com.badger.familyorgfe.features.appjourney.products.adding.repository.Add
 import com.badger.familyorgfe.features.appjourney.products.adding.repository.IAddingRepository
 import com.badger.familyorgfe.features.appjourney.tasks.alltasks.repository.AllTasksRepository
 import com.badger.familyorgfe.features.appjourney.tasks.alltasks.repository.IAllTasksRepository
+import com.badger.familyorgfe.features.appjourney.tasks.taskdetails.repository.CurrentTaskRepository
+import com.badger.familyorgfe.features.appjourney.tasks.taskdetails.repository.ICurrentTaskRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -147,6 +149,14 @@ class SourceModule {
     @Singleton
     fun provideAllTasksRepository(): IAllTasksRepository {
         return AllTasksRepository()
+    }
+
+    @Provides
+    @Singleton
+    fun provideCurrentTaskRepository(
+        allTasksRepository: IAllTasksRepository
+    ): ICurrentTaskRepository {
+        return CurrentTaskRepository(allTasksRepository)
     }
 
 }

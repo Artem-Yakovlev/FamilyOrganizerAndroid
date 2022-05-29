@@ -18,6 +18,7 @@ interface IAllTasksViewModel : IBaseViewModel<IAllTasksViewModel.Event> {
     sealed class Event {
         object Init : Event()
         data class OnCategorySelected(val category: TaskCategory) : Event()
+        data class OnFamilyTaskOpened(val familyTaskId: Long) : Event()
     }
 
 

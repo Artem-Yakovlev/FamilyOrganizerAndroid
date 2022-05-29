@@ -5,6 +5,7 @@ import com.badger.familyorgfe.data.model.TaskCategory
 import com.badger.familyorgfe.ext.longRunning
 import com.badger.familyorgfe.ext.viewModelScope
 import com.badger.familyorgfe.features.appjourney.tasks.alltasks.repository.IAllTasksRepository
+import com.badger.familyorgfe.features.appjourney.tasks.taskdetails.repository.ICurrentTaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -13,7 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AllTasksViewModel @Inject constructor(
-    private val allTasksRepository: IAllTasksRepository
+    private val allTasksRepository: IAllTasksRepository,
+    private val currentTaskRepository: ICurrentTaskRepository
 ) : BaseViewModel(), IAllTasksViewModel {
 
     override val categories = MutableStateFlow(TaskCategory.getAllCategories())
@@ -41,6 +43,9 @@ class AllTasksViewModel @Inject constructor(
             }
             is IAllTasksViewModel.Event.Init -> longRunning {
                 allTasksRepository.updateData()
+            }
+            is IAllTasksViewModel.Event.OnFamilyTaskOpened -> longRunning {
+                currentTaskRepository.setFamilyTaskId(event.familyTaskId)
             }
         }
     }

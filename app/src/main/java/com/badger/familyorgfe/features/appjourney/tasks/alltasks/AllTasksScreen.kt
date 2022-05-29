@@ -95,6 +95,11 @@ fun AllTasksScreen(
             val activeTasks by viewModel.openTasks.collectAsState()
             val closedTasks by viewModel.closedTasks.collectAsState()
 
+            val openTaskDetails = { taskId: Long ->
+                viewModel.onEvent(IAllTasksViewModel.Event.OnFamilyTaskOpened(taskId))
+                navController.navigate(TasksNavigationType.TASK_DETAILS_SCREEN.route)
+            }
+
             LazyVerticalGrid(
                 modifier = Modifier.nestedScroll(nestedScrollConnection),
                 contentPadding = PaddingValues(all = 16.dp),
@@ -105,9 +110,7 @@ fun AllTasksScreen(
                 items(activeTasks) { task ->
                     FamilyTaskGridItem(
                         familyTask = task,
-                        onClick = {
-                            navController.navigate(TasksNavigationType.TASK_DETAILS_SCREEN.route)
-                        }
+                        onClick = { openTaskDetails(task.id) }
                     )
                 }
                 if (closedTasks.isNotEmpty()) {
@@ -137,9 +140,7 @@ fun AllTasksScreen(
                 items(closedTasks) { task ->
                     FamilyTaskGridItem(
                         familyTask = task,
-                        onClick = {
-                            navController.navigate(TasksNavigationType.TASK_DETAILS_SCREEN.route)
-                        }
+                        onClick = { openTaskDetails(task.id) }
                     )
                 }
                 item {
@@ -181,7 +182,7 @@ private fun Toolbar(
         Text(
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center,
-            text = stringResource(id = R.string.adding_toolbar_title),
+            text = stringResource(id = R.string.all_tasks_toolbar_title),
             style = FamilyOrganizerTheme.textStyle.headline2,
             color = FamilyOrganizerTheme.colors.blackPrimary
         )
