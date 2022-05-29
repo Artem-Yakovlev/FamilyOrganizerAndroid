@@ -2,7 +2,9 @@ package com.badger.familyorgfe.data.model
 
 import com.badger.familyorgfe.R
 import org.threeten.bp.DayOfWeek
+import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalTime
 import kotlin.random.Random
 
 data class FamilyTask(
@@ -26,9 +28,50 @@ data class FamilyTask(
         is TaskCategory.All -> null
         is TaskCategory.OneShot -> null
         is TaskCategory.OneTime -> category.localDateTime
-        is TaskCategory.Recurring.DaysOfWeek -> LocalDateTime.now()
-        is TaskCategory.Recurring.EveryNDays -> LocalDateTime.now()
-        is TaskCategory.Recurring.EveryYear -> LocalDateTime.now()
+        is TaskCategory.Recurring.DaysOfWeek -> {
+            var nextDayOfWeek = category.days.first().value
+            val currentDayOfWeek = LocalDate.now().dayOfWeek.value
+
+            for (day in category.days.map(DayOfWeek::getValue)) {
+                if (currentDayOfWeek <= day) {
+                    if (category.isTimeImportant && currentDayOfWeek == day) {
+                        if (LocalTime.now() < category.time) {
+                            nextDayOfWeek = day
+                            break
+                        }
+                    } else {
+                        nextDayOfWeek = day
+                        break
+                    }
+                }
+            }
+            //TODO() Написать тесты
+            LocalDateTime.now()
+                .withHour(category.time.hour)
+                .withMinute(category.time.minute)
+                .plusDays(betweenDayOfWeeks(currentDayOfWeek, nextDayOfWeek).toLong())
+        }
+        is TaskCategory.Recurring.EveryNDays ->
+            if (category.localDateTime.isBefore(LocalDateTime.now())) {
+                category.localDateTime.plusDays(category.nDays.toLong())
+            } else {
+                category.localDateTime
+            }
+        is TaskCategory.Recurring.EveryYear ->
+            if (category.localDateTime.isBefore(LocalDateTime.now())) {
+                category.localDateTime.plusYears(1)
+            } else {
+                category.localDateTime
+            }
+
+    }
+
+    private fun betweenDayOfWeeks(currentDayOfWeek: Int, dayOfWeek: Int): Int {
+        return if (currentDayOfWeek <= dayOfWeek) {
+            dayOfWeek - currentDayOfWeek
+        } else {
+            dayOfWeek + 7 - currentDayOfWeek
+        }
     }
 
     companion object {
@@ -81,6 +124,7 @@ sealed class TaskCategory {
 
         data class DaysOfWeek(
             val days: List<DayOfWeek>,
+            val time: LocalTime,
             override val isTimeImportant: Boolean
         ) : Recurring()
 
@@ -98,6 +142,7 @@ sealed class TaskCategory {
         companion object {
             val mock = DaysOfWeek(
                 days = emptyList(),
+                time = LocalTime.now(),
                 isTimeImportant = false
             )
         }
