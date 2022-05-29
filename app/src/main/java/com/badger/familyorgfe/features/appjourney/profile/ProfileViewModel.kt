@@ -91,7 +91,7 @@ class ProfileViewModel @Inject constructor(
             is IProfileViewModel.Event.Ordinal.OnLogoutAccepted -> longRunning {
                 logoutUseCase(Unit)
                 showLogoutDialog.value = false
-                Unit
+                return@longRunning Unit
             }
             is IProfileViewModel.Event.Ordinal.OnLogoutDismiss -> {
                 showLogoutDialog.value = false
@@ -107,7 +107,7 @@ class ProfileViewModel @Inject constructor(
             is IProfileViewModel.Event.Ordinal.OnEditMemberTextChanged -> longRunning {
                 editFamilyMemberText.value = event.text
                 editFamilyMemberSaveEnabled.value = event.text.isValidUserName()
-                Unit
+                return@longRunning Unit
             }
             is IProfileViewModel.Event.Ordinal.OnMemberLocalNameSaved -> longRunning {
                 saveLocalNameUseCase(LocalName(event.email, event.localName))
@@ -121,7 +121,7 @@ class ProfileViewModel @Inject constructor(
                 updateCrutch()
                 closeEditMemberDialog()
                 excludeFamilyMemberDialog.value = null
-                Unit
+                return@longRunning Unit
             }
             is IProfileViewModel.Event.Ordinal.OnExcludeFamilyMemberClick -> {
                 excludeFamilyMemberDialog.value = event.familyMember
@@ -133,7 +133,7 @@ class ProfileViewModel @Inject constructor(
                 updateStatusUseCase(event.status)
                 updateCrutch()
                 changeStatusDialog.value = false
-                Unit
+                return@longRunning Unit
             }
             is IProfileViewModel.Event.Ordinal.OnProfileImageChanged -> longRunning {
                 updateProfileImageUseCase(event.file)
