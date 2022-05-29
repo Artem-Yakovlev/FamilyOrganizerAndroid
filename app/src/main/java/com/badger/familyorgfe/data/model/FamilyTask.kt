@@ -17,7 +17,8 @@ data class FamilyTask(
     val desc: String,
 
     val notificationEmails: List<String>,
-    val products: List<TaskProduct>
+    val products: List<TaskProduct>,
+    val subtasks: List<Subtask>
 ) {
 
     val hasNotifications get() = notificationEmails.isNotEmpty()
@@ -85,7 +86,8 @@ data class FamilyTask(
             title = "Заголовок",
             desc = "Описание",
             notificationEmails = emptyList(),
-            products = emptyList()
+            products = emptyList(),
+            subtasks = emptyList()
         )
     }
 }
@@ -165,6 +167,12 @@ data class TaskProduct(
     val title: String,
     val amount: Double,
     val measure: Product.Measure
+)
+
+data class Subtask(
+    val id: Long,
+    val text: String,
+    val checked: Boolean
 )
 
 

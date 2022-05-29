@@ -15,11 +15,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.badger.familyorgfe.R
+import com.badger.familyorgfe.data.model.TaskStatus
+import com.badger.familyorgfe.features.appjourney.bottomnavigation.TasksNavigationType
 import com.badger.familyorgfe.ui.elements.BaseToolbar
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 
@@ -35,7 +38,10 @@ fun TaskDetailsScreen(
         LazyColumn(modifier = Modifier.fillMaxSize()) {
             item {
                 Toolbar(
-                    title = familyTask.title,
+                    status = familyTask.status,
+                    onEditClicked = {
+                        navController.navigate(TasksNavigationType.CREATE_TASK_SCREEN.route)
+                    },
                     onBackClicked = { navController.popBackStack() }
                 )
             }
@@ -46,7 +52,8 @@ fun TaskDetailsScreen(
 @Composable
 private fun Toolbar(
     onBackClicked: () -> Unit,
-    title: String
+    onEditClicked: () -> Unit,
+    status: TaskStatus
 ) {
     BaseToolbar {
         Spacer(modifier = Modifier.width(16.dp))
@@ -64,10 +71,21 @@ private fun Toolbar(
         Text(
             modifier = Modifier.weight(1f),
             textAlign = TextAlign.Center,
-            text = title,
+            text = stringResource(id = status.textResourceId),
             style = FamilyOrganizerTheme.textStyle.headline2,
             color = FamilyOrganizerTheme.colors.blackPrimary
         )
-        Spacer(modifier = Modifier.width(40.dp))
+        Icon(
+            modifier = Modifier
+                .size(24.dp)
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) { onEditClicked() },
+            painter = painterResource(id = R.drawable.ic_edit_pencil),
+            contentDescription = null,
+            tint = FamilyOrganizerTheme.colors.blackPrimary
+        )
+        Spacer(modifier = Modifier.width(16.dp))
     }
 }
