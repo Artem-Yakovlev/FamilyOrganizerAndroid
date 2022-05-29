@@ -6,7 +6,6 @@ import org.threeten.bp.LocalDate
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
 import kotlin.random.Random
-import kotlin.random.nextInt
 
 data class FamilyTask(
     val id: Long,
@@ -53,12 +52,6 @@ data class FamilyTask(
                 .withMinute(category.time.minute)
                 .plusDays(betweenDayOfWeeks(currentDayOfWeek, nextDayOfWeek).toLong())
         }
-        is TaskCategory.Recurring.EveryNDays ->
-            if (category.localDateTime.isBefore(LocalDateTime.now())) {
-                category.localDateTime.plusDays(category.nDays.toLong())
-            } else {
-                category.localDateTime
-            }
         is TaskCategory.Recurring.EveryYear ->
             if (category.localDateTime.isBefore(LocalDateTime.now())) {
                 category.localDateTime.plusYears(1)
@@ -81,28 +74,45 @@ data class FamilyTask(
             id = Random.nextLong(),
             category = listOf(
                 TaskCategory.OneShot,
-                TaskCategory.OneTime(LocalDateTime.now(), false)
+                TaskCategory.OneTime(
+                    localDateTime = LocalDateTime.now(),
+                    isTimeImportant = false
+                ),
+                TaskCategory.OneTime(
+                    localDateTime = LocalDateTime.now(),
+                    isTimeImportant = true
+                ),
+                TaskCategory.Recurring.EveryYear(
+                    localDateTime = LocalDateTime.now(),
+                    isTimeImportant = true
+                ),
+                TaskCategory.Recurring.EveryYear(
+                    localDateTime = LocalDateTime.now(),
+                    isTimeImportant = false
+                ),
+                TaskCategory.Recurring.DaysOfWeek(
+                    days = listOf(
+                        DayOfWeek.MONDAY,
+                        DayOfWeek.THURSDAY
+                    ),
+                    time = LocalTime.now(),
+                    isTimeImportant = true
+                ),
+                TaskCategory.Recurring.DaysOfWeek(
+                    days = listOf(
+                        DayOfWeek.MONDAY,
+                        DayOfWeek.THURSDAY
+                    ),
+                    time = LocalTime.now(),
+                    isTimeImportant = false
+                )
             ).random(),
             status = TaskStatus.values().random(),
             title = "Заголовок",
             desc = "Описание",
             notificationEmails = listOf("gleb_you@gmail.com", "maria_you@gmail.com"),
-            products = List(Random.nextInt(0..5)) {
-                TaskProduct(
-                    it.toLong(),
-                    Random.nextBoolean(),
-                    "Предмет $it",
-                    .0,
-                    Product.Measure.KILOGRAM
-                )
-            },
-            subtasks = List(Random.nextInt(0..10)) {
-                Subtask(
-                    id = it.toLong(),
-                    text = "Предмет $it",
-                    checked = Random.nextBoolean()
-                )
-            }
+            products = emptyList(),
+            subtasks = emptyList()
         )
     }
 }
@@ -142,12 +152,6 @@ sealed class TaskCategory {
         data class DaysOfWeek(
             val days: List<DayOfWeek>,
             val time: LocalTime,
-            override val isTimeImportant: Boolean
-        ) : Recurring()
-
-        data class EveryNDays(
-            val localDateTime: LocalDateTime,
-            val nDays: Int,
             override val isTimeImportant: Boolean
         ) : Recurring()
 

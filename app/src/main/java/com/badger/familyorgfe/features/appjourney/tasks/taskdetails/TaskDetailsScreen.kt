@@ -4,7 +4,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -28,6 +27,7 @@ import com.badger.familyorgfe.features.appjourney.products.fridge.fridgeitem.get
 import com.badger.familyorgfe.ui.elements.BaseToolbar
 import com.badger.familyorgfe.ui.style.checkBoxColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
+import org.threeten.bp.format.DateTimeFormatter
 
 @Composable
 fun TaskDetailsScreen(
@@ -73,7 +73,6 @@ fun TaskDetailsScreen(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }
-
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 CategoryBlock(category = familyTask.category)
@@ -99,19 +98,16 @@ fun TaskDetailsScreen(
             item {
                 Spacer(modifier = Modifier.height(32.dp))
                 ProductsBlock(
-                    products = familyTask.products,
-                    onCheckedChanged = { id, checked ->
-                        viewModel.onEvent(
-                            ITaskDetailsViewModel.Event.OnProductChecked(id, checked)
-                        )
-                    }
-                )
+                    products = familyTask.products
+                ) { id, checked ->
+                    viewModel.onEvent(
+                        ITaskDetailsViewModel.Event.OnProductChecked(id, checked)
+                    )
+                }
             }
-
             item {
                 Spacer(modifier = Modifier.height(16.dp))
             }
-
         }
     }
 }
@@ -158,7 +154,9 @@ private fun Toolbar(
 }
 
 @Composable
-private fun LazyItemScope.CategoryBlock(category: TaskCategory) {
+private fun CategoryBlock(
+    category: TaskCategory
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -175,15 +173,78 @@ private fun LazyItemScope.CategoryBlock(category: TaskCategory) {
             modifier = Modifier
                 .weight(1f)
                 .wrapContentHeight(),
-            text = "js`dklfjlsdfjldsjflsjdflksdjjs`dklfjlsdfjldsjflsjdflksdjjs`dklfjlsdfjldsjflsjdflksdjjs`dklfjlsdfjldsjflsjdflksdjjs`dklfjlsdfjldsjflsjdflksdjjs`dklfjlsdfjldsjflsjdflksdj",
+            text = getCategoryDescription(category = category),
             style = FamilyOrganizerTheme.textStyle.body,
             color = FamilyOrganizerTheme.colors.darkGray
         )
     }
 }
 
+private const val DATE_TIME_FORMAT = "hh:mm dd.MM"
+private val dateTimeFormatter = DateTimeFormatter.ofPattern(DATE_TIME_FORMAT)
+
+private const val DATE_FORMAT = "dd.MM"
+private val dateFormatter = DateTimeFormatter.ofPattern(DATE_FORMAT)
+
+private const val TIME_FORMAT = "hh:mm"
+private val timeFormatter = DateTimeFormatter.ofPattern(TIME_FORMAT)
+
+private const val DAYS_OF_WEEK_SEPARATOR = ", "
+private const val DAYS_OF_WEEK_POSTFIX = "."
+
 @Composable
-private fun LazyItemScope.NotificationsBlock(
+private fun getCategoryDescription(
+    category: TaskCategory
+): String {
+    return when (category) {
+        is TaskCategory.OneShot ->
+            stringResource(id = R.string.task_category_one_shot)
+        is TaskCategory.OneTime -> {
+            val formatter = if (category.isTimeImportant) {
+                dateTimeFormatter
+            } else {
+                dateFormatter
+            }
+            stringResource(
+                id = R.string.task_category_one_time,
+                category.localDateTime.format(formatter)
+            )
+        }
+        is TaskCategory.Recurring.DaysOfWeek -> {
+            val daysOfWeek = category.days.joinToString(
+                separator = DAYS_OF_WEEK_SEPARATOR,
+                postfix = DAYS_OF_WEEK_POSTFIX
+            )
+            return if (category.isTimeImportant) {
+                stringResource(
+                    id = R.string.task_category_days_of_week_with_time,
+                    category.time.format(timeFormatter),
+                    daysOfWeek
+                )
+            } else {
+                stringResource(
+                    id = R.string.task_category_days_of_week,
+                    daysOfWeek
+                )
+            }
+        }
+        is TaskCategory.Recurring.EveryYear -> {
+            val formatter = if (category.isTimeImportant) {
+                dateTimeFormatter
+            } else {
+                dateFormatter
+            }
+            stringResource(
+                id = R.string.task_category_every_year,
+                category.localDateTime.format(formatter)
+            )
+        }
+        else -> ""
+    }
+}
+
+@Composable
+private fun NotificationsBlock(
     notifications: List<String>,
     localNames: List<LocalName>
 ) {
@@ -284,7 +345,7 @@ private fun SubtaskListItem(
 }
 
 @Composable
-private fun LazyItemScope.ProductsBlock(
+private fun ProductsBlock(
     products: List<TaskProduct>,
     onCheckedChanged: (Long, Boolean) -> Unit
 ) {

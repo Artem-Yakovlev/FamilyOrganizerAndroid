@@ -143,6 +143,14 @@
     <string name="task_desc_subtasks_title">Подзадачи:</string>
     <string name="task_desc_products_title">Список покупок:</string>
 
+    <string name="task_category_one_shot">Обычная задача</string>
+    <string name="task_category_one_time">Задачу необходимо выполнить до %1$1s</string>
+
+    <string name="task_category_days_of_week">Задача запланирована на следующие дни недели: %1$1s</string>
+    <string name="task_category_days_of_week_with_time">Задача запланирована на %1$1s в следующие дни недели: %2$2s </string>
+
+    <string name="task_category_every_year">Задача запланирована ежегодно на %1$1s </string>
+
     <!-- QR scanning -->
     <string name="qr_scanning_permission_title">Разрешите нам использовать камеру</string>
     <string name="qr_scanning_permission_description_ration">Это необходимо для того, чтобы мы могли сосканировать QR с вашего чека</string>
