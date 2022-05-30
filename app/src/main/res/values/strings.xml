@@ -150,6 +150,10 @@
     <string name="task_category_days_of_week_with_time">Задача запланирована на %1$1s в следующие дни недели: %2$2s </string>
 
     <string name="task_category_every_year">Задача запланирована ежегодно на %1$1s </string>
+    <string name="task_edit_title">Изменение задачи</string>
+    <string name="task_create_title">Создание задачи</string>
+    <string name="task_create_title_hint">Название задачи</string>
+    <string name="task_create_description_hint">Описание задачи</string>
 
     <!-- QR scanning -->
     <string name="qr_scanning_permission_title">Разрешите нам использовать камеру</string>

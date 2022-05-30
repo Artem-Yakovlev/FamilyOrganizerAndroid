@@ -6,9 +6,12 @@ import org.threeten.bp.LocalDate
 
 fun String.isValidMail() = Patterns.EMAIL_ADDRESS.matcher(this).matches()
 
-fun String.isValidUserName() = isNotEmpty() && length >= 2
+fun String.isValidUserName() = trim().isNotEmpty() && trim().length >= 2
 
 fun String.isValidProductName() = trim().length >= 2
+
+const val MAX_TASK_TITLE_LENGTH = 30
+fun String.isValidTaskTitle() = trim().length >= 3
 
 private const val DATE_DOT = "."
 private const val N_SEGMENTS = 3
