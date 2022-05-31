@@ -42,22 +42,20 @@ fun CreateTaskScreen(
     navController: NavController,
     viewModel: ICreateTaskViewModel = hiltViewModel<CreateTaskViewModel>()
 ) {
-    val doneEnabled by viewModel.doneEnabled.collectAsState()
-    val creating by viewModel.creating.collectAsState()
-
-    val titleValue by viewModel.titleValue.collectAsState()
-    val titleError by viewModel.titleError.collectAsState()
-
-    val descriptionValue by viewModel.descriptionValue.collectAsState()
-    val descriptionError by viewModel.descriptionError.collectAsState()
+    val state by viewModel.state.collectAsState()
+    val notificationsState by viewModel.notificationsDialogState.collectAsState()
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item {
             Toolbar(
-                doneEnabled = doneEnabled,
+                doneEnabled = state.doneEnabled,
                 onBackClicked = { navController.popBackStack() },
-                onDoneClicked = { viewModel.onEvent(ICreateTaskViewModel.Event.OnDoneClicked) },
-                creating = creating
+                onDoneClicked = {
+                    viewModel.onEvent(
+                        ICreateTaskViewModel.Event.Ordinal.OnDoneClicked
+                    )
+                },
+                creating = state.creating
             )
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -67,11 +65,11 @@ fun CreateTaskScreen(
         }
         item {
             TitleTextField(
-                value = titleValue,
-                error = titleError,
+                value = state.title,
+                valid = state.titleValid,
                 onValueChanged = { title ->
                     viewModel.onEvent(
-                        ICreateTaskViewModel.Event.OnTitleValueChanged(title)
+                        ICreateTaskViewModel.Event.Ordinal.OnTitleValueChanged(title)
                     )
                 }
             )
@@ -79,11 +77,11 @@ fun CreateTaskScreen(
         }
         item {
             DescriptionTextField(
-                value = descriptionValue,
-                error = descriptionError,
+                value = state.description,
+                valid = state.descriptionValid,
                 onValueChanged = { description ->
                     viewModel.onEvent(
-                        ICreateTaskViewModel.Event.OnDescriptionValueChanged(description)
+                        ICreateTaskViewModel.Event.Ordinal.OnDescriptionValueChanged(description)
                     )
                 }
             )
@@ -100,22 +98,13 @@ fun CreateTaskScreen(
         }
         item {
             NotificationsBlock(
-                notifications = listOf(
-                    "email@email.com",
-                    "email@email.com",
-                    "email@email.com",
-                    "email@email.com",
-                    "email@email.com",
-                    "email@email.com",
-                    "email@email.com",
-                    "email@email.com",
-                    "email@email.com",
-                    "email@email.com",
-                    "email@email.com",
-                    "email@email.com"
-                ),
+                notifications = state.notifications,
                 localNames = emptyList(),
-                onEditClicked = {}
+                onEditClicked = {
+                    viewModel.onEvent(
+                        ICreateTaskViewModel.Event.Ordinal.OpenNotifications(state.notifications)
+                    )
+                }
             )
             Spacer(modifier = Modifier.height(24.dp))
         }
@@ -137,6 +126,20 @@ fun CreateTaskScreen(
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
+
+    NotificationsEditingDialog(
+        state = notificationsState,
+        onSave = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.Notifications.Save)
+        },
+        onDismiss = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.Notifications.Dismiss)
+        },
+        onChecked = { email ->
+            viewModel.onEvent(ICreateTaskViewModel.Event.Notifications.Checked(email))
+        }
+    )
+
 }
 
 @Composable
@@ -208,7 +211,7 @@ private fun MainInformationTitle() {
 @Composable
 private fun TitleTextField(
     value: String,
-    error: String?,
+    valid: Boolean,
     onValueChanged: (String) -> Unit
 ) {
     OutlinedTextField(
@@ -216,7 +219,7 @@ private fun TitleTextField(
             .padding(horizontal = 16.dp)
             .fillMaxWidth(),
         value = value,
-        isError = error != null,
+        isError = !valid,
         singleLine = true,
         onValueChange = onValueChanged,
         textStyle = FamilyOrganizerTheme.textStyle.input,
@@ -231,7 +234,7 @@ private fun TitleTextField(
 @Composable
 private fun DescriptionTextField(
     value: String,
-    error: String?,
+    valid: Boolean,
     onValueChanged: (String) -> Unit
 ) {
     OutlinedTextField(
@@ -239,7 +242,7 @@ private fun DescriptionTextField(
             .padding(horizontal = 16.dp)
             .fillMaxWidth(),
         value = value,
-        isError = error != null,
+        isError = !valid,
         onValueChange = onValueChanged,
         textStyle = FamilyOrganizerTheme.textStyle.input,
         keyboardOptions = KeyboardOptions.Default,

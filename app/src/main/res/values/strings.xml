@@ -158,6 +158,9 @@
     <string name="task_create_title_hint">Название</string>
     <string name="task_create_description_hint">Описание</string>
 
+    <string name="task_create_notifications_dialog_title">Кому будут отправлены уведомления:</string>
+    <string name="task_create_notifications_dialog_save">Сохранить</string>
+
     <!-- QR scanning -->
     <string name="qr_scanning_permission_title">Разрешите нам использовать камеру</string>
     <string name="qr_scanning_permission_description_ration">Это необходимо для того, чтобы мы могли сосканировать QR с вашего чека</string>

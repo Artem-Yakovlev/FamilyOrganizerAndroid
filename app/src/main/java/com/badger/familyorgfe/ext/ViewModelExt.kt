@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.*
 
-fun ViewModel.longRunning(block: suspend () -> Any?) {
+fun ViewModel.longRunning(block: suspend () -> Unit) {
 
     viewModelScope.launch(Dispatchers.Default) {
         block()
