@@ -1,7 +1,9 @@
 package com.badger.familyorgfe.features.appjourney.tasks.createtask
 
 import com.badger.familyorgfe.base.BaseViewModel
+import com.badger.familyorgfe.data.model.Subtask
 import com.badger.familyorgfe.ext.MAX_TASK_TITLE_LENGTH
+import com.badger.familyorgfe.ext.isValidSubtaskTitle
 import com.badger.familyorgfe.ext.longRunning
 import com.badger.familyorgfe.features.appjourney.tasks.createtask.domain.CreateNotificationsDialogStateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,11 +19,14 @@ class CreateTaskViewModel @Inject constructor(
         MutableStateFlow(ICreateTaskViewModel.State.createEmpty())
     override val notificationsDialogState =
         MutableStateFlow<ICreateTaskViewModel.NotificationDialogState?>(null)
+    override val subtasksDialogState =
+        MutableStateFlow<ICreateTaskViewModel.SubtasksDialogState?>(null)
 
     override fun onEvent(event: ICreateTaskViewModel.Event) {
         when (event) {
             is ICreateTaskViewModel.Event.Ordinal -> onOrdinalEvent(event)
             is ICreateTaskViewModel.Event.Notifications -> onNotificationsEvent(event)
+            is ICreateTaskViewModel.Event.Subtasks -> onSubtasksEvent(event)
         }
     }
 
@@ -42,6 +47,11 @@ class CreateTaskViewModel @Inject constructor(
             is ICreateTaskViewModel.Event.Ordinal.OpenNotifications -> longRunning {
                 notificationsDialogState.value = createNotificationsDialogStateUseCase(
                     arg = event.notifications
+                )
+            }
+            is ICreateTaskViewModel.Event.Ordinal.OpenSubtasks -> longRunning {
+                subtasksDialogState.value = ICreateTaskViewModel.SubtasksDialogState.create(
+                    items = event.subtasks
                 )
             }
         }
@@ -68,6 +78,66 @@ class CreateTaskViewModel @Inject constructor(
                     notifications = notificationsDialogState.value?.toNotifications().orEmpty()
                 )
                 notificationsDialogState.value = null
+            }
+        }
+    }
+
+    private fun onSubtasksEvent(event: ICreateTaskViewModel.Event.Subtasks) {
+        when (event) {
+            is ICreateTaskViewModel.Event.CreatingSubtask -> {
+                onSubtasksCreatingEvent(event)
+            }
+            is ICreateTaskViewModel.Event.Subtasks.Delete -> {
+                subtasksDialogState.value = subtasksDialogState.value?.copy(
+                    items = subtasksDialogState.value?.items
+                        ?.filter { subtask -> subtask.text != event.title }
+                        .orEmpty()
+                )
+            }
+            is ICreateTaskViewModel.Event.Subtasks.Dismiss -> {
+                subtasksDialogState.value = null
+            }
+            is ICreateTaskViewModel.Event.Subtasks.Save -> {
+                state.value = state.value.copy(
+                    subtasks = subtasksDialogState.value?.items.orEmpty()
+                )
+                subtasksDialogState.value = null
+            }
+            is ICreateTaskViewModel.Event.Subtasks.Create -> {
+                subtasksDialogState.value = subtasksDialogState.value?.copy(
+                    creatingState = ICreateTaskViewModel.SubtasksDialogState
+                        .CreatingState.createEmpty()
+                )
+            }
+        }
+    }
+
+    private fun onSubtasksCreatingEvent(event: ICreateTaskViewModel.Event.CreatingSubtask) {
+        when (event) {
+            is ICreateTaskViewModel.Event.CreatingSubtask.Dismiss -> {
+                subtasksDialogState.value = subtasksDialogState.value?.copy(
+                    creatingState = null
+                )
+            }
+            is ICreateTaskViewModel.Event.CreatingSubtask.OnTitleChanged -> {
+                subtasksDialogState.value = subtasksDialogState.value?.copy(
+                    creatingState = subtasksDialogState.value?.creatingState?.copy(
+                        title = event.title,
+                        enabled = event.title.isValidSubtaskTitle()
+                                && subtasksDialogState.value
+                            ?.items?.all { it.text != event.title } == true
+                    )
+                )
+            }
+            is ICreateTaskViewModel.Event.CreatingSubtask.Save -> {
+                subtasksDialogState.value?.creatingState?.toSubtask()?.let { subtask ->
+                    val actualItems = subtasksDialogState.value?.items.orEmpty() + subtask
+
+                    subtasksDialogState.value = subtasksDialogState.value?.copy(
+                        items = actualItems.distinctBy(Subtask::text).sortedBy(Subtask::text),
+                        creatingState = null
+                    )
+                }
             }
         }
     }

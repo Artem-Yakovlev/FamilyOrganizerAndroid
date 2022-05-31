@@ -44,6 +44,7 @@ fun CreateTaskScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val notificationsState by viewModel.notificationsDialogState.collectAsState()
+    val subtasksState by viewModel.subtasksDialogState.collectAsState()
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item {
@@ -110,9 +111,13 @@ fun CreateTaskScreen(
         }
         item {
             SubtasksBlock(
-                subtasks = emptyList(),
+                subtasks = state.subtasks,
                 onCheckedChanged = { id, checked -> },
-                onEditClicked = {}
+                onEditClicked = {
+                    viewModel.onEvent(
+                        ICreateTaskViewModel.Event.Ordinal.OpenSubtasks(state.subtasks)
+                    )
+                }
             )
             Spacer(modifier = Modifier.height(24.dp))
         }
@@ -140,6 +145,29 @@ fun CreateTaskScreen(
         }
     )
 
+    SubtasksEditingDialog(
+        state = subtasksState,
+        onDeleteClicked = { title ->
+            viewModel.onEvent(ICreateTaskViewModel.Event.Subtasks.Delete(title))
+        },
+        onCreateClicked = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.Subtasks.Create)
+        },
+        onSaveClicked = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.Subtasks.Save)
+        },
+        onSubtaskDialogDismiss = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.Subtasks.Dismiss)
+        },
+        onSubtaskCreatingTitleChanged = { text ->
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingSubtask.OnTitleChanged(text))
+        },
+        onSubtaskCreatingSaveClicked = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingSubtask.Save)
+        },
+        onSubtaskCreatingDialogDismiss = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingSubtask.Dismiss)
+        })
 }
 
 @Composable

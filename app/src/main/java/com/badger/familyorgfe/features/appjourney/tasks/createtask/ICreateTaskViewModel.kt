@@ -2,6 +2,7 @@ package com.badger.familyorgfe.features.appjourney.tasks.createtask
 
 import com.badger.familyorgfe.base.IBaseViewModel
 import com.badger.familyorgfe.data.model.LocalName
+import com.badger.familyorgfe.data.model.Subtask
 import com.badger.familyorgfe.ext.isValidTaskTitle
 import kotlinx.coroutines.flow.StateFlow
 
@@ -10,6 +11,8 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
     val state: StateFlow<State>
 
     val notificationsDialogState: StateFlow<NotificationDialogState?>
+
+    val subtasksDialogState: StateFlow<SubtasksDialogState?>
 
     sealed class Event {
 
@@ -21,12 +24,27 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
             data class OnDescriptionValueChanged(val value: String) : Ordinal()
 
             data class OpenNotifications(val notifications: List<String>) : Ordinal()
+
+            data class OpenSubtasks(val subtasks: List<Subtask>) : Ordinal()
         }
 
         sealed class Notifications : Event() {
             data class Checked(val email: String) : Notifications()
             object Dismiss : Notifications()
             object Save : Notifications()
+        }
+
+        sealed class Subtasks : Event() {
+            object Create : Subtasks()
+            data class Delete(val title: String) : Subtasks()
+            object Dismiss : Subtasks()
+            object Save : Subtasks()
+        }
+
+        sealed class CreatingSubtask : Subtasks() {
+            data class OnTitleChanged(val title: String) : CreatingSubtask()
+            object Dismiss : CreatingSubtask()
+            object Save : CreatingSubtask()
         }
     }
 
@@ -35,7 +53,8 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
         val doneEnabled: Boolean,
         val title: String,
         val description: String,
-        val notifications: List<String>
+        val notifications: List<String>,
+        val subtasks: List<Subtask>
     ) {
         val titleValid: Boolean = title.isValidTaskTitle()
         val descriptionValid: Boolean = description.isNotEmpty()
@@ -46,7 +65,8 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
                 doneEnabled = false,
                 title = "",
                 description = "",
-                notifications = emptyList()
+                notifications = emptyList(),
+                subtasks = emptyList()
             )
         }
     }
@@ -82,6 +102,42 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
 
             fun createEmpty() = NotificationDialogState(
                 items = emptyList()
+            )
+        }
+    }
+
+    data class SubtasksDialogState(
+        val items: List<Subtask>,
+        val creatingState: CreatingState?
+    ) {
+        data class CreatingState(
+            val title: String,
+            val enabled: Boolean
+        ) {
+
+            fun toSubtask() = Subtask(
+                id = -1,
+                text = title,
+                checked = false
+            )
+
+            companion object {
+                fun createEmpty() = CreatingState(
+                    title = "",
+                    enabled = false
+                )
+            }
+        }
+
+        companion object {
+            fun create(items: List<Subtask>) = SubtasksDialogState(
+                items = items,
+                creatingState = null
+            )
+
+            fun createEmpty() = SubtasksDialogState(
+                items = emptyList(),
+                creatingState = null
             )
         }
     }
