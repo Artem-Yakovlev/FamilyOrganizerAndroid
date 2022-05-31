@@ -193,7 +193,7 @@ private const val DAYS_OF_WEEK_SEPARATOR = ", "
 private const val DAYS_OF_WEEK_POSTFIX = "."
 
 @Composable
-private fun getCategoryDescription(
+fun getCategoryDescription(
     category: TaskCategory
 ): String {
     return when (category) {
@@ -300,7 +300,7 @@ private fun SubtasksBlock(
                 .padding(horizontal = 16.dp)
         ) {
             Text(
-                text = stringResource(id = R.string.task_desc_subtasks_title),
+                text = stringResource(id = R.string.task_desc_subtasks_is_not_empty_title),
                 style = FamilyOrganizerTheme.textStyle.body.copy(fontWeight = FontWeight.Medium),
                 color = FamilyOrganizerTheme.colors.blackPrimary,
                 maxLines = 1
@@ -316,7 +316,7 @@ private fun SubtasksBlock(
 }
 
 @Composable
-private fun SubtaskListItem(
+fun SubtaskListItem(
     task: Subtask,
     onCheckedChanged: (Boolean) -> Unit
 ) {
@@ -356,7 +356,7 @@ private fun ProductsBlock(
                 .padding(horizontal = 16.dp)
         ) {
             Text(
-                text = stringResource(id = R.string.task_desc_products_title),
+                text = stringResource(id = R.string.task_desc_products_is_not_empty_title),
                 style = FamilyOrganizerTheme.textStyle.body.copy(fontWeight = FontWeight.Medium),
                 color = FamilyOrganizerTheme.colors.blackPrimary,
                 maxLines = 1
@@ -372,7 +372,7 @@ private fun ProductsBlock(
 }
 
 @Composable
-private fun ProductListItem(
+fun ProductListItem(
     product: TaskProduct,
     onCheckedChanged: (Boolean) -> Unit
 ) {

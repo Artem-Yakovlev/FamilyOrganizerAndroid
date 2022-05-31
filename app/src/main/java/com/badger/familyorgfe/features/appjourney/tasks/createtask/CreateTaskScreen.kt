@@ -9,18 +9,29 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.badger.familyorgfe.R
+import com.badger.familyorgfe.data.model.LocalName
+import com.badger.familyorgfe.data.model.Subtask
+import com.badger.familyorgfe.data.model.TaskCategory
+import com.badger.familyorgfe.data.model.TaskProduct
+import com.badger.familyorgfe.features.appjourney.tasks.taskdetails.ProductListItem
+import com.badger.familyorgfe.features.appjourney.tasks.taskdetails.SubtaskListItem
+import com.badger.familyorgfe.features.appjourney.tasks.taskdetails.getCategoryDescription
 import com.badger.familyorgfe.ui.elements.BaseToolbar
 import com.badger.familyorgfe.ui.style.outlinedTextFieldColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
@@ -48,6 +59,10 @@ fun CreateTaskScreen(
                 onDoneClicked = { viewModel.onEvent(ICreateTaskViewModel.Event.OnDoneClicked) },
                 creating = creating
             )
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+        item {
+            MainInformationTitle()
             Spacer(modifier = Modifier.height(8.dp))
         }
         item {
@@ -72,6 +87,54 @@ fun CreateTaskScreen(
                     )
                 }
             )
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+        item {
+            CategoryBlock(
+                category = TaskCategory.OneShot,
+                onEditClicked = {
+
+                }
+            )
+            Spacer(modifier = Modifier.height(32.dp))
+        }
+        item {
+            NotificationsBlock(
+                notifications = listOf(
+                    "email@email.com",
+                    "email@email.com",
+                    "email@email.com",
+                    "email@email.com",
+                    "email@email.com",
+                    "email@email.com",
+                    "email@email.com",
+                    "email@email.com",
+                    "email@email.com",
+                    "email@email.com",
+                    "email@email.com",
+                    "email@email.com"
+                ),
+                localNames = emptyList(),
+                onEditClicked = {}
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+        item {
+            SubtasksBlock(
+                subtasks = emptyList(),
+                onCheckedChanged = { id, checked -> },
+                onEditClicked = {}
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+
+        item {
+            ProductsBlock(
+                products = emptyList(),
+                onCheckedChanged = { id, checked -> },
+                onEditClicked = {}
+            )
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
@@ -126,6 +189,22 @@ private fun Toolbar(
     }
 }
 
+/**
+ * Main information
+ * */
+
+@Composable
+private fun MainInformationTitle() {
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        text = stringResource(id = R.string.task_main_info_title),
+        style = FamilyOrganizerTheme.textStyle.body.copy(fontSize = 16.sp),
+        color = FamilyOrganizerTheme.colors.darkGray
+    )
+}
+
 @Composable
 private fun TitleTextField(
     value: String,
@@ -168,5 +247,190 @@ private fun DescriptionTextField(
         placeholder = {
             Text(text = stringResource(id = R.string.task_create_description_hint))
         }
+    )
+}
+
+@Composable
+private fun CategoryBlock(
+    category: TaskCategory,
+    onEditClicked: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            modifier = Modifier.size(28.dp),
+            painter = painterResource(id = category.imageResId),
+            contentDescription = null,
+            tint = FamilyOrganizerTheme.colors.blackPrimary
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            modifier = Modifier
+                .weight(1f)
+                .wrapContentHeight(),
+            text = getCategoryDescription(category = category),
+            style = FamilyOrganizerTheme.textStyle.body,
+            color = FamilyOrganizerTheme.colors.darkGray
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        TaskEditIcon(onEditClicked = onEditClicked)
+    }
+}
+
+@Composable
+private fun NotificationsBlock(
+    notifications: List<String>,
+    localNames: List<LocalName>,
+    onEditClicked: () -> Unit
+) {
+    val notificationLocalNames = notifications.map { email ->
+        localNames.find { it.email == email } ?: email
+    }.joinToString(separator = ", ", postfix = ".")
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .padding(horizontal = 16.dp)
+    ) {
+        if (notifications.isNotEmpty()) {
+            Icon(
+                modifier = Modifier.size(size = 24.dp),
+                painter = painterResource(id = R.drawable.ic_notification_on),
+                contentDescription = null,
+                tint = FamilyOrganizerTheme.colors.blackPrimary
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                modifier = Modifier.weight(1f),
+                text = "${stringResource(id = R.string.tasks_notifications_on)} $notificationLocalNames",
+                style = FamilyOrganizerTheme.textStyle.body,
+                color = FamilyOrganizerTheme.colors.blackPrimary
+            )
+        } else {
+            Icon(
+                modifier = Modifier.size(size = 24.dp),
+                painter = painterResource(id = R.drawable.ic_notifications_off),
+                contentDescription = null,
+                tint = FamilyOrganizerTheme.colors.blackPrimary
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                modifier = Modifier.weight(1f),
+                text = stringResource(id = R.string.tasks_notifications_off),
+                style = FamilyOrganizerTheme.textStyle.body,
+                color = FamilyOrganizerTheme.colors.blackPrimary
+            )
+        }
+        Spacer(modifier = Modifier.width(8.dp))
+        TaskEditIcon(onEditClicked = onEditClicked)
+    }
+}
+
+/**
+ * Attachments
+ * */
+
+@Composable
+private fun SubtasksBlock(
+    subtasks: List<Subtask>,
+    onCheckedChanged: (Long, Boolean) -> Unit,
+    onEditClicked: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = stringResource(
+                    id = if (subtasks.isNotEmpty()) {
+                        R.string.task_desc_subtasks_is_not_empty_title
+                    } else {
+                        R.string.task_desc_subtasks_is_empty_title
+                    }
+                ),
+                style = FamilyOrganizerTheme.textStyle.body.copy(fontWeight = FontWeight.Medium),
+                color = FamilyOrganizerTheme.colors.blackPrimary,
+                maxLines = 1
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            TaskEditIcon(onEditClicked = onEditClicked)
+        }
+
+        subtasks.forEach { item ->
+            SubtaskListItem(
+                task = item,
+                onCheckedChanged = { checked -> onCheckedChanged(item.id, checked) }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ProductsBlock(
+    products: List<TaskProduct>,
+    onCheckedChanged: (Long, Boolean) -> Unit,
+    onEditClicked: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        Row(modifier = Modifier.fillMaxWidth()) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = stringResource(
+                    id = if (products.isNotEmpty()) {
+                        R.string.task_desc_products_is_not_empty_title
+                    } else {
+                        R.string.task_desc_products_is_empty_title
+                    }
+                ),
+                style = FamilyOrganizerTheme.textStyle.body.copy(fontWeight = FontWeight.Medium),
+                color = FamilyOrganizerTheme.colors.blackPrimary,
+                maxLines = 1
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            TaskEditIcon(onEditClicked = onEditClicked)
+        }
+        products.forEach { item ->
+            ProductListItem(
+                product = item,
+                onCheckedChanged = { checked -> onCheckedChanged(item.id, checked) }
+            )
+        }
+    }
+}
+
+/**
+ * Utils
+ * */
+
+@Composable
+private fun TaskEditIcon(
+    onEditClicked: () -> Unit
+) {
+    Icon(
+        modifier = Modifier
+            .size(24.dp)
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = rememberRipple(
+                    bounded = false,
+                    color = FamilyOrganizerTheme.colors.primary
+                ),
+                onClick = onEditClicked
+            ),
+        painter = painterResource(id = R.drawable.ic_edit_pencil),
+        contentDescription = null,
+        tint = FamilyOrganizerTheme.colors.primary
     )
 }
