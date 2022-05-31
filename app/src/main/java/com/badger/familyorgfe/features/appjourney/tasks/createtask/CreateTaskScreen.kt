@@ -38,13 +38,14 @@ import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 
 @Composable
 fun CreateTaskScreen(
-    modifier: Modifier,
+    modifier: Modifier = Modifier,
     navController: NavController,
     viewModel: ICreateTaskViewModel = hiltViewModel<CreateTaskViewModel>()
 ) {
     val state by viewModel.state.collectAsState()
     val notificationsState by viewModel.notificationsDialogState.collectAsState()
     val subtasksState by viewModel.subtasksDialogState.collectAsState()
+    val productsState by viewModel.productsDialogState.collectAsState()
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
         item {
@@ -124,9 +125,13 @@ fun CreateTaskScreen(
 
         item {
             ProductsBlock(
-                products = emptyList(),
+                products = state.products,
                 onCheckedChanged = { id, checked -> },
-                onEditClicked = {}
+                onEditClicked = {
+                    viewModel.onEvent(
+                        ICreateTaskViewModel.Event.Ordinal.OpenProducts(state.products)
+                    )
+                }
             )
             Spacer(modifier = Modifier.height(16.dp))
         }
@@ -168,6 +173,37 @@ fun CreateTaskScreen(
         onSubtaskCreatingDialogDismiss = {
             viewModel.onEvent(ICreateTaskViewModel.Event.CreatingSubtask.Dismiss)
         })
+
+    ProductsEditingDialog(
+        state = productsState,
+        onDeleteClicked = { title ->
+            viewModel.onEvent(ICreateTaskViewModel.Event.Products.Delete(title))
+        },
+        onCreateClicked = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.Products.Create)
+        },
+        onSaveClicked = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.Products.Save)
+        },
+        onProductsDialogDismiss = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.Products.Dismiss)
+        },
+        onProductCreatingTitleChanged = { text ->
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingProducts.OnTitleChanged(text))
+        },
+        onProductCreatingAmountChanged = { amount ->
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingProducts.OnAmountChanged(amount))
+        },
+        onProductCreatingMeasureChanged = { measure ->
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingProducts.OnMeasureChanged(measure))
+        },
+        onProductCreatingSaveClicked = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingProducts.Save)
+        },
+        onProductCreatingDialogDismiss = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingProducts.Dismiss)
+        }
+    )
 }
 
 @Composable

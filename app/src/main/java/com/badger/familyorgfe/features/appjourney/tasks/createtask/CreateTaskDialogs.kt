@@ -14,12 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.badger.familyorgfe.R
+import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.data.model.Subtask
+import com.badger.familyorgfe.data.model.TaskProduct
 import com.badger.familyorgfe.ext.clickableWithoutIndication
+import com.badger.familyorgfe.features.appjourney.products.fridge.fridgeitem.getMeasureString
 import com.badger.familyorgfe.ui.elements.BaseActionButton
 import com.badger.familyorgfe.ui.elements.BaseTextButton
 import com.badger.familyorgfe.ui.style.buttonColors
@@ -372,6 +376,254 @@ private fun SubtaskCreatingDialog(
             BaseActionButton(
                 onAction = onSaveClicked,
                 text = stringResource(R.string.task_create_subtasks_creating_dialog_save),
+                enabled = state.enabled
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+/**
+ * Products
+ * */
+
+@Composable
+fun ProductsEditingDialog(
+    state: ICreateTaskViewModel.ProductDialogState?,
+
+    onDeleteClicked: (String) -> Unit,
+    onCreateClicked: () -> Unit,
+    onSaveClicked: () -> Unit,
+
+    onProductCreatingTitleChanged: (String) -> Unit,
+    onProductCreatingAmountChanged: (String) -> Unit,
+    onProductCreatingMeasureChanged: (Product.Measure) -> Unit,
+    onProductCreatingSaveClicked: () -> Unit,
+
+    onProductsDialogDismiss: () -> Unit,
+    onProductCreatingDialogDismiss: () -> Unit
+) {
+    AnimatedVisibility(
+        visible = state != null,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickableWithoutIndication(onProductsDialogDismiss),
+            color = FamilyOrganizerTheme.colors.blackPrimary.copy(alpha = 0.35f),
+            content = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 0.dp),
+                    contentAlignment = Alignment.Center,
+                    content = {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
+                                .background(FamilyOrganizerTheme.colors.whitePrimary)
+                                .align(Alignment.BottomCenter)
+                                .padding(horizontal = 16.dp, vertical = 16.dp)
+                                .clickableWithoutIndication { }
+                        ) {
+                            state?.let { state ->
+                                ProductsEditingContent(
+                                    state = state,
+                                    onSaveClicked = onSaveClicked,
+                                    onDeleteClicked = onDeleteClicked,
+                                    onCreate = onCreateClicked
+                                )
+                            }
+                        }
+                    }
+                )
+
+            }
+        )
+    }
+
+    AnimatedVisibility(
+        visible = state?.creatingState != null,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        Surface(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickableWithoutIndication(onProductCreatingDialogDismiss),
+            color = FamilyOrganizerTheme.colors.blackPrimary.copy(alpha = 0.35f),
+            content = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 0.dp),
+                    contentAlignment = Alignment.Center,
+                    content = {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
+                                .background(FamilyOrganizerTheme.colors.whitePrimary)
+                                .align(Alignment.BottomCenter)
+                                .padding(horizontal = 16.dp, vertical = 16.dp)
+                                .clickableWithoutIndication { }
+                        ) {
+                            state?.creatingState?.let { creatingState ->
+                                ProductsCreatingDialog(
+                                    state = creatingState,
+                                    onSaveClicked = onProductCreatingSaveClicked,
+                                    onTitleChanged = onProductCreatingTitleChanged
+                                )
+                            }
+                        }
+                    }
+                )
+            }
+        )
+    }
+}
+
+@Composable
+private fun ColumnScope.ProductsEditingContent(
+    state: ICreateTaskViewModel.ProductDialogState,
+    onCreate: () -> Unit,
+    onSaveClicked: () -> Unit,
+    onDeleteClicked: (String) -> Unit,
+) {
+    Spacer(modifier = Modifier.height(8.dp))
+    Text(
+        modifier = Modifier
+            .fillMaxWidth()
+            .align(Alignment.Start),
+        text = stringResource(id = R.string.task_create_products_dialog_title),
+        style = FamilyOrganizerTheme.textStyle.body.copy(fontSize = 16.sp),
+        color = FamilyOrganizerTheme.colors.darkGray
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    state.items.forEach { product ->
+        ProductsListItem(
+            product = product,
+            onDeleteClicked = onDeleteClicked
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+    }
+    Spacer(modifier = Modifier.height(4.dp))
+
+    BaseTextButton(
+        onAction = onCreate,
+        text = stringResource(R.string.task_create_products_dialog_create),
+        enabled = true
+    )
+    Spacer(modifier = Modifier.height(4.dp))
+    BaseActionButton(
+        onAction = onSaveClicked,
+        text = stringResource(R.string.task_create_products_dialog_save),
+        enabled = true
+    )
+}
+
+@Composable
+private fun ProductsListItem(
+    product: TaskProduct,
+    onDeleteClicked: (String) -> Unit
+) {
+    Row(
+        Modifier
+            .fillMaxWidth()
+            .padding(start = 4.dp)
+    ) {
+        Checkbox(
+            checked = product.checked,
+            onCheckedChange = {},
+            colors = checkBoxColors()
+        )
+        Spacer(modifier = Modifier.width(4.dp))
+
+        Column(modifier = Modifier.align(Alignment.CenterVertically)) {
+            Text(
+                text = product.title,
+                style = FamilyOrganizerTheme.textStyle.body,
+                color = FamilyOrganizerTheme.colors.darkGray,
+                maxLines = 1
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+
+            product.amount?.let { amount ->
+                product.measure?.let { measure ->
+                    Text(
+                        text = getMeasureString(quantity = amount, measure = measure),
+                        style = FamilyOrganizerTheme.textStyle.label.copy(
+                            fontWeight = FontWeight.Light
+                        ),
+                        color = FamilyOrganizerTheme.colors.darkClay,
+                        maxLines = 1
+                    )
+                }
+            }
+            Spacer(modifier = Modifier.width(8.dp))
+            Icon(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickableWithoutIndication { onDeleteClicked(product.title) },
+                painter = painterResource(id = R.drawable.ic_remove),
+                contentDescription = null,
+                tint = FamilyOrganizerTheme.colors.blackPrimary
+            )
+        }
+    }
+}
+
+@Composable
+private fun ProductsCreatingDialog(
+    state: ICreateTaskViewModel.ProductDialogState.CreatingState,
+    onTitleChanged: (String) -> Unit,
+    onSaveClicked: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .wrapContentHeight()
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(size = 16.dp))
+            .background(color = FamilyOrganizerTheme.colors.whitePrimary)
+            .padding(start = 16.dp, end = 16.dp)
+    ) {
+        Column(
+            horizontalAlignment = Alignment.Start
+        ) {
+
+            Text(
+                text = stringResource(R.string.task_create_products_creating_dialog_title),
+                style = FamilyOrganizerTheme.textStyle.headline2,
+                lineHeight = 26.sp,
+                modifier = Modifier.padding(top = 16.dp)
+            )
+
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 16.dp),
+                value = state.title,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                onValueChange = { onTitleChanged(it) },
+                textStyle = FamilyOrganizerTheme.textStyle.input,
+                colors = outlinedTextFieldColors(),
+                placeholder = {
+                    Text(
+                        text = stringResource(
+                            id = R.string.task_create_subtasks_creating_dialog_hint
+                        )
+                    )
+                }
+            )
+
+            BaseActionButton(
+                onAction = onSaveClicked,
+                text = stringResource(R.string.task_create_products_creating_dialog_save),
                 enabled = state.enabled
             )
         }

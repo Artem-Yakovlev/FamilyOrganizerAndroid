@@ -2,6 +2,7 @@ package com.badger.familyorgfe.features.appjourney.tasks.createtask
 
 import com.badger.familyorgfe.base.BaseViewModel
 import com.badger.familyorgfe.data.model.Subtask
+import com.badger.familyorgfe.data.model.TaskProduct
 import com.badger.familyorgfe.ext.MAX_TASK_TITLE_LENGTH
 import com.badger.familyorgfe.ext.isValidSubtaskTitle
 import com.badger.familyorgfe.ext.longRunning
@@ -21,12 +22,15 @@ class CreateTaskViewModel @Inject constructor(
         MutableStateFlow<ICreateTaskViewModel.NotificationDialogState?>(null)
     override val subtasksDialogState =
         MutableStateFlow<ICreateTaskViewModel.SubtasksDialogState?>(null)
+    override val productsDialogState =
+        MutableStateFlow<ICreateTaskViewModel.ProductDialogState?>(null)
 
     override fun onEvent(event: ICreateTaskViewModel.Event) {
         when (event) {
             is ICreateTaskViewModel.Event.Ordinal -> onOrdinalEvent(event)
             is ICreateTaskViewModel.Event.Notifications -> onNotificationsEvent(event)
             is ICreateTaskViewModel.Event.Subtasks -> onSubtasksEvent(event)
+            is ICreateTaskViewModel.Event.Products -> onProductsEvent(event)
         }
     }
 
@@ -54,8 +58,17 @@ class CreateTaskViewModel @Inject constructor(
                     items = event.subtasks
                 )
             }
+            is ICreateTaskViewModel.Event.Ordinal.OpenProducts -> longRunning {
+                productsDialogState.value = ICreateTaskViewModel.ProductDialogState.create(
+                    items = event.products
+                )
+            }
         }
     }
+
+    /**
+     * Notifications
+     * */
 
     private fun onNotificationsEvent(event: ICreateTaskViewModel.Event.Notifications) {
         when (event) {
@@ -81,6 +94,10 @@ class CreateTaskViewModel @Inject constructor(
             }
         }
     }
+
+    /**
+     * Subtasks
+     * */
 
     private fun onSubtasksEvent(event: ICreateTaskViewModel.Event.Subtasks) {
         when (event) {
@@ -135,6 +152,83 @@ class CreateTaskViewModel @Inject constructor(
 
                     subtasksDialogState.value = subtasksDialogState.value?.copy(
                         items = actualItems.distinctBy(Subtask::text).sortedBy(Subtask::text),
+                        creatingState = null
+                    )
+                }
+            }
+        }
+    }
+
+    /**
+     * Products
+     * */
+
+    private fun onProductsEvent(event: ICreateTaskViewModel.Event.Products) {
+        when (event) {
+            is ICreateTaskViewModel.Event.CreatingProducts -> onProductsCreatingEvent(event)
+            is ICreateTaskViewModel.Event.Products.Create -> {
+                productsDialogState.value = productsDialogState.value?.copy(
+                    creatingState = ICreateTaskViewModel.ProductDialogState
+                        .CreatingState.createEmpty()
+                )
+            }
+            is ICreateTaskViewModel.Event.Products.Delete -> {
+                productsDialogState.value = productsDialogState.value?.copy(
+                    items = productsDialogState.value?.items
+                        ?.filter { subtask -> subtask.title != event.title }
+                        .orEmpty()
+                )
+            }
+            is ICreateTaskViewModel.Event.Products.Dismiss -> {
+                productsDialogState.value = null
+            }
+            is ICreateTaskViewModel.Event.Products.Save -> {
+                state.value = state.value.copy(
+                    products = productsDialogState.value?.items.orEmpty()
+                )
+                productsDialogState.value = null
+            }
+        }
+    }
+
+    private fun onProductsCreatingEvent(event: ICreateTaskViewModel.Event.CreatingProducts) {
+        when (event) {
+            is ICreateTaskViewModel.Event.CreatingProducts.Dismiss -> {
+                productsDialogState.value = productsDialogState.value?.copy(
+                    creatingState = null
+                )
+            }
+            is ICreateTaskViewModel.Event.CreatingProducts.OnAmountChanged -> {
+                event.amount.toDoubleOrNull()?.let { amount ->
+                    productsDialogState.value = productsDialogState.value?.copy(
+                        creatingState = productsDialogState.value?.creatingState?.copy(
+                            amount = amount
+                        )
+                    )
+                }
+            }
+            is ICreateTaskViewModel.Event.CreatingProducts.OnMeasureChanged -> {
+                productsDialogState.value = productsDialogState.value?.copy(
+                    creatingState = productsDialogState.value?.creatingState?.copy(
+                        measure = event.measure
+                    )
+                )
+            }
+            is ICreateTaskViewModel.Event.CreatingProducts.OnTitleChanged -> {
+                productsDialogState.value = productsDialogState.value?.copy(
+                    creatingState = productsDialogState.value?.creatingState?.copy(
+                        title = event.title
+                    )
+                )
+            }
+            is ICreateTaskViewModel.Event.CreatingProducts.Save -> {
+                productsDialogState.value?.creatingState?.toProduct()?.let { product ->
+                    val actualItems = productsDialogState.value?.items.orEmpty() + product
+
+                    productsDialogState.value = productsDialogState.value?.copy(
+                        items = actualItems
+                            .distinctBy(TaskProduct::title)
+                            .sortedBy(TaskProduct::title),
                         creatingState = null
                     )
                 }

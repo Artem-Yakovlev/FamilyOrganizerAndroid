@@ -191,8 +191,8 @@ data class TaskProduct(
     val id: Long,
     val checked: Boolean,
     val title: String,
-    val amount: Double,
-    val measure: Product.Measure
+    val amount: Double?,
+    val measure: Product.Measure?
 )
 
 data class Subtask(

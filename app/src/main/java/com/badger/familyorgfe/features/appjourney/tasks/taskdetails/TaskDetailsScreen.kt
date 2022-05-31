@@ -400,12 +400,19 @@ fun ProductListItem(
                 maxLines = 1
             )
             Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = getMeasureString(quantity = product.amount, measure = product.measure),
-                style = FamilyOrganizerTheme.textStyle.label.copy(fontWeight = FontWeight.Light),
-                color = FamilyOrganizerTheme.colors.darkClay,
-                maxLines = 1
-            )
+
+            product.amount?.let { amount ->
+                product.measure?.let { measure ->
+                    Text(
+                        text = getMeasureString(quantity = amount, measure = measure),
+                        style = FamilyOrganizerTheme.textStyle.label.copy(
+                            fontWeight = FontWeight.Light
+                        ),
+                        color = FamilyOrganizerTheme.colors.darkClay,
+                        maxLines = 1
+                    )
+                }
+            }
         }
     }
 }

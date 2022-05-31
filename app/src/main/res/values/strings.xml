@@ -169,6 +169,13 @@
     <string name="task_create_subtasks_creating_dialog_hint">Текст задачи</string>
     <string name="task_create_subtasks_creating_dialog_save">Сохранить</string>
 
+    <string name="task_create_products_dialog_title">Список покупок:</string>
+    <string name="task_create_products_dialog_create">Добавить продукт</string>
+    <string name="task_create_products_dialog_save">Сохранить</string>
+
+    <string name="task_create_products_creating_dialog_title">Добавление продукта</string>
+    <string name="task_create_products_creating_dialog_save">Сохранить</string>
+
     <!-- QR scanning -->
     <string name="qr_scanning_permission_title">Разрешите нам использовать камеру</string>
     <string name="qr_scanning_permission_description_ration">Это необходимо для того, чтобы мы могли сосканировать QR с вашего чека</string>
