@@ -174,6 +174,15 @@ fun CreateTaskScreen(
         },
         onOneTimeCategorySaveClicked = {
             viewModel.onEvent(ICreateTaskViewModel.Event.CreatingOneTimeCategory.Save)
+        },
+        onEveryYearCategoryDateChanged = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingEveryYearCategory.OnDateChanged(it))
+        },
+        onEveryYearCategoryTimeChanged = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingEveryYearCategory.OnTimeChanged(it))
+        },
+        onEveryYearCategorySaveClicked = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingEveryYearCategory.Save)
         }
     )
 

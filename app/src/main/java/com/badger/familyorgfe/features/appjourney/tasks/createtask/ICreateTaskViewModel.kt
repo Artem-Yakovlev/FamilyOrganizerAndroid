@@ -57,7 +57,11 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
         }
 
         sealed class CreatingEveryYearCategory : Categories() {
+            data class OnDateChanged(val date: String) : CreatingEveryYearCategory()
+            data class OnTimeChanged(val time: String) : CreatingEveryYearCategory()
+            object Save : CreatingEveryYearCategory()
             object Dismiss : CreatingEveryYearCategory()
+
         }
 
         sealed class Notifications : Event() {
@@ -139,7 +143,7 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
 
                 val enabled = dateValid && timeValid
 
-                fun toCategory(): TaskCategory.OneTime {
+                fun toOneTimeCategory(): TaskCategory.OneTime {
                     val time = timeString.convertToRealFutureTime()
                     val date = dateString.convertToRealFutureDate()
 
@@ -164,8 +168,43 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
                 }
             }
 
+            data class EveryYearCategory(
+                val dateString: String,
+                val timeString: String
+            ) : CreatingState() {
+
+                val dateValid = dateString.convertToRealFutureDate() != null
+
+                val timeValid = timeString.convertToRealFutureTime() != null || timeString.isEmpty()
+
+                val enabled = dateValid && timeValid
+
+                fun toEveryYearCategory(): TaskCategory.Recurring.EveryYear {
+                    val time = timeString.convertToRealFutureTime()
+                    val date = dateString.convertToRealFutureDate()
+
+                    val timeImportant = time != null
+                    val localDateTime = if (timeImportant) {
+                        date?.atTime(time)
+                    } else {
+                        date?.atStartOfDay()
+                    } ?: LocalDateTime.now()
+
+                    return TaskCategory.Recurring.EveryYear(
+                        localDateTime = localDateTime,
+                        isTimeImportant = timeImportant
+                    )
+                }
+
+                companion object {
+                    fun createEmpty() = EveryYearCategory(
+                        dateString = "",
+                        timeString = ""
+                    )
+                }
+            }
+
             object DaysOfWeekCategory : CreatingState()
-            object EveryYearCategory : CreatingState()
         }
 
         companion object {

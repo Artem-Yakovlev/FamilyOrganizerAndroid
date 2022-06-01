@@ -100,7 +100,7 @@ class CreateTaskViewModel @Inject constructor(
             is ICreateTaskViewModel.Event.Categories.OnEveryYearCategoryClicked -> {
                 categoriesDialogState.value = categoriesDialogState.value?.copy(
                     creatingState = ICreateTaskViewModel.CategoriesDialogState
-                        .CreatingState.EveryYearCategory
+                        .CreatingState.EveryYearCategory.createEmpty()
                 )
             }
             is ICreateTaskViewModel.Event.Categories.OnOneShotCategoryClicked -> {
@@ -143,7 +143,7 @@ class CreateTaskViewModel @Inject constructor(
             }
             is ICreateTaskViewModel.Event.CreatingOneTimeCategory.Save -> {
                 state.value = state.value.copy(
-                    category = creatingState.toCategory()
+                    category = creatingState.toOneTimeCategory()
                 )
                 categoriesDialogState.value = null
             }
@@ -163,9 +163,33 @@ class CreateTaskViewModel @Inject constructor(
     private fun onEveryYearCategoryEvent(
         event: ICreateTaskViewModel.Event.CreatingEveryYearCategory
     ) {
+        val creatingState = categoriesDialogState.value?.creatingState
+                as? ICreateTaskViewModel.CategoriesDialogState.CreatingState.EveryYearCategory
+            ?: return
+
         when (event) {
-            ICreateTaskViewModel.Event.CreatingEveryYearCategory.Dismiss -> {
+            is ICreateTaskViewModel.Event.CreatingEveryYearCategory.Dismiss -> {
                 dismissCategoryCreatingDialog()
+            }
+            is ICreateTaskViewModel.Event.CreatingEveryYearCategory.OnDateChanged -> {
+                categoriesDialogState.value = categoriesDialogState.value?.copy(
+                    creatingState = creatingState.copy(
+                        dateString = event.date.filterDateSymbols()
+                    )
+                )
+            }
+            is ICreateTaskViewModel.Event.CreatingEveryYearCategory.OnTimeChanged -> {
+                categoriesDialogState.value = categoriesDialogState.value?.copy(
+                    creatingState = creatingState.copy(
+                        timeString = event.time.filterTimeSymbols()
+                    )
+                )
+            }
+            is ICreateTaskViewModel.Event.CreatingEveryYearCategory.Save -> {
+                state.value = state.value.copy(
+                    category = creatingState.toEveryYearCategory()
+                )
+                categoriesDialogState.value = null
             }
         }
     }

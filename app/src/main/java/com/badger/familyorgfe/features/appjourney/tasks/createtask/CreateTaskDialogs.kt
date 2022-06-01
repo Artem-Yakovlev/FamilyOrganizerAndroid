@@ -52,7 +52,11 @@ fun CategoryEditingDialog(
     onOneTimeCategorySaveClicked: () -> Unit,
 
     onDaysOfWeekCategoryDismiss: () -> Unit,
+
     onEveryYearCategoryDismiss: () -> Unit,
+    onEveryYearCategoryDateChanged: (String) -> Unit,
+    onEveryYearCategoryTimeChanged: (String) -> Unit,
+    onEveryYearCategorySaveClicked: () -> Unit,
 ) {
     AnimatedVisibility(
         visible = state != null,
@@ -88,7 +92,10 @@ fun CategoryEditingDialog(
                 onDismiss = onEveryYearCategoryDismiss,
                 block = {
                     EveryYearCategoryContent(
-                        state = creatingState
+                        state = creatingState,
+                        onDateChanged = onEveryYearCategoryDateChanged,
+                        onTimeChanged = onEveryYearCategoryTimeChanged,
+                        onSaveClicked = onEveryYearCategorySaveClicked
                     )
                 })
         }
@@ -166,9 +173,34 @@ private fun ColumnScope.OneTimeCategoryContent(
     onTimeChanged: (String) -> Unit,
     onSaveClicked: () -> Unit
 ) {
+    DateTimeDialog(
+        title = stringResource(id = R.string.task_create_category_one_time_title),
+        dateString = state.dateString,
+        dateValid = state.dateValid,
+        timeString = state.timeString,
+        timeValid = state.timeValid,
+        actionEnabled = state.enabled,
+        onDateChanged = onDateChanged,
+        onTimeChanged = onTimeChanged,
+        onSaveClicked = onSaveClicked
+    )
+}
+
+@Composable
+private fun ColumnScope.DateTimeDialog(
+    title: String,
+    dateString: String,
+    dateValid: Boolean,
+    timeString: String,
+    timeValid: Boolean,
+    actionEnabled: Boolean,
+    onDateChanged: (String) -> Unit,
+    onTimeChanged: (String) -> Unit,
+    onSaveClicked: () -> Unit
+) {
     Text(
         modifier = Modifier.align(Alignment.CenterHorizontally),
-        text = stringResource(R.string.task_create_category_one_time_title),
+        text = title,
         style = FamilyOrganizerTheme.textStyle.subtitle2.copy(
             fontSize = 18.sp,
             fontWeight = FontWeight.Medium
@@ -178,24 +210,24 @@ private fun ColumnScope.OneTimeCategoryContent(
     Spacer(modifier = Modifier.height(16.dp))
 
     DateTimeTextField(
-        value = state.dateString,
+        value = dateString,
         onValueChange = onDateChanged,
         hint = stringResource(id = R.string.task_create_category_one_time_date_hint),
-        error = !state.dateValid
+        error = !dateValid
     )
     Spacer(modifier = Modifier.height(8.dp))
     DateTimeTextField(
-        value = state.timeString,
+        value = timeString,
         onValueChange = onTimeChanged,
         hint = stringResource(id = R.string.task_create_category_one_time_time_hint),
-        error = !state.timeValid
+        error = !timeValid
     )
 
     Spacer(modifier = Modifier.height(16.dp))
     BaseActionButton(
         onAction = onSaveClicked,
         text = stringResource(id = R.string.task_create_category_one_save),
-        enabled = state.enabled
+        enabled = actionEnabled
     )
     Spacer(modifier = Modifier.height(8.dp))
 }
@@ -228,10 +260,23 @@ private fun DaysOfWeekCategoryContent(
 }
 
 @Composable
-private fun EveryYearCategoryContent(
-    state: ICreateTaskViewModel.CategoriesDialogState.CreatingState.EveryYearCategory
+private fun ColumnScope.EveryYearCategoryContent(
+    state: ICreateTaskViewModel.CategoriesDialogState.CreatingState.EveryYearCategory,
+    onDateChanged: (String) -> Unit,
+    onTimeChanged: (String) -> Unit,
+    onSaveClicked: () -> Unit
 ) {
-
+    DateTimeDialog(
+        title = stringResource(id = R.string.task_create_category_every_year_title),
+        dateString = state.dateString,
+        dateValid = state.dateValid,
+        timeString = state.timeString,
+        timeValid = state.timeValid,
+        actionEnabled = state.enabled,
+        onDateChanged = onDateChanged,
+        onTimeChanged = onTimeChanged,
+        onSaveClicked = onSaveClicked
+    )
 }
 
 /**
