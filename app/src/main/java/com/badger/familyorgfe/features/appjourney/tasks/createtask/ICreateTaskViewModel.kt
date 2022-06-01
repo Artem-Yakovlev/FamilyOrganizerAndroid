@@ -28,7 +28,7 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
     sealed class Event {
 
         sealed class Ordinal : Event() {
-            data class Init(val id: Long?) : Ordinal()
+            object Init : Ordinal()
             object OnDoneClicked : Ordinal()
 
             data class OnTitleValueChanged(val value: String) : Ordinal()

@@ -10,7 +10,7 @@ class UpdateFamilyTaskUseCase @Inject constructor(
 ) : BaseUseCase<FamilyTask, Boolean>() {
 
     override suspend fun invoke(arg: FamilyTask): Boolean {
-        delay(5000)
+        delay(2500)
         return true
     }
 }

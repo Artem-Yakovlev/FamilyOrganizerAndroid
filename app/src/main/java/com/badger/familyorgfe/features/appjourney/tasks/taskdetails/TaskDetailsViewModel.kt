@@ -32,9 +32,17 @@ class TaskDetailsViewModel @Inject constructor(
 
     override fun onEvent(event: ITaskDetailsViewModel.Event) {
         when (event) {
-            is ITaskDetailsViewModel.Event.OpenEditing -> TODO()
-            is ITaskDetailsViewModel.Event.OnProductChecked -> TODO()
-            is ITaskDetailsViewModel.Event.OnSubtaskChecked -> TODO()
+            is ITaskDetailsViewModel.Event.OpenEditing -> longRunning {
+                familyTask.value?.id?.let { id ->
+                    currentTaskRepository.setFamilyTaskId(id)
+                }
+            }
+            is ITaskDetailsViewModel.Event.OnProductChecked -> {
+
+            }
+            is ITaskDetailsViewModel.Event.OnSubtaskChecked -> {
+
+            }
         }
     }
 
