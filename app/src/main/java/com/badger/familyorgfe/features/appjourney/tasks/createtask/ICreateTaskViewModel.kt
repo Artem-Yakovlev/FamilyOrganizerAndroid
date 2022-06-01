@@ -28,7 +28,7 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
     sealed class Event {
 
         sealed class Ordinal : Event() {
-            object Init : Ordinal()
+            data class Init(val id: Long?) : Ordinal()
             object OnDoneClicked : Ordinal()
 
             data class OnTitleValueChanged(val value: String) : Ordinal()
@@ -108,7 +108,9 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
     }
 
     data class State(
-        val creating: Boolean,
+        val id: Long?,
+        val status: TaskStatus?,
+
         val title: String,
         val description: String,
         val category: TaskCategory,
@@ -116,13 +118,14 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
         val subtasks: List<Subtask>,
         val products: List<TaskProduct>
     ) {
+        val creating: Boolean = id != null && status != null
         val titleValid: Boolean = title.isValidTaskTitle()
         val doneEnabled: Boolean = titleValid
 
         fun createFamilyTask() = FamilyTask(
-            id = -1,
+            id = id ?: -1,
             category = category,
-            status = TaskStatus.ACTIVE,
+            status = status ?: TaskStatus.ACTIVE,
             title = title,
             desc = description,
             notificationEmails = notifications,
@@ -132,13 +135,25 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
 
         companion object {
             fun createEmpty() = State(
-                creating = true,
+                id = null,
+                status = null,
                 title = "",
                 description = "",
                 category = TaskCategory.OneShot,
                 notifications = emptyList(),
                 subtasks = emptyList(),
                 products = emptyList()
+            )
+
+            fun createFromTask(task: FamilyTask) = State(
+                id = task.id,
+                status = task.status,
+                title = task.title,
+                description = task.desc,
+                notifications = task.notificationEmails,
+                products = task.products,
+                subtasks = task.subtasks,
+                category = task.category
             )
         }
     }

@@ -75,6 +75,7 @@ fun CreateTaskScreen(
     BackHandler(onBack = onBack)
 
     LaunchedEffect(Unit) {
+        viewModel.onEvent(ICreateTaskViewModel.Event.Ordinal.Init(null))
         viewModel.saved.collectLatest { saved ->
             if (saved) {
                 navController.popBackStack()

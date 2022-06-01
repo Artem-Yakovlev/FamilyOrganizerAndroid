@@ -7,6 +7,8 @@ import com.badger.familyorgfe.data.model.TaskProduct
 import com.badger.familyorgfe.ext.*
 import com.badger.familyorgfe.features.appjourney.tasks.createtask.domain.CreateFamilyTaskUseCase
 import com.badger.familyorgfe.features.appjourney.tasks.createtask.domain.CreateNotificationsDialogStateUseCase
+import com.badger.familyorgfe.features.appjourney.tasks.createtask.domain.GetFamilyTaskByIdUseCase
+import com.badger.familyorgfe.features.appjourney.tasks.createtask.domain.UpdateFamilyTaskUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,6 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CreateTaskViewModel @Inject constructor(
     private val createNotificationsDialogStateUseCase: CreateNotificationsDialogStateUseCase,
+    private val getFamilyTaskByIdUseCase: GetFamilyTaskByIdUseCase,
+    private val updateFamilyTaskUseCase: UpdateFamilyTaskUseCase,
     private val createFamilyTaskUseCase: CreateFamilyTaskUseCase
 ) : BaseViewModel(), ICreateTaskViewModel {
 
@@ -46,13 +50,21 @@ class CreateTaskViewModel @Inject constructor(
 
     private fun onOrdinalEvent(event: ICreateTaskViewModel.Event.Ordinal) {
         when (event) {
-            is ICreateTaskViewModel.Event.Ordinal.Init -> {
-
+            is ICreateTaskViewModel.Event.Ordinal.Init -> longRunning {
+                event.id?.let { familyTaskId ->
+                    getFamilyTaskByIdUseCase(arg = familyTaskId)?.let { familyTask ->
+                        state.value = ICreateTaskViewModel.State.createFromTask(familyTask)
+                    }
+                }
             }
             is ICreateTaskViewModel.Event.Ordinal.OnDoneClicked -> longRunning {
                 if (!loading.value) {
                     loading.value = true
-                    createFamilyTaskUseCase(state.value.createFamilyTask())
+                    if (state.value.creating) {
+                        createFamilyTaskUseCase(state.value.createFamilyTask())
+                    } else {
+                        updateFamilyTaskUseCase(state.value.createFamilyTask())
+                    }
                     loading.value = false
                     saved.emit(true)
                 }
