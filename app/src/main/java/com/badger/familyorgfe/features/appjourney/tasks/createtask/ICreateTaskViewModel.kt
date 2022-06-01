@@ -4,7 +4,9 @@ import com.badger.familyorgfe.base.IBaseViewModel
 import com.badger.familyorgfe.data.model.*
 import com.badger.familyorgfe.ext.*
 import kotlinx.coroutines.flow.StateFlow
+import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDateTime
+import org.threeten.bp.LocalTime
 
 interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
 
@@ -53,6 +55,10 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
         }
 
         sealed class CreatingDaysOfWeekCategory : Categories() {
+            data class Add(val dayOfWeek: DayOfWeek) : CreatingDaysOfWeekCategory()
+            data class Remove(val dayOfWeek: DayOfWeek) : CreatingDaysOfWeekCategory()
+            data class OnTimeChanged(val time: String) : CreatingDaysOfWeekCategory()
+            object Save : CreatingDaysOfWeekCategory()
             object Dismiss : CreatingDaysOfWeekCategory()
         }
 
@@ -172,9 +178,7 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
                 val dateString: String,
                 val timeString: String
             ) : CreatingState() {
-
                 val dateValid = dateString.convertToRealFutureDate() != null
-
                 val timeValid = timeString.convertToRealFutureTime() != null || timeString.isEmpty()
 
                 val enabled = dateValid && timeValid
@@ -204,7 +208,33 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
                 }
             }
 
-            object DaysOfWeekCategory : CreatingState()
+            data class DaysOfWeekCategory(
+                val daysOfWeek: List<DayOfWeek>,
+                val timeString: String
+            ) : CreatingState() {
+
+                val timeValid = timeString.convertToRealFutureTime() != null || timeString.isEmpty()
+
+                val enabled = daysOfWeek.isNotEmpty() && timeValid
+
+                fun toDaysOfWeekCategory(): TaskCategory.Recurring.DaysOfWeek {
+                    val time = timeString.convertToRealFutureTime()
+                    val timeImportant = time != null
+
+                    return TaskCategory.Recurring.DaysOfWeek(
+                        days = daysOfWeek,
+                        time = time ?: LocalTime.MAX,
+                        isTimeImportant = timeImportant
+                    )
+                }
+
+                companion object {
+                    fun createEmpty() = DaysOfWeekCategory(
+                        daysOfWeek = emptyList(),
+                        timeString = ""
+                    )
+                }
+            }
         }
 
         companion object {

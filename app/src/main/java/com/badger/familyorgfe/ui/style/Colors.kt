@@ -2,6 +2,7 @@ package com.badger.familyorgfe.ui.style
 
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.CheckboxDefaults
+import androidx.compose.material.SwitchDefaults
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -18,6 +19,12 @@ fun outlinedTextFieldColors() = TextFieldDefaults.outlinedTextFieldColors(
 fun buttonColors() = ButtonDefaults.buttonColors(
     backgroundColor = FamilyOrganizerTheme.colors.primary,
     disabledBackgroundColor = FamilyOrganizerTheme.colors.darkClay
+)
+
+@Composable
+fun switchColors() = SwitchDefaults.colors(
+    checkedTrackColor = FamilyOrganizerTheme.colors.primary,
+    checkedThumbColor = FamilyOrganizerTheme.colors.primary,
 )
 
 @Composable

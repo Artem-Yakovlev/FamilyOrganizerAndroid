@@ -94,7 +94,7 @@ class CreateTaskViewModel @Inject constructor(
             is ICreateTaskViewModel.Event.Categories.OnDaysOfWeekCategoryClicked -> {
                 categoriesDialogState.value = categoriesDialogState.value?.copy(
                     creatingState = ICreateTaskViewModel.CategoriesDialogState
-                        .CreatingState.DaysOfWeekCategory
+                        .CreatingState.DaysOfWeekCategory.createEmpty()
                 )
             }
             is ICreateTaskViewModel.Event.Categories.OnEveryYearCategoryClicked -> {
@@ -153,9 +153,40 @@ class CreateTaskViewModel @Inject constructor(
     private fun onDaysOfWeekCategoryEvent(
         event: ICreateTaskViewModel.Event.CreatingDaysOfWeekCategory
     ) {
+        val creatingState = categoriesDialogState.value?.creatingState
+                as? ICreateTaskViewModel.CategoriesDialogState.CreatingState.DaysOfWeekCategory
+            ?: return
+
         when (event) {
-            ICreateTaskViewModel.Event.CreatingDaysOfWeekCategory.Dismiss -> {
+            is ICreateTaskViewModel.Event.CreatingDaysOfWeekCategory.Dismiss -> {
                 dismissCategoryCreatingDialog()
+            }
+            is ICreateTaskViewModel.Event.CreatingDaysOfWeekCategory.Add -> {
+                categoriesDialogState.value = categoriesDialogState.value?.copy(
+                    creatingState = creatingState.copy(
+                        daysOfWeek = (creatingState.daysOfWeek + event.dayOfWeek).distinct()
+                    )
+                )
+            }
+            is ICreateTaskViewModel.Event.CreatingDaysOfWeekCategory.OnTimeChanged -> {
+                categoriesDialogState.value = categoriesDialogState.value?.copy(
+                    creatingState = creatingState.copy(
+                        timeString = event.time.filterTimeSymbols()
+                    )
+                )
+            }
+            is ICreateTaskViewModel.Event.CreatingDaysOfWeekCategory.Remove -> {
+                categoriesDialogState.value = categoriesDialogState.value?.copy(
+                    creatingState = creatingState.copy(
+                        daysOfWeek = creatingState.daysOfWeek.filter { it != event.dayOfWeek }
+                    )
+                )
+            }
+            is ICreateTaskViewModel.Event.CreatingDaysOfWeekCategory.Save -> {
+                state.value = state.value.copy(
+                    category = creatingState.toDaysOfWeekCategory()
+                )
+                categoriesDialogState.value = null
             }
         }
     }

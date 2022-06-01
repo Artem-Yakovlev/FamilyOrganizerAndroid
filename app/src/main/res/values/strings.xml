@@ -190,6 +190,7 @@
     <string name="task_create_category_one_time_date_hint">Дата</string>
     <string name="task_create_category_one_time_time_hint">Время</string>
     <string name="task_create_category_every_year_title">Когда это событие произойдет в следующий раз?</string>
+    <string name="task_create_category_days_of_week_title">Выберите дни недели и время</string>
     <string name="task_create_category_one_save">Сохранить</string>
 
     <!-- QR scanning -->

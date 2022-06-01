@@ -31,7 +31,9 @@ import com.badger.familyorgfe.ui.elements.BaseOutlinedButton
 import com.badger.familyorgfe.ui.style.buttonColors
 import com.badger.familyorgfe.ui.style.checkBoxColors
 import com.badger.familyorgfe.ui.style.outlinedTextFieldColors
+import com.badger.familyorgfe.ui.style.switchColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
+import org.threeten.bp.DayOfWeek
 
 /**
  * Category
@@ -52,6 +54,10 @@ fun CategoryEditingDialog(
     onOneTimeCategorySaveClicked: () -> Unit,
 
     onDaysOfWeekCategoryDismiss: () -> Unit,
+    onDaysOfWeekCategoryAddDay: (DayOfWeek) -> Unit,
+    onDaysOfWeekCategoryRemoveDay: (DayOfWeek) -> Unit,
+    onDaysOfWeekCategoryTimeChanged: (String) -> Unit,
+    onDaysOfWeekCategorySaveClicked: () -> Unit,
 
     onEveryYearCategoryDismiss: () -> Unit,
     onEveryYearCategoryDateChanged: (String) -> Unit,
@@ -68,7 +74,6 @@ fun CategoryEditingDialog(
             block = {
                 state?.let { state ->
                     CategoryEditingContent(
-                        state = state,
                         onOneShotCategorySelected = onOneShotCategorySelected,
                         onOneTimeCategorySelected = onOneTimeCategorySelected,
                         onDaysOfWeekCategorySelected = onDaysOfWeekCategorySelected,
@@ -83,7 +88,11 @@ fun CategoryEditingDialog(
                 onDismiss = onDaysOfWeekCategoryDismiss,
                 block = {
                     DaysOfWeekCategoryContent(
-                        state = creatingState
+                        state = creatingState,
+                        onDaysOfWeekCategoryAddDay = onDaysOfWeekCategoryAddDay,
+                        onDaysOfWeekCategoryRemoveDay = onDaysOfWeekCategoryRemoveDay,
+                        onDaysOfWeekCategoryTimeChanged = onDaysOfWeekCategoryTimeChanged,
+                        onDaysOfWeekCategorySaveClicked = onDaysOfWeekCategorySaveClicked,
                     )
                 })
         }
@@ -117,7 +126,6 @@ fun CategoryEditingDialog(
 
 @Composable
 private fun ColumnScope.CategoryEditingContent(
-    state: ICreateTaskViewModel.CategoriesDialogState,
     onOneShotCategorySelected: () -> Unit,
     onOneTimeCategorySelected: () -> Unit,
     onDaysOfWeekCategorySelected: () -> Unit,
@@ -253,10 +261,78 @@ private fun DateTimeTextField(
 }
 
 @Composable
-private fun DaysOfWeekCategoryContent(
-    state: ICreateTaskViewModel.CategoriesDialogState.CreatingState.DaysOfWeekCategory
+private fun ColumnScope.DaysOfWeekCategoryContent(
+    state: ICreateTaskViewModel.CategoriesDialogState.CreatingState.DaysOfWeekCategory,
+    onDaysOfWeekCategoryAddDay: (DayOfWeek) -> Unit,
+    onDaysOfWeekCategoryRemoveDay: (DayOfWeek) -> Unit,
+    onDaysOfWeekCategoryTimeChanged: (String) -> Unit,
+    onDaysOfWeekCategorySaveClicked: () -> Unit,
 ) {
+    Text(
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+        text = stringResource(id = R.string.task_create_category_days_of_week_title),
+        style = FamilyOrganizerTheme.textStyle.subtitle2.copy(
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Medium
+        ),
+        color = FamilyOrganizerTheme.colors.darkGray
+    )
+    Spacer(modifier = Modifier.height(16.dp))
 
+    DayOfWeek.values().forEach { dayOfWeek ->
+        DayOfWeekItem(
+            dayOfWeek = dayOfWeek,
+            checked = state.daysOfWeek.contains(dayOfWeek),
+            onChecked = { checked ->
+                if (checked) {
+                    onDaysOfWeekCategoryAddDay(dayOfWeek)
+                } else {
+                    onDaysOfWeekCategoryRemoveDay(dayOfWeek)
+                }
+            }
+        )
+        Spacer(modifier = Modifier.height(2.dp))
+    }
+
+    DateTimeTextField(
+        value = state.timeString,
+        onValueChange = onDaysOfWeekCategoryTimeChanged,
+        hint = stringResource(id = R.string.task_create_category_one_time_time_hint),
+        error = !state.timeValid
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
+    BaseActionButton(
+        onAction = onDaysOfWeekCategorySaveClicked,
+        text = stringResource(id = R.string.task_create_category_one_save),
+        enabled = state.enabled
+    )
+}
+
+@Composable
+private fun ColumnScope.DayOfWeekItem(
+    dayOfWeek: DayOfWeek,
+    checked: Boolean,
+    onChecked: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = dayOfWeek.name,
+            style = FamilyOrganizerTheme.textStyle.body,
+            color = FamilyOrganizerTheme.colors.blackPrimary
+        )
+        Switch(
+            checked = checked,
+            onCheckedChange = onChecked,
+            colors = switchColors()
+        )
+    }
 }
 
 @Composable
@@ -849,7 +925,6 @@ private fun ColumnScope.ProductCreatingContent(
     onMeasureChanged: (Product.Measure) -> Unit,
     onCreateClicked: () -> Unit
 ) {
-
     Spacer(modifier = Modifier.height(16.dp))
     Text(
         modifier = Modifier.align(Alignment.CenterHorizontally),

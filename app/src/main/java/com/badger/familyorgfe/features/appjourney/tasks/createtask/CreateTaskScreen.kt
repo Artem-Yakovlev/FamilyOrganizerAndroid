@@ -183,6 +183,18 @@ fun CreateTaskScreen(
         },
         onEveryYearCategorySaveClicked = {
             viewModel.onEvent(ICreateTaskViewModel.Event.CreatingEveryYearCategory.Save)
+        },
+        onDaysOfWeekCategoryAddDay = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingDaysOfWeekCategory.Add(it))
+        },
+        onDaysOfWeekCategoryRemoveDay = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingDaysOfWeekCategory.Remove(it))
+        },
+        onDaysOfWeekCategoryTimeChanged = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingDaysOfWeekCategory.OnTimeChanged(it))
+        },
+        onDaysOfWeekCategorySaveClicked = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingDaysOfWeekCategory.Save)
         }
     )
 
