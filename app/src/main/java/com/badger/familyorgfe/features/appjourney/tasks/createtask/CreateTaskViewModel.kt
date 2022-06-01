@@ -4,9 +4,7 @@ import com.badger.familyorgfe.base.BaseViewModel
 import com.badger.familyorgfe.data.model.Subtask
 import com.badger.familyorgfe.data.model.TaskCategory
 import com.badger.familyorgfe.data.model.TaskProduct
-import com.badger.familyorgfe.ext.MAX_TASK_TITLE_LENGTH
-import com.badger.familyorgfe.ext.isValidSubtaskTitle
-import com.badger.familyorgfe.ext.longRunning
+import com.badger.familyorgfe.ext.*
 import com.badger.familyorgfe.features.appjourney.tasks.createtask.domain.CreateNotificationsDialogStateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -112,7 +110,7 @@ class CreateTaskViewModel @Inject constructor(
             is ICreateTaskViewModel.Event.Categories.OnOneTimeCategoryClicked -> {
                 categoriesDialogState.value = categoriesDialogState.value?.copy(
                     creatingState = ICreateTaskViewModel.CategoriesDialogState
-                        .CreatingState.OneTimeCategory
+                        .CreatingState.OneTimeCategory.createEmpty()
                 )
             }
         }
@@ -121,9 +119,33 @@ class CreateTaskViewModel @Inject constructor(
     private fun onOneTimeCategoryEvent(
         event: ICreateTaskViewModel.Event.CreatingOneTimeCategory
     ) {
+        val creatingState = categoriesDialogState.value?.creatingState
+                as? ICreateTaskViewModel.CategoriesDialogState.CreatingState.OneTimeCategory
+            ?: return
+
         when (event) {
-            ICreateTaskViewModel.Event.CreatingOneTimeCategory.Dismiss -> {
+            is ICreateTaskViewModel.Event.CreatingOneTimeCategory.Dismiss -> {
                 dismissCategoryCreatingDialog()
+            }
+            is ICreateTaskViewModel.Event.CreatingOneTimeCategory.OnDateChanged -> {
+                categoriesDialogState.value = categoriesDialogState.value?.copy(
+                    creatingState = creatingState.copy(
+                        dateString = event.date.filterDateSymbols()
+                    )
+                )
+            }
+            is ICreateTaskViewModel.Event.CreatingOneTimeCategory.OnTimeChanged -> {
+                categoriesDialogState.value = categoriesDialogState.value?.copy(
+                    creatingState = creatingState.copy(
+                        timeString = event.time.filterTimeSymbols()
+                    )
+                )
+            }
+            is ICreateTaskViewModel.Event.CreatingOneTimeCategory.Save -> {
+                state.value = state.value.copy(
+                    category = creatingState.toCategory()
+                )
+                categoriesDialogState.value = null
             }
         }
     }

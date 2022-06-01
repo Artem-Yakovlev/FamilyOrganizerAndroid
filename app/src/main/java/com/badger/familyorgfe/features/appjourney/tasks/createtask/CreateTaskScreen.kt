@@ -165,7 +165,17 @@ fun CreateTaskScreen(
         },
         onEveryYearCategoryDismiss = {
             viewModel.onEvent(ICreateTaskViewModel.Event.CreatingEveryYearCategory.Dismiss)
-        })
+        },
+        onOneTimeCategoryDateChanged = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingOneTimeCategory.OnDateChanged(it))
+        },
+        onOneTimeCategoryTimeChanged = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingOneTimeCategory.OnTimeChanged(it))
+        },
+        onOneTimeCategorySaveClicked = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingOneTimeCategory.Save)
+        }
+    )
 
     NotificationsEditingDialog(
         state = notificationsState,

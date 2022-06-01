@@ -47,6 +47,10 @@ fun CategoryEditingDialog(
     onDismiss: () -> Unit,
 
     onOneTimeCategoryDismiss: () -> Unit,
+    onOneTimeCategoryDateChanged: (String) -> Unit,
+    onOneTimeCategoryTimeChanged: (String) -> Unit,
+    onOneTimeCategorySaveClicked: () -> Unit,
+
     onDaysOfWeekCategoryDismiss: () -> Unit,
     onEveryYearCategoryDismiss: () -> Unit,
 ) {
@@ -93,7 +97,10 @@ fun CategoryEditingDialog(
                 onDismiss = onOneTimeCategoryDismiss,
                 block = {
                     OneTimeCategoryContent(
-                        state = creatingState
+                        state = creatingState,
+                        onDateChanged = onOneTimeCategoryDateChanged,
+                        onTimeChanged = onOneTimeCategoryTimeChanged,
+                        onSaveClicked = onOneTimeCategorySaveClicked
                     )
                 })
         }
@@ -153,10 +160,64 @@ private fun ColumnScope.CategorySelectingItem(
 }
 
 @Composable
-private fun OneTimeCategoryContent(
-    state: ICreateTaskViewModel.CategoriesDialogState.CreatingState.OneTimeCategory
+private fun ColumnScope.OneTimeCategoryContent(
+    state: ICreateTaskViewModel.CategoriesDialogState.CreatingState.OneTimeCategory,
+    onDateChanged: (String) -> Unit,
+    onTimeChanged: (String) -> Unit,
+    onSaveClicked: () -> Unit
 ) {
+    Text(
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+        text = stringResource(R.string.task_create_category_one_time_title),
+        style = FamilyOrganizerTheme.textStyle.subtitle2.copy(
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Medium
+        ),
+        color = FamilyOrganizerTheme.colors.darkGray
+    )
+    Spacer(modifier = Modifier.height(16.dp))
 
+    DateTimeTextField(
+        value = state.dateString,
+        onValueChange = onDateChanged,
+        hint = stringResource(id = R.string.task_create_category_one_time_date_hint),
+        error = !state.dateValid
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+    DateTimeTextField(
+        value = state.timeString,
+        onValueChange = onTimeChanged,
+        hint = stringResource(id = R.string.task_create_category_one_time_time_hint),
+        error = !state.timeValid
+    )
+
+    Spacer(modifier = Modifier.height(16.dp))
+    BaseActionButton(
+        onAction = onSaveClicked,
+        text = stringResource(id = R.string.task_create_category_one_save),
+        enabled = state.enabled
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+}
+
+@Composable
+private fun DateTimeTextField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    hint: String,
+    error: Boolean
+) {
+    OutlinedTextField(
+        value = value,
+        isError = error,
+        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+        onValueChange = onValueChange,
+        textStyle = FamilyOrganizerTheme.textStyle.input,
+        colors = outlinedTextFieldColors(),
+        placeholder = { Text(text = hint) },
+        modifier = Modifier
+            .fillMaxWidth()
+    )
 }
 
 @Composable

@@ -2,10 +2,9 @@ package com.badger.familyorgfe.features.appjourney.tasks.createtask
 
 import com.badger.familyorgfe.base.IBaseViewModel
 import com.badger.familyorgfe.data.model.*
-import com.badger.familyorgfe.ext.isValidProductName
-import com.badger.familyorgfe.ext.isValidQuantity
-import com.badger.familyorgfe.ext.isValidTaskTitle
+import com.badger.familyorgfe.ext.*
 import kotlinx.coroutines.flow.StateFlow
+import org.threeten.bp.LocalDateTime
 
 interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
 
@@ -47,6 +46,9 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
         }
 
         sealed class CreatingOneTimeCategory : Categories() {
+            data class OnDateChanged(val date: String) : CreatingOneTimeCategory()
+            data class OnTimeChanged(val time: String) : CreatingOneTimeCategory()
+            object Save : CreatingOneTimeCategory()
             object Dismiss : CreatingOneTimeCategory()
         }
 
@@ -126,7 +128,42 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
     ) {
 
         sealed class CreatingState {
-            object OneTimeCategory : CreatingState()
+            data class OneTimeCategory(
+                val dateString: String,
+                val timeString: String
+            ) : CreatingState() {
+
+                val dateValid = dateString.convertToRealFutureDate() != null
+
+                val timeValid = timeString.convertToRealFutureTime() != null || timeString.isEmpty()
+
+                val enabled = dateValid && timeValid
+
+                fun toCategory(): TaskCategory.OneTime {
+                    val time = timeString.convertToRealFutureTime()
+                    val date = dateString.convertToRealFutureDate()
+
+                    val timeImportant = time != null
+                    val localDateTime = if (timeImportant) {
+                        date?.atTime(time)
+                    } else {
+                        date?.atStartOfDay()
+                    } ?: LocalDateTime.now()
+
+                    return TaskCategory.OneTime(
+                        localDateTime = localDateTime,
+                        isTimeImportant = timeImportant
+                    )
+                }
+
+                companion object {
+                    fun createEmpty() = OneTimeCategory(
+                        dateString = "",
+                        timeString = ""
+                    )
+                }
+            }
+
             object DaysOfWeekCategory : CreatingState()
             object EveryYearCategory : CreatingState()
         }
