@@ -162,6 +162,7 @@
     <string name="task_create_notifications_dialog_save">Сохранить</string>
 
     <string name="task_create_subtasks_dialog_title">Список подзадач:</string>
+    <string name="task_create_subtasks_dialog_empty_title">Список подзадач пуст</string>
     <string name="task_create_subtasks_dialog_create">Добавить задачу</string>
     <string name="task_create_subtasks_dialog_save">Сохранить</string>
 
@@ -170,6 +171,7 @@
     <string name="task_create_subtasks_creating_dialog_save">Сохранить</string>
 
     <string name="task_create_products_dialog_title">Список покупок:</string>
+    <string name="task_create_products_dialog_empty_title">Список покупок пуст</string>
     <string name="task_create_products_dialog_create">Добавить продукт</string>
     <string name="task_create_products_dialog_save">Сохранить</string>
 

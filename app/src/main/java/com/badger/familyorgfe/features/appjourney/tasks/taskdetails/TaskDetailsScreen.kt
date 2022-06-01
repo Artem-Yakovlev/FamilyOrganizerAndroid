@@ -404,7 +404,7 @@ fun ProductListItem(
             product.amount?.let { amount ->
                 product.measure?.let { measure ->
                     Text(
-                        text = getMeasureString(quantity = amount, measure = measure),
+                        text = "$amount ${getMeasureString(quantity = amount, measure = measure)}",
                         style = FamilyOrganizerTheme.textStyle.label.copy(
                             fontWeight = FontWeight.Light
                         ),

@@ -10,7 +10,7 @@ import com.badger.familyorgfe.data.source.converters.UserStatusConverter
 import com.badger.familyorgfe.data.source.dao.LocalNameDao
 
 @TypeConverters(DateTimeConverter::class, StringListConverter::class, UserStatusConverter::class)
-@Database(entities = [LocalName::class], version = 1)
+@Database(entities = [LocalName::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun localNamesDao(): LocalNameDao
 }

@@ -1,6 +1,5 @@
 package com.badger.familyorgfe.features.appjourney.profile.domain
 
-import android.util.Log
 import com.badger.familyorgfe.base.BaseUseCase
 import com.badger.familyorgfe.data.source.user.UserApi
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
@@ -21,7 +20,6 @@ class UpdateProfileImageUseCase @Inject constructor(
 
             userApi.updateProfileImage(body)
         } catch (e: Exception) {
-            Log.d("ASMR", e.toString())
         }
     }
 }

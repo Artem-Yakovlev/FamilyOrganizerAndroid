@@ -5,6 +5,8 @@ import com.badger.familyorgfe.data.model.LocalName
 import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.data.model.Subtask
 import com.badger.familyorgfe.data.model.TaskProduct
+import com.badger.familyorgfe.ext.isValidProductName
+import com.badger.familyorgfe.ext.isValidQuantity
 import com.badger.familyorgfe.ext.isValidTaskTitle
 import kotlinx.coroutines.flow.StateFlow
 
@@ -175,12 +177,16 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
             val measure: Product.Measure?,
             val enabled: Boolean
         ) {
+            fun copyWithUpdatedEnabled(state: ProductDialogState?) = copy(
+                enabled = title.isValidProductName() && amount?.isValidQuantity() ?: true
+                        && state?.items?.map(TaskProduct::title)?.all { it != title } == true
+            )
 
             fun toProduct() = TaskProduct(
                 id = -1,
                 title = title,
                 amount = amount,
-                measure = measure,
+                measure = measure.takeIf { amount != null },
                 checked = false
             )
 

@@ -203,7 +203,7 @@ class CreateTaskViewModel @Inject constructor(
                     productsDialogState.value = productsDialogState.value?.copy(
                         creatingState = productsDialogState.value?.creatingState?.copy(
                             amount = amount
-                        )
+                        )?.copyWithUpdatedEnabled(productsDialogState.value)
                     )
                 }
             }
@@ -211,14 +211,14 @@ class CreateTaskViewModel @Inject constructor(
                 productsDialogState.value = productsDialogState.value?.copy(
                     creatingState = productsDialogState.value?.creatingState?.copy(
                         measure = event.measure
-                    )
+                    )?.copyWithUpdatedEnabled(productsDialogState.value)
                 )
             }
             is ICreateTaskViewModel.Event.CreatingProducts.OnTitleChanged -> {
                 productsDialogState.value = productsDialogState.value?.copy(
                     creatingState = productsDialogState.value?.creatingState?.copy(
                         title = event.title
-                    )
+                    )?.copyWithUpdatedEnabled(productsDialogState.value)
                 )
             }
             is ICreateTaskViewModel.Event.CreatingProducts.Save -> {

@@ -14,6 +14,8 @@ import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 
+fun Double.isValidQuantity() = this > 0
+
 fun Product.toFridgeItem(): FridgeItem {
     val expDaysLeft = expiryMillis?.let { expiryMillis ->
         val expDate = Instant.ofEpochSecond(expiryMillis)
@@ -85,7 +87,7 @@ fun LocalDate.toExpirationDateString() = try {
 
 private const val FILE_NAME = "filename"
 
-fun Uri.toImageFile(context: Context) : File {
+fun Uri.toImageFile(context: Context): File {
     val bitmap = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
         MediaStore.Images
             .Media.getBitmap(context.contentResolver, this)

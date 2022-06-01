@@ -1,9 +1,11 @@
 package com.badger.familyorgfe.ui.elements
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
+import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
@@ -11,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import com.badger.familyorgfe.ui.style.buttonColors
+import com.badger.familyorgfe.ui.style.outlinedButtonColors
 import com.badger.familyorgfe.ui.style.textButtonColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 
@@ -52,6 +55,30 @@ fun BaseTextButton(
             .fillMaxWidth()
             .padding(top = 16.dp)
             .clip(RoundedCornerShape(8.dp))
+    ) {
+        Text(
+            text = text.uppercase(),
+            color = FamilyOrganizerTheme.colors.primary,
+            style = FamilyOrganizerTheme.textStyle.button,
+            modifier = Modifier.padding(vertical = 10.dp)
+        )
+    }
+}
+
+@Composable
+fun BaseOutlinedButton(
+    onAction: () -> Unit,
+    text: String,
+    enabled: Boolean
+) {
+    OutlinedButton(
+        modifier = Modifier
+            .fillMaxWidth(),
+        enabled = enabled,
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(2.dp, FamilyOrganizerTheme.colors.primary),
+        onClick = onAction,
+        colors = outlinedButtonColors(),
     ) {
         Text(
             text = text.uppercase(),

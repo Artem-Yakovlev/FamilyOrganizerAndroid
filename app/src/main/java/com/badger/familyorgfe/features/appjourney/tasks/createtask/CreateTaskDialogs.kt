@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -23,9 +23,11 @@ import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.data.model.Subtask
 import com.badger.familyorgfe.data.model.TaskProduct
 import com.badger.familyorgfe.ext.clickableWithoutIndication
+import com.badger.familyorgfe.features.appjourney.common.AddingBottomSheetTextInput
+import com.badger.familyorgfe.features.appjourney.common.getStringForMeasure
 import com.badger.familyorgfe.features.appjourney.products.fridge.fridgeitem.getMeasureString
 import com.badger.familyorgfe.ui.elements.BaseActionButton
-import com.badger.familyorgfe.ui.elements.BaseTextButton
+import com.badger.familyorgfe.ui.elements.BaseOutlinedButton
 import com.badger.familyorgfe.ui.style.buttonColors
 import com.badger.familyorgfe.ui.style.checkBoxColors
 import com.badger.familyorgfe.ui.style.outlinedTextFieldColors
@@ -267,7 +269,13 @@ private fun ColumnScope.SubtasksEditingContent(
         modifier = Modifier
             .fillMaxWidth()
             .align(Alignment.Start),
-        text = stringResource(id = R.string.task_create_subtasks_dialog_title),
+        text = stringResource(
+            id = if (state.items.isNotEmpty()) {
+                R.string.task_create_subtasks_dialog_title
+            } else {
+                R.string.task_create_subtasks_dialog_empty_title
+            }
+        ),
         style = FamilyOrganizerTheme.textStyle.body.copy(fontSize = 16.sp),
         color = FamilyOrganizerTheme.colors.darkGray
     )
@@ -281,7 +289,7 @@ private fun ColumnScope.SubtasksEditingContent(
     }
     Spacer(modifier = Modifier.height(4.dp))
 
-    BaseTextButton(
+    BaseOutlinedButton(
         onAction = onCreate,
         text = stringResource(R.string.task_create_subtasks_dialog_create),
         enabled = true
@@ -474,10 +482,12 @@ fun ProductsEditingDialog(
                                 .clickableWithoutIndication { }
                         ) {
                             state?.creatingState?.let { creatingState ->
-                                ProductsCreatingDialog(
+                                ProductCreatingContent(
                                     state = creatingState,
-                                    onSaveClicked = onProductCreatingSaveClicked,
-                                    onTitleChanged = onProductCreatingTitleChanged
+                                    onTitleChanged = onProductCreatingTitleChanged,
+                                    onQuantityChanged = onProductCreatingAmountChanged,
+                                    onMeasureChanged = onProductCreatingMeasureChanged,
+                                    onCreateClicked = onProductCreatingSaveClicked
                                 )
                             }
                         }
@@ -500,7 +510,13 @@ private fun ColumnScope.ProductsEditingContent(
         modifier = Modifier
             .fillMaxWidth()
             .align(Alignment.Start),
-        text = stringResource(id = R.string.task_create_products_dialog_title),
+        text = stringResource(
+            id = if (state.items.isNotEmpty()) {
+                R.string.task_create_products_dialog_title
+            } else {
+                R.string.task_create_products_dialog_empty_title
+            }
+        ),
         style = FamilyOrganizerTheme.textStyle.body.copy(fontSize = 16.sp),
         color = FamilyOrganizerTheme.colors.darkGray
     )
@@ -514,7 +530,7 @@ private fun ColumnScope.ProductsEditingContent(
     }
     Spacer(modifier = Modifier.height(4.dp))
 
-    BaseTextButton(
+    BaseOutlinedButton(
         onAction = onCreate,
         text = stringResource(R.string.task_create_products_dialog_create),
         enabled = true
@@ -535,7 +551,8 @@ private fun ProductsListItem(
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(start = 4.dp)
+            .padding(start = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Checkbox(
             checked = product.checked,
@@ -544,7 +561,7 @@ private fun ProductsListItem(
         )
         Spacer(modifier = Modifier.width(4.dp))
 
-        Column(modifier = Modifier.align(Alignment.CenterVertically)) {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = product.title,
                 style = FamilyOrganizerTheme.textStyle.body,
@@ -556,7 +573,7 @@ private fun ProductsListItem(
             product.amount?.let { amount ->
                 product.measure?.let { measure ->
                     Text(
-                        text = getMeasureString(quantity = amount, measure = measure),
+                        text = "$amount ${getMeasureString(quantity = amount, measure = measure)}",
                         style = FamilyOrganizerTheme.textStyle.label.copy(
                             fontWeight = FontWeight.Light
                         ),
@@ -565,68 +582,146 @@ private fun ProductsListItem(
                     )
                 }
             }
-            Spacer(modifier = Modifier.width(8.dp))
-            Icon(
-                modifier = Modifier
-                    .size(24.dp)
-                    .clickableWithoutIndication { onDeleteClicked(product.title) },
-                painter = painterResource(id = R.drawable.ic_remove),
-                contentDescription = null,
-                tint = FamilyOrganizerTheme.colors.blackPrimary
-            )
         }
+        Spacer(modifier = Modifier.width(8.dp))
+        Icon(
+            modifier = Modifier
+                .size(24.dp)
+                .clickableWithoutIndication { onDeleteClicked(product.title) },
+            painter = painterResource(id = R.drawable.ic_remove),
+            contentDescription = null,
+            tint = FamilyOrganizerTheme.colors.blackPrimary
+        )
     }
 }
 
 @Composable
-private fun ProductsCreatingDialog(
+private fun ColumnScope.ProductCreatingContent(
     state: ICreateTaskViewModel.ProductDialogState.CreatingState,
     onTitleChanged: (String) -> Unit,
-    onSaveClicked: () -> Unit
+    onQuantityChanged: (String) -> Unit,
+    onMeasureChanged: (Product.Measure) -> Unit,
+    onCreateClicked: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .wrapContentHeight()
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(size = 16.dp))
-            .background(color = FamilyOrganizerTheme.colors.whitePrimary)
-            .padding(start = 16.dp, end = 16.dp)
-    ) {
-        Column(
-            horizontalAlignment = Alignment.Start
+
+    Spacer(modifier = Modifier.height(16.dp))
+    Text(
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+        text = stringResource(
+            id = R.string.bottom_sheet_adding_title
+        ),
+        style = FamilyOrganizerTheme.textStyle.headline3.copy(fontSize = 20.sp),
+        color = FamilyOrganizerTheme.colors.blackPrimary
+    )
+    Spacer(modifier = Modifier.height(22.dp))
+
+    /**
+     * Info
+     * */
+
+    Text(
+        modifier = Modifier.align(Alignment.Start),
+        text = stringResource(id = R.string.bottom_sheet_adding_info),
+        style = FamilyOrganizerTheme.textStyle.body.copy(fontWeight = FontWeight.Medium),
+        color = FamilyOrganizerTheme.colors.blackPrimary
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+
+    AddingBottomSheetTextInput(
+        modifier = Modifier.fillMaxWidth(),
+        value = state.title,
+        hint = stringResource(id = R.string.bottom_sheet_adding_hint_title),
+        onValueChange = onTitleChanged
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+
+    Row(modifier = Modifier.fillMaxWidth()) {
+        AddingBottomSheetTextInput(
+            modifier = Modifier.weight(1f),
+            value = state.amount?.toString().orEmpty(),
+            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+            hint = stringResource(id = R.string.bottom_sheet_adding_hint_quantity),
+            onValueChange = onQuantityChanged
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+
+        var expanded by remember { mutableStateOf(false) }
+
+        ExposedDropdownMenuBox(
+            modifier = Modifier.weight(1f),
+            expanded = expanded,
+            onExpandedChange = {
+                expanded = !expanded
+            }
         ) {
-
-            Text(
-                text = stringResource(R.string.task_create_products_creating_dialog_title),
-                style = FamilyOrganizerTheme.textStyle.headline2,
-                lineHeight = 26.sp,
-                modifier = Modifier.padding(top = 16.dp)
-            )
-
             OutlinedTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-                value = state.title,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                onValueChange = { onTitleChanged(it) },
+                value = getStringForMeasure(
+                    state.measure ?: Product.Measure.KILOGRAM
+                ),
+                onValueChange = {},
                 textStyle = FamilyOrganizerTheme.textStyle.input,
                 colors = outlinedTextFieldColors(),
-                placeholder = {
-                    Text(
-                        text = stringResource(
-                            id = R.string.task_create_subtasks_creating_dialog_hint
-                        )
+                trailingIcon = {
+                    Icon(
+                        modifier = Modifier
+                            .size(24.dp),
+                        painter = painterResource(
+                            id = if (expanded) {
+                                R.drawable.ic_profile_status_arrow_up
+                            } else {
+                                R.drawable.ic_profile_status_arrow_down
+                            }
+                        ),
+                        contentDescription = null,
+                        tint = FamilyOrganizerTheme.colors.darkClay
                     )
                 }
             )
-
-            BaseActionButton(
-                onAction = onSaveClicked,
-                text = stringResource(R.string.task_create_products_creating_dialog_save),
-                enabled = state.enabled
-            )
+            ExposedDropdownMenu(
+                expanded = expanded,
+                onDismissRequest = {
+                    expanded = false
+                }
+            ) {
+                Product.Measure.values()
+                    .forEach { selectionOption ->
+                        DropdownMenuItem(
+                            onClick = {
+                                onMeasureChanged(selectionOption)
+                                expanded = false
+                            }
+                        ) {
+                            Text(
+                                text = getStringForMeasure(measure = selectionOption),
+                                style = FamilyOrganizerTheme.textStyle.body.copy(fontWeight = FontWeight.Medium),
+                                color = FamilyOrganizerTheme.colors.blackPrimary
+                            )
+                        }
+                    }
+            }
         }
-        Spacer(modifier = Modifier.height(16.dp))
     }
+
+    /**
+     * Expiration
+     * */
+    Spacer(modifier = Modifier.height(40.dp))
+
+    Button(
+        onClick = onCreateClicked,
+        enabled = state.enabled,
+        colors = buttonColors(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp)
+            .clip(RoundedCornerShape(8.dp))
+    ) {
+        Text(
+            text = stringResource(R.string.bottom_sheet_adding_button).uppercase(),
+            color = FamilyOrganizerTheme.colors.whitePrimary,
+            style = FamilyOrganizerTheme.textStyle.button,
+            modifier = Modifier.padding(vertical = 10.dp)
+        )
+    }
+    Spacer(modifier = Modifier.height(16.dp))
 }

@@ -158,7 +158,7 @@ private fun ColumnScope.ProductBottomSheetContent(
             }
         ) {
             OutlinedTextField(
-                value = getMeasureString(
+                value = getStringForMeasure(
                     productBottomSheetState.measure ?: Product.Measure.KILOGRAM
                 ),
                 onValueChange = {},
@@ -196,7 +196,7 @@ private fun ColumnScope.ProductBottomSheetContent(
                             }
                         ) {
                             Text(
-                                text = getMeasureString(measure = selectionOption),
+                                text = getStringForMeasure(measure = selectionOption),
                                 style = FamilyOrganizerTheme.textStyle.body.copy(fontWeight = FontWeight.Medium),
                                 color = FamilyOrganizerTheme.colors.blackPrimary
                             )
@@ -274,7 +274,7 @@ private fun ColumnScope.ProductBottomSheetContent(
 }
 
 @Composable
-private fun AddingBottomSheetTextInput(
+fun AddingBottomSheetTextInput(
     modifier: Modifier,
     value: String,
     hint: String,
@@ -296,7 +296,7 @@ private fun AddingBottomSheetTextInput(
 }
 
 @Composable
-private fun getMeasureString(measure: Product.Measure) = when (measure) {
+fun getStringForMeasure(measure: Product.Measure) = when (measure) {
     Product.Measure.LITER -> stringResource(id = R.string.adding_measure_litter)
     Product.Measure.KILOGRAM -> stringResource(id = R.string.adding_measure_kg)
     Product.Measure.THINGS -> stringResource(id = R.string.adding_measure_things)

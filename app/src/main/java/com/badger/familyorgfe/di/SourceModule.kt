@@ -11,7 +11,6 @@ import com.badger.familyorgfe.data.source.AppDatabase
 import com.badger.familyorgfe.data.source.auth.AuthApi
 import com.badger.familyorgfe.data.source.family.FamilyApi
 import com.badger.familyorgfe.data.source.familyauth.FamilyAuthApi
-import com.badger.familyorgfe.data.source.getPrepopulateCallback
 import com.badger.familyorgfe.data.source.products.ProductsApi
 import com.badger.familyorgfe.data.source.user.UserApi
 import com.badger.familyorgfe.features.appjourney.products.adding.repository.AddingRepository
@@ -73,9 +72,7 @@ class SourceModule {
             applicationContext,
             AppDatabase::class.java,
             DATABASE_NAME
-        )
-            .addCallback(getPrepopulateCallback(applicationContext))
-            .build()
+        ).build()
     }
 
     /**
