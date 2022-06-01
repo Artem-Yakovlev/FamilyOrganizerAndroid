@@ -1,10 +1,7 @@
 package com.badger.familyorgfe.features.appjourney.tasks.createtask
 
 import com.badger.familyorgfe.base.IBaseViewModel
-import com.badger.familyorgfe.data.model.LocalName
-import com.badger.familyorgfe.data.model.Product
-import com.badger.familyorgfe.data.model.Subtask
-import com.badger.familyorgfe.data.model.TaskProduct
+import com.badger.familyorgfe.data.model.*
 import com.badger.familyorgfe.ext.isValidProductName
 import com.badger.familyorgfe.ext.isValidQuantity
 import com.badger.familyorgfe.ext.isValidTaskTitle
@@ -13,6 +10,8 @@ import kotlinx.coroutines.flow.StateFlow
 interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
 
     val state: StateFlow<State>
+
+    val categoriesDialogState: StateFlow<CategoriesDialogState?>
 
     val notificationsDialogState: StateFlow<NotificationDialogState?>
 
@@ -29,11 +28,34 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
             data class OnTitleValueChanged(val value: String) : Ordinal()
             data class OnDescriptionValueChanged(val value: String) : Ordinal()
 
+            data class OpenCategories(val category: TaskCategory) : Ordinal()
+
             data class OpenNotifications(val notifications: List<String>) : Ordinal()
 
             data class OpenSubtasks(val subtasks: List<Subtask>) : Ordinal()
 
             data class OpenProducts(val products: List<TaskProduct>) : Ordinal()
+        }
+
+        sealed class Categories : Event() {
+            object OnOneShotCategoryClicked : Categories()
+            object OnOneTimeCategoryClicked : Categories()
+            object OnDaysOfWeekCategoryClicked : Categories()
+            object OnEveryYearCategoryClicked : Categories()
+
+            object Dismiss : Categories()
+        }
+
+        sealed class CreatingOneTimeCategory : Categories() {
+            object Dismiss : CreatingOneTimeCategory()
+        }
+
+        sealed class CreatingDaysOfWeekCategory : Categories() {
+            object Dismiss : CreatingDaysOfWeekCategory()
+        }
+
+        sealed class CreatingEveryYearCategory : Categories() {
+            object Dismiss : CreatingEveryYearCategory()
         }
 
         sealed class Notifications : Event() {
@@ -76,6 +98,7 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
         val doneEnabled: Boolean,
         val title: String,
         val description: String,
+        val category: TaskCategory,
         val notifications: List<String>,
         val subtasks: List<Subtask>,
         val products: List<TaskProduct>
@@ -89,9 +112,34 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
                 doneEnabled = false,
                 title = "",
                 description = "",
+                category = TaskCategory.OneShot,
                 notifications = emptyList(),
                 subtasks = emptyList(),
                 products = emptyList()
+            )
+        }
+    }
+
+    data class CategoriesDialogState(
+        val category: TaskCategory,
+        val creatingState: CreatingState?
+    ) {
+
+        sealed class CreatingState {
+            object OneTimeCategory : CreatingState()
+            object DaysOfWeekCategory : CreatingState()
+            object EveryYearCategory : CreatingState()
+        }
+
+        companion object {
+            fun create(category: TaskCategory) = CategoriesDialogState(
+                category = category,
+                creatingState = null
+            )
+
+            fun createEmpty() = CategoriesDialogState(
+                category = TaskCategory.OneShot,
+                creatingState = null
             )
         }
     }

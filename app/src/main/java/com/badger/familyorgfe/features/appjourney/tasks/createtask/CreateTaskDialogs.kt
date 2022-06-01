@@ -34,6 +34,146 @@ import com.badger.familyorgfe.ui.style.outlinedTextFieldColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 
 /**
+ * Category
+ * */
+
+@Composable
+fun CategoryEditingDialog(
+    state: ICreateTaskViewModel.CategoriesDialogState?,
+    onOneShotCategorySelected: () -> Unit,
+    onOneTimeCategorySelected: () -> Unit,
+    onDaysOfWeekCategorySelected: () -> Unit,
+    onEveryYearCategorySelected: () -> Unit,
+    onDismiss: () -> Unit,
+
+    onOneTimeCategoryDismiss: () -> Unit,
+    onDaysOfWeekCategoryDismiss: () -> Unit,
+    onEveryYearCategoryDismiss: () -> Unit,
+) {
+    AnimatedVisibility(
+        visible = state != null,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        TaskEditingBottomSheet(
+            onDismiss = onDismiss,
+            block = {
+                state?.let { state ->
+                    CategoryEditingContent(
+                        state = state,
+                        onOneShotCategorySelected = onOneShotCategorySelected,
+                        onOneTimeCategorySelected = onOneTimeCategorySelected,
+                        onDaysOfWeekCategorySelected = onDaysOfWeekCategorySelected,
+                        onEveryYearCategorySelected = onEveryYearCategorySelected
+                    )
+                }
+            })
+    }
+    when (val creatingState = state?.creatingState) {
+        is ICreateTaskViewModel.CategoriesDialogState.CreatingState.DaysOfWeekCategory -> {
+            TaskEditingBottomSheet(
+                onDismiss = onDaysOfWeekCategoryDismiss,
+                block = {
+                    DaysOfWeekCategoryContent(
+                        state = creatingState
+                    )
+                })
+        }
+        is ICreateTaskViewModel.CategoriesDialogState.CreatingState.EveryYearCategory -> {
+            TaskEditingBottomSheet(
+                onDismiss = onEveryYearCategoryDismiss,
+                block = {
+                    EveryYearCategoryContent(
+                        state = creatingState
+                    )
+                })
+        }
+        is ICreateTaskViewModel.CategoriesDialogState.CreatingState.OneTimeCategory -> {
+            TaskEditingBottomSheet(
+                onDismiss = onOneTimeCategoryDismiss,
+                block = {
+                    OneTimeCategoryContent(
+                        state = creatingState
+                    )
+                })
+        }
+        else -> Unit
+    }
+}
+
+@Composable
+private fun ColumnScope.CategoryEditingContent(
+    state: ICreateTaskViewModel.CategoriesDialogState,
+    onOneShotCategorySelected: () -> Unit,
+    onOneTimeCategorySelected: () -> Unit,
+    onDaysOfWeekCategorySelected: () -> Unit,
+    onEveryYearCategorySelected: () -> Unit
+) {
+    Text(
+        modifier = Modifier.align(Alignment.CenterHorizontally),
+        text = stringResource(R.string.task_create_category_title),
+        style = FamilyOrganizerTheme.textStyle.subtitle2.copy(
+            fontSize = 18.sp,
+            fontWeight = FontWeight.Medium
+        ),
+        color = FamilyOrganizerTheme.colors.darkGray
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+
+    CategorySelectingItem(
+        onAction = onOneShotCategorySelected,
+        text = stringResource(id = R.string.task_create_category_one_shot)
+    )
+    CategorySelectingItem(
+        onAction = onOneTimeCategorySelected,
+        text = stringResource(id = R.string.task_create_category_one_time)
+    )
+    CategorySelectingItem(
+        onAction = onDaysOfWeekCategorySelected,
+        text = stringResource(id = R.string.task_create_category_days_of_week)
+    )
+    CategorySelectingItem(
+        onAction = onEveryYearCategorySelected,
+        text = stringResource(id = R.string.task_create_category_every_year)
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+}
+
+@Composable
+private fun ColumnScope.CategorySelectingItem(
+    onAction: () -> Unit,
+    text: String
+) {
+    BaseOutlinedButton(
+        onAction = onAction,
+        text = text,
+        enabled = true
+    )
+    Spacer(modifier = Modifier.height(8.dp))
+}
+
+@Composable
+private fun OneTimeCategoryContent(
+    state: ICreateTaskViewModel.CategoriesDialogState.CreatingState.OneTimeCategory
+) {
+
+}
+
+@Composable
+private fun DaysOfWeekCategoryContent(
+    state: ICreateTaskViewModel.CategoriesDialogState.CreatingState.DaysOfWeekCategory
+) {
+
+}
+
+@Composable
+private fun EveryYearCategoryContent(
+    state: ICreateTaskViewModel.CategoriesDialogState.CreatingState.EveryYearCategory
+) {
+
+}
+
+/**
  * Notifications
  * */
 
@@ -724,4 +864,43 @@ private fun ColumnScope.ProductCreatingContent(
         )
     }
     Spacer(modifier = Modifier.height(16.dp))
+}
+
+/**
+ * Utils
+ * */
+
+@Composable
+private fun TaskEditingBottomSheet(
+    block: @Composable ColumnScope.() -> Unit,
+    onDismiss: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxSize()
+            .clickableWithoutIndication(onDismiss),
+        color = FamilyOrganizerTheme.colors.blackPrimary.copy(alpha = 0.35f),
+        content = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 0.dp),
+                contentAlignment = Alignment.Center,
+                content = {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                            .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
+                            .background(FamilyOrganizerTheme.colors.whitePrimary)
+                            .align(Alignment.BottomCenter)
+                            .padding(horizontal = 16.dp, vertical = 16.dp)
+                            .clickableWithoutIndication { },
+                        content = block
+                    )
+                }
+            )
+
+        }
+    )
 }

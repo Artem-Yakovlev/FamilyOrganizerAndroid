@@ -178,6 +178,14 @@
     <string name="task_create_products_creating_dialog_title">Добавление продукта</string>
     <string name="task_create_products_creating_dialog_save">Сохранить</string>
 
+    <string name="task_create_category_title">Выбери тип задачи</string>
+    <string name="task_create_category_save">Сохранить</string>
+
+    <string name="task_create_category_one_shot">Обычная задача</string>
+    <string name="task_create_category_one_time">С ограничением по времени</string>
+    <string name="task_create_category_days_of_week">Повторяющаяся в дни недели</string>
+    <string name="task_create_category_every_year">Повторяющаяся ежегодно</string>
+
     <!-- QR scanning -->
     <string name="qr_scanning_permission_title">Разрешите нам использовать камеру</string>
     <string name="qr_scanning_permission_description_ration">Это необходимо для того, чтобы мы могли сосканировать QR с вашего чека</string>

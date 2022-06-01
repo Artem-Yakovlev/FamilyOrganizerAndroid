@@ -2,6 +2,7 @@ package com.badger.familyorgfe.features.appjourney.tasks.createtask
 
 import com.badger.familyorgfe.base.BaseViewModel
 import com.badger.familyorgfe.data.model.Subtask
+import com.badger.familyorgfe.data.model.TaskCategory
 import com.badger.familyorgfe.data.model.TaskProduct
 import com.badger.familyorgfe.ext.MAX_TASK_TITLE_LENGTH
 import com.badger.familyorgfe.ext.isValidSubtaskTitle
@@ -18,6 +19,8 @@ class CreateTaskViewModel @Inject constructor(
 
     override val state =
         MutableStateFlow(ICreateTaskViewModel.State.createEmpty())
+    override val categoriesDialogState =
+        MutableStateFlow<ICreateTaskViewModel.CategoriesDialogState?>(null)
     override val notificationsDialogState =
         MutableStateFlow<ICreateTaskViewModel.NotificationDialogState?>(null)
     override val subtasksDialogState =
@@ -28,6 +31,7 @@ class CreateTaskViewModel @Inject constructor(
     override fun onEvent(event: ICreateTaskViewModel.Event) {
         when (event) {
             is ICreateTaskViewModel.Event.Ordinal -> onOrdinalEvent(event)
+            is ICreateTaskViewModel.Event.Categories -> onCategoriesEvent(event)
             is ICreateTaskViewModel.Event.Notifications -> onNotificationsEvent(event)
             is ICreateTaskViewModel.Event.Subtasks -> onSubtasksEvent(event)
             is ICreateTaskViewModel.Event.Products -> onProductsEvent(event)
@@ -63,7 +67,91 @@ class CreateTaskViewModel @Inject constructor(
                     items = event.products
                 )
             }
+            is ICreateTaskViewModel.Event.Ordinal.OpenCategories -> longRunning {
+                categoriesDialogState.value = ICreateTaskViewModel.CategoriesDialogState.create(
+                    category = event.category
+                )
+            }
         }
+    }
+
+    /**
+     * Categories
+     * */
+
+    private fun onCategoriesEvent(event: ICreateTaskViewModel.Event.Categories) {
+        when (event) {
+            is ICreateTaskViewModel.Event.CreatingOneTimeCategory -> {
+                onOneTimeCategoryEvent(event)
+            }
+            is ICreateTaskViewModel.Event.CreatingDaysOfWeekCategory -> {
+                onDaysOfWeekCategoryEvent(event)
+            }
+            is ICreateTaskViewModel.Event.CreatingEveryYearCategory -> {
+                onEveryYearCategoryEvent(event)
+            }
+            is ICreateTaskViewModel.Event.Categories.Dismiss -> {
+                categoriesDialogState.value = null
+            }
+            is ICreateTaskViewModel.Event.Categories.OnDaysOfWeekCategoryClicked -> {
+                categoriesDialogState.value = categoriesDialogState.value?.copy(
+                    creatingState = ICreateTaskViewModel.CategoriesDialogState
+                        .CreatingState.DaysOfWeekCategory
+                )
+            }
+            is ICreateTaskViewModel.Event.Categories.OnEveryYearCategoryClicked -> {
+                categoriesDialogState.value = categoriesDialogState.value?.copy(
+                    creatingState = ICreateTaskViewModel.CategoriesDialogState
+                        .CreatingState.EveryYearCategory
+                )
+            }
+            is ICreateTaskViewModel.Event.Categories.OnOneShotCategoryClicked -> {
+                state.value = state.value.copy(category = TaskCategory.OneShot)
+                categoriesDialogState.value = null
+            }
+            is ICreateTaskViewModel.Event.Categories.OnOneTimeCategoryClicked -> {
+                categoriesDialogState.value = categoriesDialogState.value?.copy(
+                    creatingState = ICreateTaskViewModel.CategoriesDialogState
+                        .CreatingState.OneTimeCategory
+                )
+            }
+        }
+    }
+
+    private fun onOneTimeCategoryEvent(
+        event: ICreateTaskViewModel.Event.CreatingOneTimeCategory
+    ) {
+        when (event) {
+            ICreateTaskViewModel.Event.CreatingOneTimeCategory.Dismiss -> {
+                dismissCategoryCreatingDialog()
+            }
+        }
+    }
+
+    private fun onDaysOfWeekCategoryEvent(
+        event: ICreateTaskViewModel.Event.CreatingDaysOfWeekCategory
+    ) {
+        when (event) {
+            ICreateTaskViewModel.Event.CreatingDaysOfWeekCategory.Dismiss -> {
+                dismissCategoryCreatingDialog()
+            }
+        }
+    }
+
+    private fun onEveryYearCategoryEvent(
+        event: ICreateTaskViewModel.Event.CreatingEveryYearCategory
+    ) {
+        when (event) {
+            ICreateTaskViewModel.Event.CreatingEveryYearCategory.Dismiss -> {
+                dismissCategoryCreatingDialog()
+            }
+        }
+    }
+
+    private fun dismissCategoryCreatingDialog() {
+        categoriesDialogState.value = categoriesDialogState.value?.copy(
+            creatingState = null
+        )
     }
 
     /**

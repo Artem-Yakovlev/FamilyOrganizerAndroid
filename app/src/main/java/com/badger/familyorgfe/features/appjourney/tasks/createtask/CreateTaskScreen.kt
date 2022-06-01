@@ -43,6 +43,7 @@ fun CreateTaskScreen(
     viewModel: ICreateTaskViewModel = hiltViewModel<CreateTaskViewModel>()
 ) {
     val state by viewModel.state.collectAsState()
+    val categoriesState by viewModel.categoriesDialogState.collectAsState()
     val notificationsState by viewModel.notificationsDialogState.collectAsState()
     val subtasksState by viewModel.subtasksDialogState.collectAsState()
     val productsState by viewModel.productsDialogState.collectAsState()
@@ -91,9 +92,11 @@ fun CreateTaskScreen(
         }
         item {
             CategoryBlock(
-                category = TaskCategory.OneShot,
+                category = state.category,
                 onEditClicked = {
-
+                    viewModel.onEvent(
+                        ICreateTaskViewModel.Event.Ordinal.OpenCategories(state.category)
+                    )
                 }
             )
             Spacer(modifier = Modifier.height(32.dp))
@@ -136,6 +139,33 @@ fun CreateTaskScreen(
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
+
+    CategoryEditingDialog(
+        state = categoriesState,
+        onOneShotCategorySelected = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.Categories.OnOneShotCategoryClicked)
+        },
+        onOneTimeCategorySelected = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.Categories.OnOneTimeCategoryClicked)
+        },
+        onDaysOfWeekCategorySelected = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.Categories.OnDaysOfWeekCategoryClicked)
+        },
+        onEveryYearCategorySelected = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.Categories.OnEveryYearCategoryClicked)
+        },
+        onDismiss = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.Categories.Dismiss)
+        },
+        onOneTimeCategoryDismiss = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingOneTimeCategory.Dismiss)
+        },
+        onDaysOfWeekCategoryDismiss = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingDaysOfWeekCategory.Dismiss)
+        },
+        onEveryYearCategoryDismiss = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingEveryYearCategory.Dismiss)
+        })
 
     NotificationsEditingDialog(
         state = notificationsState,
