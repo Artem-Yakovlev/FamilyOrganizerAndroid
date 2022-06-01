@@ -10,10 +10,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -33,8 +30,11 @@ import com.badger.familyorgfe.features.appjourney.tasks.taskdetails.ProductListI
 import com.badger.familyorgfe.features.appjourney.tasks.taskdetails.SubtaskListItem
 import com.badger.familyorgfe.features.appjourney.tasks.taskdetails.getCategoryDescription
 import com.badger.familyorgfe.ui.elements.BaseToolbar
+import com.badger.familyorgfe.ui.elements.FullScreenLoading
 import com.badger.familyorgfe.ui.style.outlinedTextFieldColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
+import com.badger.familyorgfe.utils.BackHandler
+import kotlinx.coroutines.flow.collectLatest
 
 @Composable
 fun CreateTaskScreen(
@@ -43,103 +43,144 @@ fun CreateTaskScreen(
     viewModel: ICreateTaskViewModel = hiltViewModel<CreateTaskViewModel>()
 ) {
     val state by viewModel.state.collectAsState()
+    val loading by viewModel.loading.collectAsState()
+
     val categoriesState by viewModel.categoriesDialogState.collectAsState()
     val notificationsState by viewModel.notificationsDialogState.collectAsState()
     val subtasksState by viewModel.subtasksDialogState.collectAsState()
     val productsState by viewModel.productsDialogState.collectAsState()
 
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-        item {
-            Toolbar(
-                doneEnabled = state.doneEnabled,
-                onBackClicked = { navController.popBackStack() },
-                onDoneClicked = {
-                    viewModel.onEvent(
-                        ICreateTaskViewModel.Event.Ordinal.OnDoneClicked
-                    )
-                },
-                creating = state.creating
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+    val onBack: () -> Unit = {
+        when {
+            categoriesState != null -> {
+                viewModel.onEvent(ICreateTaskViewModel.Event.Categories.Dismiss)
+            }
+            categoriesState?.creatingState != null -> {
+                viewModel.onEvent(ICreateTaskViewModel.Event.Categories.DismissCreating)
+            }
+            notificationsState != null -> {
+                viewModel.onEvent(ICreateTaskViewModel.Event.Notifications.Dismiss)
+            }
+            subtasksState != null -> {
+                viewModel.onEvent(ICreateTaskViewModel.Event.Subtasks.Dismiss)
+            }
+            productsState != null -> {
+                viewModel.onEvent(ICreateTaskViewModel.Event.Products.Dismiss)
+            }
+            else -> {
+                navController.popBackStack()
+            }
         }
-        item {
-            MainInformationTitle()
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-        item {
-            TitleTextField(
-                value = state.title,
-                valid = state.titleValid,
-                onValueChanged = { title ->
-                    viewModel.onEvent(
-                        ICreateTaskViewModel.Event.Ordinal.OnTitleValueChanged(title)
-                    )
-                }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-        }
-        item {
-            DescriptionTextField(
-                value = state.description,
-                valid = state.descriptionValid,
-                onValueChanged = { description ->
-                    viewModel.onEvent(
-                        ICreateTaskViewModel.Event.Ordinal.OnDescriptionValueChanged(description)
-                    )
-                }
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-        }
-        item {
-            CategoryBlock(
-                category = state.category,
-                onEditClicked = {
-                    viewModel.onEvent(
-                        ICreateTaskViewModel.Event.Ordinal.OpenCategories(state.category)
-                    )
-                }
-            )
-            Spacer(modifier = Modifier.height(32.dp))
-        }
-        item {
-            NotificationsBlock(
-                notifications = state.notifications,
-                localNames = emptyList(),
-                onEditClicked = {
-                    viewModel.onEvent(
-                        ICreateTaskViewModel.Event.Ordinal.OpenNotifications(state.notifications)
-                    )
-                }
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-        }
-        item {
-            SubtasksBlock(
-                subtasks = state.subtasks,
-                onCheckedChanged = { id, checked -> },
-                onEditClicked = {
-                    viewModel.onEvent(
-                        ICreateTaskViewModel.Event.Ordinal.OpenSubtasks(state.subtasks)
-                    )
-                }
-            )
-            Spacer(modifier = Modifier.height(24.dp))
-        }
+    }
+    BackHandler(onBack = onBack)
 
-        item {
-            ProductsBlock(
-                products = state.products,
-                onCheckedChanged = { id, checked -> },
-                onEditClicked = {
-                    viewModel.onEvent(
-                        ICreateTaskViewModel.Event.Ordinal.OpenProducts(state.products)
-                    )
-                }
-            )
-            Spacer(modifier = Modifier.height(16.dp))
+    LaunchedEffect(Unit) {
+        viewModel.saved.collectLatest { saved ->
+            if (saved) {
+                navController.popBackStack()
+            }
         }
     }
 
+    if (loading) {
+        FullScreenLoading(
+            modifier = Modifier.fillMaxSize(),
+            backgroundAlpha = 1f,
+            content = {}
+        )
+    } else {
+        LazyColumn(modifier = Modifier.fillMaxSize()) {
+            item {
+                Toolbar(
+                    doneEnabled = state.doneEnabled,
+                    onBackClicked = { navController.popBackStack() },
+                    onDoneClicked = {
+                        viewModel.onEvent(
+                            ICreateTaskViewModel.Event.Ordinal.OnDoneClicked
+                        )
+                    },
+                    creating = state.creating
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            item {
+                MainInformationTitle()
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+            item {
+                TitleTextField(
+                    value = state.title,
+                    valid = state.titleValid,
+                    onValueChanged = { title ->
+                        viewModel.onEvent(
+                            ICreateTaskViewModel.Event.Ordinal.OnTitleValueChanged(title)
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+            item {
+                DescriptionTextField(
+                    value = state.description,
+                    valid = true,
+                    onValueChanged = { description ->
+                        viewModel.onEvent(
+                            ICreateTaskViewModel.Event.Ordinal.OnDescriptionValueChanged(description)
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+            item {
+                CategoryBlock(
+                    category = state.category,
+                    onEditClicked = {
+                        viewModel.onEvent(
+                            ICreateTaskViewModel.Event.Ordinal.OpenCategories(state.category)
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+            }
+            item {
+                NotificationsBlock(
+                    notifications = state.notifications,
+                    localNames = emptyList(),
+                    onEditClicked = {
+                        viewModel.onEvent(
+                            ICreateTaskViewModel.Event.Ordinal.OpenNotifications(state.notifications)
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+            item {
+                SubtasksBlock(
+                    subtasks = state.subtasks,
+                    onCheckedChanged = { id, checked -> },
+                    onEditClicked = {
+                        viewModel.onEvent(
+                            ICreateTaskViewModel.Event.Ordinal.OpenSubtasks(state.subtasks)
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+
+            item {
+                ProductsBlock(
+                    products = state.products,
+                    onCheckedChanged = { id, checked -> },
+                    onEditClicked = {
+                        viewModel.onEvent(
+                            ICreateTaskViewModel.Event.Ordinal.OpenProducts(state.products)
+                        )
+                    }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+        }
+    }
     CategoryEditingDialog(
         state = categoriesState,
         onOneShotCategorySelected = {
@@ -157,14 +198,8 @@ fun CreateTaskScreen(
         onDismiss = {
             viewModel.onEvent(ICreateTaskViewModel.Event.Categories.Dismiss)
         },
-        onOneTimeCategoryDismiss = {
-            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingOneTimeCategory.Dismiss)
-        },
-        onDaysOfWeekCategoryDismiss = {
-            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingDaysOfWeekCategory.Dismiss)
-        },
-        onEveryYearCategoryDismiss = {
-            viewModel.onEvent(ICreateTaskViewModel.Event.CreatingEveryYearCategory.Dismiss)
+        onCreatingDismiss = {
+            viewModel.onEvent(ICreateTaskViewModel.Event.Categories.DismissCreating)
         },
         onOneTimeCategoryDateChanged = {
             viewModel.onEvent(ICreateTaskViewModel.Event.CreatingOneTimeCategory.OnDateChanged(it))

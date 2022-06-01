@@ -47,19 +47,17 @@ fun CategoryEditingDialog(
     onDaysOfWeekCategorySelected: () -> Unit,
     onEveryYearCategorySelected: () -> Unit,
     onDismiss: () -> Unit,
+    onCreatingDismiss: () -> Unit,
 
-    onOneTimeCategoryDismiss: () -> Unit,
     onOneTimeCategoryDateChanged: (String) -> Unit,
     onOneTimeCategoryTimeChanged: (String) -> Unit,
     onOneTimeCategorySaveClicked: () -> Unit,
 
-    onDaysOfWeekCategoryDismiss: () -> Unit,
     onDaysOfWeekCategoryAddDay: (DayOfWeek) -> Unit,
     onDaysOfWeekCategoryRemoveDay: (DayOfWeek) -> Unit,
     onDaysOfWeekCategoryTimeChanged: (String) -> Unit,
     onDaysOfWeekCategorySaveClicked: () -> Unit,
 
-    onEveryYearCategoryDismiss: () -> Unit,
     onEveryYearCategoryDateChanged: (String) -> Unit,
     onEveryYearCategoryTimeChanged: (String) -> Unit,
     onEveryYearCategorySaveClicked: () -> Unit,
@@ -85,7 +83,7 @@ fun CategoryEditingDialog(
     when (val creatingState = state?.creatingState) {
         is ICreateTaskViewModel.CategoriesDialogState.CreatingState.DaysOfWeekCategory -> {
             TaskEditingBottomSheet(
-                onDismiss = onDaysOfWeekCategoryDismiss,
+                onDismiss = onCreatingDismiss,
                 block = {
                     DaysOfWeekCategoryContent(
                         state = creatingState,
@@ -98,7 +96,7 @@ fun CategoryEditingDialog(
         }
         is ICreateTaskViewModel.CategoriesDialogState.CreatingState.EveryYearCategory -> {
             TaskEditingBottomSheet(
-                onDismiss = onEveryYearCategoryDismiss,
+                onDismiss = onCreatingDismiss,
                 block = {
                     EveryYearCategoryContent(
                         state = creatingState,
@@ -110,7 +108,7 @@ fun CategoryEditingDialog(
         }
         is ICreateTaskViewModel.CategoriesDialogState.CreatingState.OneTimeCategory -> {
             TaskEditingBottomSheet(
-                onDismiss = onOneTimeCategoryDismiss,
+                onDismiss = onCreatingDismiss,
                 block = {
                     OneTimeCategoryContent(
                         state = creatingState,

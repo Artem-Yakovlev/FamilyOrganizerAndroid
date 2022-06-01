@@ -5,18 +5,26 @@ import com.badger.familyorgfe.data.model.Subtask
 import com.badger.familyorgfe.data.model.TaskCategory
 import com.badger.familyorgfe.data.model.TaskProduct
 import com.badger.familyorgfe.ext.*
+import com.badger.familyorgfe.features.appjourney.tasks.createtask.domain.CreateFamilyTaskUseCase
 import com.badger.familyorgfe.features.appjourney.tasks.createtask.domain.CreateNotificationsDialogStateUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
 class CreateTaskViewModel @Inject constructor(
-    private val createNotificationsDialogStateUseCase: CreateNotificationsDialogStateUseCase
+    private val createNotificationsDialogStateUseCase: CreateNotificationsDialogStateUseCase,
+    private val createFamilyTaskUseCase: CreateFamilyTaskUseCase
 ) : BaseViewModel(), ICreateTaskViewModel {
 
     override val state =
         MutableStateFlow(ICreateTaskViewModel.State.createEmpty())
+    override val loading =
+        MutableStateFlow(false)
+    override val saved =
+        MutableSharedFlow<Boolean>()
+
     override val categoriesDialogState =
         MutableStateFlow<ICreateTaskViewModel.CategoriesDialogState?>(null)
     override val notificationsDialogState =
@@ -41,8 +49,13 @@ class CreateTaskViewModel @Inject constructor(
             is ICreateTaskViewModel.Event.Ordinal.Init -> {
 
             }
-            is ICreateTaskViewModel.Event.Ordinal.OnDoneClicked -> {
-
+            is ICreateTaskViewModel.Event.Ordinal.OnDoneClicked -> longRunning {
+                if (!loading.value) {
+                    loading.value = true
+                    createFamilyTaskUseCase(state.value.createFamilyTask())
+                    loading.value = false
+                    saved.emit(true)
+                }
             }
             is ICreateTaskViewModel.Event.Ordinal.OnDescriptionValueChanged -> {
                 state.value = state.value.copy(description = event.value)
@@ -113,6 +126,9 @@ class CreateTaskViewModel @Inject constructor(
                         .CreatingState.OneTimeCategory.createEmpty()
                 )
             }
+            is ICreateTaskViewModel.Event.Categories.DismissCreating -> {
+                dismissCategoryCreatingDialog()
+            }
         }
     }
 
@@ -124,9 +140,6 @@ class CreateTaskViewModel @Inject constructor(
             ?: return
 
         when (event) {
-            is ICreateTaskViewModel.Event.CreatingOneTimeCategory.Dismiss -> {
-                dismissCategoryCreatingDialog()
-            }
             is ICreateTaskViewModel.Event.CreatingOneTimeCategory.OnDateChanged -> {
                 categoriesDialogState.value = categoriesDialogState.value?.copy(
                     creatingState = creatingState.copy(
@@ -158,9 +171,6 @@ class CreateTaskViewModel @Inject constructor(
             ?: return
 
         when (event) {
-            is ICreateTaskViewModel.Event.CreatingDaysOfWeekCategory.Dismiss -> {
-                dismissCategoryCreatingDialog()
-            }
             is ICreateTaskViewModel.Event.CreatingDaysOfWeekCategory.Add -> {
                 categoriesDialogState.value = categoriesDialogState.value?.copy(
                     creatingState = creatingState.copy(
@@ -199,9 +209,6 @@ class CreateTaskViewModel @Inject constructor(
             ?: return
 
         when (event) {
-            is ICreateTaskViewModel.Event.CreatingEveryYearCategory.Dismiss -> {
-                dismissCategoryCreatingDialog()
-            }
             is ICreateTaskViewModel.Event.CreatingEveryYearCategory.OnDateChanged -> {
                 categoriesDialogState.value = categoriesDialogState.value?.copy(
                     creatingState = creatingState.copy(
