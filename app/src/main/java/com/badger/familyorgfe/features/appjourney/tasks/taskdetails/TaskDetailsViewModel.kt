@@ -10,16 +10,19 @@ import com.badger.familyorgfe.features.appjourney.tasks.taskdetails.repository.I
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
 @HiltViewModel
 class TaskDetailsViewModel @Inject constructor(
     private val currentTaskRepository: ICurrentTaskRepository,
-    private val userRepository: IUserRepository
+    userRepository: IUserRepository
 ) : BaseViewModel(), ITaskDetailsViewModel {
 
-    override val familyTask: StateFlow<FamilyTask?> = currentTaskRepository.currentTask.stateIn(
+    override val familyTask: StateFlow<FamilyTask?> = flow {
+        emit(currentTaskRepository.getCurrentTask())
+    }.stateIn(
         viewModelScope(),
         started = SharingStarted.Lazily,
         initialValue = null
@@ -44,9 +47,5 @@ class TaskDetailsViewModel @Inject constructor(
 
             }
         }
-    }
-
-    override fun onCleared() = longRunning {
-        currentTaskRepository.setFamilyTaskId(null)
     }
 }

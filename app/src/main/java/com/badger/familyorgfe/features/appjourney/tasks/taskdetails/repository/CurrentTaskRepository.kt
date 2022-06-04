@@ -2,26 +2,22 @@ package com.badger.familyorgfe.features.appjourney.tasks.taskdetails.repository
 
 import com.badger.familyorgfe.data.model.FamilyTask
 import com.badger.familyorgfe.features.appjourney.tasks.alltasks.repository.IAllTasksRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.firstOrNull
 import javax.inject.Inject
 
 class CurrentTaskRepository @Inject constructor(
-    allTasksRepository: IAllTasksRepository
+    private val allTasksRepository: IAllTasksRepository
 ) : ICurrentTaskRepository {
 
-    private val currentTaskId = MutableStateFlow<Long?>(null)
+    private var currentTaskId: Long? = null
 
-    override val currentTask: Flow<FamilyTask?> = combine(
-        allTasksRepository.openTasks, allTasksRepository.closedTasks
-    ) { openTasks, closedTasks ->
-        openTasks + closedTasks
-    }.combine(currentTaskId) { tasks, taskId ->
-        tasks.find { it.id == taskId }
+    override suspend fun getCurrentTask(): FamilyTask? {
+        return (allTasksRepository.closedTasks.firstOrNull().orEmpty() +
+                allTasksRepository.openTasks.firstOrNull()
+                    .orEmpty()).find { task -> task.id == currentTaskId }
     }
 
     override suspend fun setFamilyTaskId(familyTaskId: Long?) {
-        currentTaskId.value = familyTaskId
+        currentTaskId = familyTaskId
     }
 }

@@ -1,6 +1,5 @@
 package com.badger.familyorgfe.features.appjourney.tasks.createtask
 
-import android.util.Log
 import com.badger.familyorgfe.base.BaseViewModel
 import com.badger.familyorgfe.data.model.Subtask
 import com.badger.familyorgfe.data.model.TaskCategory
@@ -9,11 +8,10 @@ import com.badger.familyorgfe.ext.*
 import com.badger.familyorgfe.features.appjourney.tasks.createtask.domain.CreateFamilyTaskUseCase
 import com.badger.familyorgfe.features.appjourney.tasks.createtask.domain.CreateNotificationsDialogStateUseCase
 import com.badger.familyorgfe.features.appjourney.tasks.createtask.domain.UpdateFamilyTaskUseCase
-import com.badger.familyorgfe.features.appjourney.tasks.taskdetails.repository.CurrentTaskRepository
+import com.badger.familyorgfe.features.appjourney.tasks.taskdetails.repository.ICurrentTaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
 import javax.inject.Inject
 
 @HiltViewModel
@@ -21,7 +19,7 @@ class CreateTaskViewModel @Inject constructor(
     private val createNotificationsDialogStateUseCase: CreateNotificationsDialogStateUseCase,
     private val updateFamilyTaskUseCase: UpdateFamilyTaskUseCase,
     private val createFamilyTaskUseCase: CreateFamilyTaskUseCase,
-    private val currentTaskRepository: CurrentTaskRepository
+    private val currentTaskRepository: ICurrentTaskRepository
 ) : BaseViewModel(), ICreateTaskViewModel {
 
     override val state =
@@ -53,14 +51,13 @@ class CreateTaskViewModel @Inject constructor(
     private fun onOrdinalEvent(event: ICreateTaskViewModel.Event.Ordinal) {
         when (event) {
             is ICreateTaskViewModel.Event.Ordinal.Init -> longRunning {
-                currentTaskRepository.currentTask.first()?.let { familyTask ->
+                currentTaskRepository.getCurrentTask()?.let { familyTask ->
                     state.value = ICreateTaskViewModel.State.createFromTask(familyTask)
                 }
             }
             is ICreateTaskViewModel.Event.Ordinal.OnDoneClicked -> longRunning {
                 if (!loading.value) {
                     loading.value = true
-                    Log.d("ASMR", state.value.creating.toString())
                     if (state.value.creating) {
                         createFamilyTaskUseCase(state.value.createFamilyTask())
                     } else {

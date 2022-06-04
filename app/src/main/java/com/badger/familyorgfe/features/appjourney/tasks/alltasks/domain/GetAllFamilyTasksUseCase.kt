@@ -1,6 +1,5 @@
 package com.badger.familyorgfe.features.appjourney.tasks.alltasks.domain
 
-import android.util.Log
 import com.badger.familyorgfe.base.BaseUseCase
 import com.badger.familyorgfe.data.model.FamilyTask
 import com.badger.familyorgfe.data.repository.IDataStoreRepository
@@ -17,7 +16,6 @@ class GetAllFamilyTasksUseCase @Inject constructor(
 
     override suspend fun invoke(arg: Unit): List<FamilyTask> {
         return dataStoreRepository.familyId.firstOrNull()?.let { familyId ->
-            Log.d("ASMR", "$familyId !")
             val form = GetAllJson.Form(familyId = familyId)
             try {
                 val result = tasksApi.getAll(form)
