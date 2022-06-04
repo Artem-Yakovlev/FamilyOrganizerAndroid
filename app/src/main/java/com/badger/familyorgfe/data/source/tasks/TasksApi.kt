@@ -13,6 +13,7 @@ interface TasksApi {
         private const val DELETE = "$API/delete"
         private const val MODIFY = "$API/modify"
         private const val CHANGE_STATUS = "$API/changeStatus"
+        private const val CHECK_SUBTASK_OR_PRODUCT = "$API/checkSubtaskOrProduct"
     }
 
     @POST(GET_ALL)
@@ -29,4 +30,7 @@ interface TasksApi {
 
     @POST(CHANGE_STATUS)
     suspend fun changeStatus(@Body form: ChangeStatusJson.Form): BaseResponse<ChangeStatusJson.Response>
+
+    @POST(CHECK_SUBTASK_OR_PRODUCT)
+    suspend fun checkSubtaskOrProduct(@Body form: CheckSubtaskOrProductJson.Form): BaseResponse<CheckSubtaskOrProductJson.Response>
 }
