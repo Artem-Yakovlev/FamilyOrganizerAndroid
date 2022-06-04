@@ -18,7 +18,7 @@ data class RemoteTask(
     fun toFamilyTask(): FamilyTask {
         return FamilyTask(
             id = id,
-            category = category.toTaskCategory(),
+            category = category.toCategory(),
             status = status,
             title = title,
             desc = description,
