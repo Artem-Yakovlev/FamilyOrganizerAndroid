@@ -4,6 +4,7 @@ import com.badger.familyorgfe.data.model.FamilyTask
 import com.badger.familyorgfe.data.model.Subtask
 import com.badger.familyorgfe.data.model.TaskProduct
 import com.badger.familyorgfe.data.model.TaskStatus
+import com.badger.familyorgfe.data.source.tasks.model.RemoteCategory.Companion.toRemote
 
 data class RemoteTask(
     val id: Long,
@@ -26,5 +27,20 @@ data class RemoteTask(
             products = products,
             subtasks = subtasks
         )
+    }
+
+    companion object {
+        fun FamilyTask.toRemote() : RemoteTask {
+            return RemoteTask(
+                id = id,
+                category = category.toRemote(),
+                status = status,
+                title = title,
+                description = desc,
+                notifications = notificationEmails,
+                products = products,
+                subtasks = subtasks
+            )
+        }
     }
 }

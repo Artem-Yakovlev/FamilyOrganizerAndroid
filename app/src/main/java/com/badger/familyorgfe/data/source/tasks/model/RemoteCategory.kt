@@ -5,6 +5,7 @@ import com.badger.familyorgfe.ext.toInstantAtZone
 import org.threeten.bp.DayOfWeek
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.LocalTime
+import org.threeten.bp.ZoneId
 
 class RemoteCategory(
     private val type: RemoteCategoryType,
@@ -29,6 +30,32 @@ class RemoteCategory(
             isTimeImportant = isTimeImportant
         )
     }
+
+    companion object {
+        fun TaskCategory.toRemote() = when (this) {
+            is TaskCategory.All, TaskCategory.OneShot ->
+                RemoteCategory(type = RemoteCategoryType.ONE_SHOT)
+            is TaskCategory.OneTime ->
+                RemoteCategory(
+                    type = RemoteCategoryType.ONE_SHOT,
+                    dateTime = localDateTime.atZone(ZoneId.systemDefault()).toEpochSecond(),
+                    isTimeImportant = isTimeImportant
+                )
+            is TaskCategory.Recurring.DaysOfWeek ->
+                RemoteCategory(
+                    type = RemoteCategoryType.DAYS_OF_WEEK,
+                    days = days.map(DayOfWeek::getValue),
+                    time = time.nano.toLong(),
+                    isTimeImportant = isTimeImportant
+                )
+            is TaskCategory.Recurring.EveryYear ->
+                RemoteCategory(
+                    type = RemoteCategoryType.EVERY_YEAR,
+                    dateTime = localDateTime.atZone(ZoneId.systemDefault()).toEpochSecond(),
+                    isTimeImportant = isTimeImportant
+                )
+        }
+    }
 }
 
 enum class RemoteCategoryType {
@@ -37,49 +64,3 @@ enum class RemoteCategoryType {
     DAYS_OF_WEEK,
     EVERY_YEAR
 }
-
-//sealed class RemoteCategory {
-//    abstract val isTimeImportant: Boolean
-//
-//    object OneShot : RemoteCategory() {
-//        override val isTimeImportant = false
-//    }
-//
-//    data class OneTime(
-//        val localDateTime: Long,
-//        override val isTimeImportant: Boolean
-//    ) : RemoteCategory()
-//
-//    sealed class Recurring : RemoteCategory() {
-//
-//        data class DaysOfWeek(
-//            val days: List<Int>,
-//            val time: Long,
-//            override val isTimeImportant: Boolean
-//        ) : Recurring()
-//
-//        data class EveryYear(
-//            val localDateTime: Long,
-//            override val isTimeImportant: Boolean
-//        ) : Recurring()
-//    }
-//
-//    fun toTaskCategory(): TaskCategory {
-//        return when (this) {
-//            is OneShot -> TaskCategory.OneShot
-//            is TaskCategory.OneTime -> TaskCategory.OneTime(
-//                localDateTime = localDateTime.toInstantAtZone().toLocalDateTime(),
-//                isTimeImportant = isTimeImportant
-//            )
-//            is Recurring.DaysOfWeek -> TaskCategory.Recurring.DaysOfWeek(
-//                days = days.map { dayNumber -> DayOfWeek.of(dayNumber) },
-//                time = time.toInstantAtZone().toLocalTime(),
-//                isTimeImportant = isTimeImportant
-//            )
-//            is Recurring.EveryYear -> TaskCategory.Recurring.EveryYear(
-//                localDateTime = localDateTime.toInstantAtZone().toLocalDateTime(),
-//                isTimeImportant = isTimeImportant
-//            )
-//        }
-//    }
-//}

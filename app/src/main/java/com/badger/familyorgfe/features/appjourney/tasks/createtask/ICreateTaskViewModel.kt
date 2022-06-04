@@ -118,7 +118,7 @@ interface ICreateTaskViewModel : IBaseViewModel<ICreateTaskViewModel.Event> {
         val subtasks: List<Subtask>,
         val products: List<TaskProduct>
     ) {
-        val creating: Boolean = id != null && status != null
+        val creating: Boolean = id == null && status == null
         val titleValid: Boolean = title.isValidTaskTitle()
         val doneEnabled: Boolean = titleValid
 

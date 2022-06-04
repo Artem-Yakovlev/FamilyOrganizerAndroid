@@ -1,5 +1,6 @@
 package com.badger.familyorgfe.features.appjourney.tasks.createtask
 
+import android.util.Log
 import com.badger.familyorgfe.base.BaseViewModel
 import com.badger.familyorgfe.data.model.Subtask
 import com.badger.familyorgfe.data.model.TaskCategory
@@ -59,6 +60,7 @@ class CreateTaskViewModel @Inject constructor(
             is ICreateTaskViewModel.Event.Ordinal.OnDoneClicked -> longRunning {
                 if (!loading.value) {
                     loading.value = true
+                    Log.d("ASMR", state.value.creating.toString())
                     if (state.value.creating) {
                         createFamilyTaskUseCase(state.value.createFamilyTask())
                     } else {
