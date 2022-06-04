@@ -2,12 +2,16 @@ package com.badger.familyorgfe.features.appjourney.tasks.alltasks.repository
 
 import com.badger.familyorgfe.data.model.FamilyTask
 import com.badger.familyorgfe.data.model.TaskCategory
-import com.badger.familyorgfe.data.model.TaskStatus
+import com.badger.familyorgfe.features.appjourney.tasks.alltasks.domain.GetAllFamilyTasksUseCase
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
-class AllTasksRepository @Inject constructor() : IAllTasksRepository {
+class AllTasksRepository @Inject constructor(
+    private val getAllFamilyTasksUseCase: GetAllFamilyTasksUseCase
+) : IAllTasksRepository {
 
     override val currentCategory = MutableStateFlow<TaskCategory>(TaskCategory.All)
 
@@ -17,24 +21,17 @@ class AllTasksRepository @Inject constructor() : IAllTasksRepository {
     private val _closedTasks = MutableStateFlow<List<FamilyTask>>(emptyList())
     override val closedTasks = combine(currentCategory, _closedTasks, ::filterTasksByCategory)
 
-    override suspend fun updateData() {
-        _openTasks.value = listOf(
-            FamilyTask.createMock(),
-            FamilyTask.createMock(),
-            FamilyTask.createMock()
-        ).map { it.copy(status = TaskStatus.ACTIVE) }
 
-        _closedTasks.value = listOf(
-            FamilyTask.createMock(),
-            FamilyTask.createMock()
-        ).map {
-            it.copy(
-                status = listOf(
-                    TaskStatus.FINISHED,
-                    TaskStatus.FAILED
-                ).random()
-            )
+    private suspend fun getAllTasks(): List<FamilyTask> {
+        return withContext(Dispatchers.Default) {
+            getAllFamilyTasksUseCase(Unit)
         }
+    }
+
+    override suspend fun updateData() {
+        val allTasks = getAllTasks()
+        _openTasks.value = allTasks.filter(FamilyTask::isActive)
+        _closedTasks.value = allTasks.filterNot(FamilyTask::isActive)
     }
 
     override suspend fun changeCategory(category: TaskCategory) {

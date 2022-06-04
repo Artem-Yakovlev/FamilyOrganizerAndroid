@@ -5,8 +5,9 @@ import com.badger.familyorgfe.features.appjourney.tasks.alltasks.repository.IAll
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.combine
+import javax.inject.Inject
 
-class CurrentTaskRepository(
+class CurrentTaskRepository @Inject constructor(
     allTasksRepository: IAllTasksRepository
 ) : ICurrentTaskRepository {
 

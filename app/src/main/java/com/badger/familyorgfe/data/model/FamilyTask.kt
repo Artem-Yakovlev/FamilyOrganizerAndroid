@@ -21,6 +21,8 @@ data class FamilyTask(
     val subtasks: List<Subtask>
 ) {
 
+    val isActive get() = status == TaskStatus.ACTIVE
+
     val hasNotifications get() = notificationEmails.isNotEmpty()
 
     val hasProducts get() = products.isNotEmpty()

@@ -12,9 +12,11 @@ import com.badger.familyorgfe.data.source.auth.AuthApi
 import com.badger.familyorgfe.data.source.family.FamilyApi
 import com.badger.familyorgfe.data.source.familyauth.FamilyAuthApi
 import com.badger.familyorgfe.data.source.products.ProductsApi
+import com.badger.familyorgfe.data.source.tasks.TasksApi
 import com.badger.familyorgfe.data.source.user.UserApi
 import com.badger.familyorgfe.features.appjourney.products.adding.repository.AddingRepository
 import com.badger.familyorgfe.features.appjourney.products.adding.repository.IAddingRepository
+import com.badger.familyorgfe.features.appjourney.tasks.alltasks.domain.GetAllFamilyTasksUseCase
 import com.badger.familyorgfe.features.appjourney.tasks.alltasks.repository.AllTasksRepository
 import com.badger.familyorgfe.features.appjourney.tasks.alltasks.repository.IAllTasksRepository
 import com.badger.familyorgfe.features.appjourney.tasks.taskdetails.repository.CurrentTaskRepository
@@ -138,14 +140,26 @@ class SourceModule {
 
     @Provides
     @Singleton
+    fun provideTasksApi(retrofit: Retrofit): TasksApi =
+        retrofit.create(TasksApi::class.java)
+
+    @Provides
+    @Singleton
     fun provideAddingRepository(): IAddingRepository {
         return AddingRepository()
     }
 
     @Provides
     @Singleton
-    fun provideAllTasksRepository(): IAllTasksRepository {
-        return AllTasksRepository()
+    fun provideAllTasksRepository(
+        tasksApi: TasksApi,
+        dataStore: DataStore<Preferences>
+    ): IAllTasksRepository {
+        val useCase = GetAllFamilyTasksUseCase(
+            tasksApi = tasksApi,
+            dataStoreRepository = DataStoreRepository(dataStore)
+        )
+        return AllTasksRepository(useCase)
     }
 
     @Provides
