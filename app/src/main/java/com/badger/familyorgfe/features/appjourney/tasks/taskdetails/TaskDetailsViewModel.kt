@@ -6,17 +6,16 @@ import com.badger.familyorgfe.data.model.LocalName
 import com.badger.familyorgfe.data.repository.IUserRepository
 import com.badger.familyorgfe.ext.longRunning
 import com.badger.familyorgfe.ext.viewModelScope
+import com.badger.familyorgfe.features.appjourney.tasks.taskdetails.domain.DeleteTaskUseCase
 import com.badger.familyorgfe.features.appjourney.tasks.taskdetails.repository.ICurrentTaskRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.flow.*
 import javax.inject.Inject
 
 @HiltViewModel
 class TaskDetailsViewModel @Inject constructor(
     private val currentTaskRepository: ICurrentTaskRepository,
+    private val deleteTaskUseCase: DeleteTaskUseCase,
     userRepository: IUserRepository
 ) : BaseViewModel(), ITaskDetailsViewModel {
 
@@ -32,6 +31,9 @@ class TaskDetailsViewModel @Inject constructor(
         started = SharingStarted.Lazily,
         initialValue = emptyList()
     )
+    override val deleted = MutableSharedFlow<Boolean>()
+
+    private val loading = MutableStateFlow(false)
 
     override fun onEvent(event: ITaskDetailsViewModel.Event) {
         when (event) {
@@ -45,6 +47,16 @@ class TaskDetailsViewModel @Inject constructor(
             }
             is ITaskDetailsViewModel.Event.OnSubtaskChecked -> {
 
+            }
+            is ITaskDetailsViewModel.Event.DeleteTask -> longRunning {
+                familyTask.value?.let { task ->
+                    if (!loading.value) {
+                        loading.value = true
+                        deleteTaskUseCase(task.id)
+                        deleted.emit(true)
+                        loading.value = false
+                    }
+                }
             }
         }
     }

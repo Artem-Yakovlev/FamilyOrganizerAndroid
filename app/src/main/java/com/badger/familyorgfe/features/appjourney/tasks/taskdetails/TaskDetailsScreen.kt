@@ -7,10 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Checkbox
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -24,9 +21,12 @@ import com.badger.familyorgfe.R
 import com.badger.familyorgfe.data.model.*
 import com.badger.familyorgfe.features.appjourney.bottomnavigation.TasksNavigationType
 import com.badger.familyorgfe.features.appjourney.products.fridge.fridgeitem.getMeasureString
+import com.badger.familyorgfe.ui.elements.BaseTextButton
 import com.badger.familyorgfe.ui.elements.BaseToolbar
 import com.badger.familyorgfe.ui.style.checkBoxColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.filter
 import org.threeten.bp.format.DateTimeFormatter
 
 @Composable
@@ -35,6 +35,12 @@ fun TaskDetailsScreen(
     navController: NavController,
     viewModel: ITaskDetailsViewModel = hiltViewModel<TaskDetailsViewModel>()
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.deleted.filter { deleted -> deleted }.collectLatest {
+            navController.popBackStack()
+        }
+    }
+
     val nullableFamilyTask by viewModel.familyTask.collectAsState()
     val localNames by viewModel.localNames.collectAsState()
 
@@ -102,6 +108,16 @@ fun TaskDetailsScreen(
                 ) { id, checked ->
                     viewModel.onEvent(
                         ITaskDetailsViewModel.Event.OnProductChecked(id, checked)
+                    )
+                }
+            }
+            item {
+                Spacer(modifier = Modifier.height(32.dp))
+                Row(modifier = Modifier.fillMaxWidth()) {
+                    BaseTextButton(
+                        onAction = { viewModel.onEvent(ITaskDetailsViewModel.Event.DeleteTask) },
+                        text = stringResource(id = R.string.task_delete_button_text),
+                        enabled = true
                     )
                 }
             }
