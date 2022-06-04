@@ -23,7 +23,6 @@ class AllTasksRepository @Inject constructor(
     private val _closedTasks = MutableStateFlow<List<FamilyTask>>(emptyList())
     override val closedTasks = combine(currentCategory, _closedTasks, ::filterTasksByCategory)
 
-
     private suspend fun getAllTasks(): List<FamilyTask> {
         return withContext(Dispatchers.Default) {
             getAllFamilyTasksUseCase(Unit).map {

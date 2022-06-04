@@ -42,6 +42,7 @@ class AllTasksViewModel @Inject constructor(
                 allTasksRepository.changeCategory(event.category)
             }
             is IAllTasksViewModel.Event.Init -> longRunning {
+                currentTaskRepository.setFamilyTaskId(null)
                 allTasksRepository.updateData()
             }
             is IAllTasksViewModel.Event.OnFamilyTaskOpened -> longRunning {
