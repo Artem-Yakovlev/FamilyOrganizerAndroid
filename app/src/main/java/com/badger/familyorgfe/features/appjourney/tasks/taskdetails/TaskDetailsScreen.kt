@@ -93,6 +93,7 @@ fun TaskDetailsScreen(
             item {
                 Spacer(modifier = Modifier.height(32.dp))
                 SubtasksBlock(
+                    enabled = familyTask.isActive,
                     subtasks = familyTask.subtasks,
                     onCheckedChanged = { id, checked ->
                         viewModel.onEvent(
@@ -104,6 +105,7 @@ fun TaskDetailsScreen(
             item {
                 Spacer(modifier = Modifier.height(32.dp))
                 ProductsBlock(
+                    enabled = familyTask.isActive,
                     products = familyTask.products
                 ) { id, checked ->
                     viewModel.onEvent(
@@ -113,14 +115,17 @@ fun TaskDetailsScreen(
             }
             item {
                 Spacer(modifier = Modifier.height(32.dp))
-                Row(modifier = Modifier.fillMaxWidth()) {
-                    BaseTextButton(
-                        onAction = { viewModel.onEvent(ITaskDetailsViewModel.Event.DeleteTask) },
-                        text = stringResource(id = R.string.task_delete_button_text),
-                        enabled = true
-                    )
+                if (familyTask.isActive) {
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        BaseTextButton(
+                            onAction = { viewModel.onEvent(ITaskDetailsViewModel.Event.DeleteTask) },
+                            text = stringResource(id = R.string.task_delete_button_text),
+                            enabled = true
+                        )
+                    }
                 }
             }
+
             item {
                 Spacer(modifier = Modifier.height(16.dp))
             }
@@ -154,17 +159,19 @@ private fun Toolbar(
             style = FamilyOrganizerTheme.textStyle.headline2,
             color = FamilyOrganizerTheme.colors.blackPrimary
         )
-        Icon(
-            modifier = Modifier
-                .size(24.dp)
-                .clickable(
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { onEditClicked() },
-            painter = painterResource(id = R.drawable.ic_edit_pencil),
-            contentDescription = null,
-            tint = FamilyOrganizerTheme.colors.blackPrimary
-        )
+        if (status == TaskStatus.ACTIVE) {
+            Icon(
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) { onEditClicked() },
+                painter = painterResource(id = R.drawable.ic_edit_pencil),
+                contentDescription = null,
+                tint = FamilyOrganizerTheme.colors.blackPrimary
+            )
+        }
         Spacer(modifier = Modifier.width(16.dp))
     }
 }
@@ -306,6 +313,7 @@ private fun NotificationsBlock(
 
 @Composable
 private fun SubtasksBlock(
+    enabled: Boolean,
     subtasks: List<Subtask>,
     onCheckedChanged: (Long, Boolean) -> Unit
 ) {
@@ -324,6 +332,7 @@ private fun SubtasksBlock(
             subtasks.forEach { item ->
                 SubtaskListItem(
                     task = item,
+                    enabled = enabled,
                     onCheckedChanged = { checked -> onCheckedChanged(item.id, checked) }
                 )
             }
@@ -334,6 +343,7 @@ private fun SubtasksBlock(
 @Composable
 fun SubtaskListItem(
     task: Subtask,
+    enabled: Boolean,
     onCheckedChanged: (Boolean) -> Unit
 ) {
     Row(
@@ -342,6 +352,7 @@ fun SubtaskListItem(
             .padding(start = 4.dp)
     ) {
         Checkbox(
+            enabled = enabled,
             checked = task.checked,
             onCheckedChange = onCheckedChanged,
             colors = checkBoxColors()
@@ -362,6 +373,7 @@ fun SubtaskListItem(
 
 @Composable
 private fun ProductsBlock(
+    enabled: Boolean,
     products: List<TaskProduct>,
     onCheckedChanged: (Long, Boolean) -> Unit
 ) {
@@ -379,6 +391,7 @@ private fun ProductsBlock(
             )
             products.forEach { item ->
                 ProductListItem(
+                    enabled = enabled,
                     product = item,
                     onCheckedChanged = { checked -> onCheckedChanged(item.id, checked) }
                 )
@@ -390,6 +403,7 @@ private fun ProductsBlock(
 @Composable
 fun ProductListItem(
     product: TaskProduct,
+    enabled: Boolean,
     onCheckedChanged: (Boolean) -> Unit
 ) {
     Row(
@@ -398,6 +412,7 @@ fun ProductListItem(
             .padding(start = 4.dp)
     ) {
         Checkbox(
+            enabled = enabled,
             checked = product.checked,
             onCheckedChange = onCheckedChanged,
             colors = checkBoxColors()

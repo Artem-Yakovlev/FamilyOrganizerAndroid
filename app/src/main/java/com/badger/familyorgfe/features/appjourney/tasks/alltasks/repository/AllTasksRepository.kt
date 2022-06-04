@@ -1,7 +1,9 @@
 package com.badger.familyorgfe.features.appjourney.tasks.alltasks.repository
 
 import com.badger.familyorgfe.data.model.FamilyTask
+import com.badger.familyorgfe.data.model.Subtask
 import com.badger.familyorgfe.data.model.TaskCategory
+import com.badger.familyorgfe.data.model.TaskProduct
 import com.badger.familyorgfe.features.appjourney.tasks.alltasks.domain.GetAllFamilyTasksUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -24,7 +26,12 @@ class AllTasksRepository @Inject constructor(
 
     private suspend fun getAllTasks(): List<FamilyTask> {
         return withContext(Dispatchers.Default) {
-            getAllFamilyTasksUseCase(Unit)
+            getAllFamilyTasksUseCase(Unit).map {
+                it.copy(
+                    products = it.products.sortedBy(TaskProduct::title),
+                    subtasks = it.subtasks.sortedBy(Subtask::text)
+                )
+            }
         }
     }
 

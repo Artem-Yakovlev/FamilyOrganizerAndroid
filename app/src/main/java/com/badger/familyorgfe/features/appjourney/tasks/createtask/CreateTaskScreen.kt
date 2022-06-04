@@ -158,7 +158,7 @@ fun CreateTaskScreen(
             item {
                 SubtasksBlock(
                     subtasks = state.subtasks,
-                    onCheckedChanged = { id, checked -> },
+                    onCheckedChanged = { _, _ -> },
                     onEditClicked = {
                         viewModel.onEvent(
                             ICreateTaskViewModel.Event.Ordinal.OpenSubtasks(state.subtasks)
@@ -171,7 +171,7 @@ fun CreateTaskScreen(
             item {
                 ProductsBlock(
                     products = state.products,
-                    onCheckedChanged = { id, checked -> },
+                    onCheckedChanged = { _, _ -> },
                     onEditClicked = {
                         viewModel.onEvent(
                             ICreateTaskViewModel.Event.Ordinal.OpenProducts(state.products)
@@ -530,6 +530,7 @@ private fun SubtasksBlock(
 
         subtasks.forEach { item ->
             SubtaskListItem(
+                enabled = false,
                 task = item,
                 onCheckedChanged = { checked -> onCheckedChanged(item.id, checked) }
             )
@@ -567,6 +568,7 @@ private fun ProductsBlock(
         }
         products.forEach { item ->
             ProductListItem(
+                enabled = false,
                 product = item,
                 onCheckedChanged = { checked -> onCheckedChanged(item.id, checked) }
             )
