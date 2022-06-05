@@ -15,7 +15,7 @@ class AddProductUseCase @Inject constructor(
 
     data class Argument(
         val products: List<Product>,
-        val tasks: List<String>
+        val tasks: List<Long>
     )
 
     override suspend fun invoke(arg: Argument): Boolean {

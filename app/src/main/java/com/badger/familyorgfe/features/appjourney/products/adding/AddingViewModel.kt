@@ -204,7 +204,7 @@ class AddingViewModel @Inject constructor(
                         products = addingRepository.readyToAddingProducts.first(),
                         tasks = updatableTasks.value
                             ?.filter(UpdatableTask::checked)
-                            ?.map(UpdatableTask::title).orEmpty()
+                            ?.map(UpdatableTask::taskId).orEmpty()
                     )
 
                     isLoading.value = true

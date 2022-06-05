@@ -29,7 +29,7 @@ data class ProductBottomSheetState(
             id = id ?: Random.nextLong(),
             name = title,
             quantity = quantity,
-            measure = measure,
+            measure = measure.takeIf { quantity != null },
             category = Product.Category.DEFAULT,
             expiryMillis = expirationDate?.atStartOfDay()?.toEpochSecond(ZoneOffset.UTC)
         )
