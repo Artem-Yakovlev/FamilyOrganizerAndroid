@@ -1,12 +1,15 @@
 package com.badger.familyorgfe.features.appjourney.products.adding
 
 import com.badger.familyorgfe.base.BaseViewModel
+import com.badger.familyorgfe.data.model.FamilyTask
 import com.badger.familyorgfe.data.model.Product
 import com.badger.familyorgfe.ext.*
 import com.badger.familyorgfe.features.appjourney.common.productbottomsheet.ProductBottomSheetState
 import com.badger.familyorgfe.features.appjourney.products.adding.domain.AddProductUseCase
+import com.badger.familyorgfe.features.appjourney.products.adding.model.UpdatableTask
 import com.badger.familyorgfe.features.appjourney.products.adding.repository.IAddingRepository
 import com.badger.familyorgfe.features.appjourney.products.fridge.fridgeitem.FridgeItem
+import com.badger.familyorgfe.features.appjourney.tasks.alltasks.repository.IAllTasksRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.*
 import javax.inject.Inject
@@ -14,7 +17,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AddingViewModel @Inject constructor(
     private val addingRepository: IAddingRepository,
-    private val addProductUseCase: AddProductUseCase
+    private val addProductUseCase: AddProductUseCase,
+    private val allTasksRepository: IAllTasksRepository
 ) : BaseViewModel(), IAddingViewModel {
 
     private val isLoading = MutableStateFlow(false)
@@ -35,6 +39,8 @@ class AddingViewModel @Inject constructor(
         .stateIn(viewModelScope(), started = SharingStarted.Lazily, initialValue = false)
 
     override val editingState = MutableStateFlow<ProductBottomSheetState?>(null)
+
+    override val updatableTasks = MutableStateFlow<List<UpdatableTask>?>(null)
 
     override fun onEvent(event: IAddingViewModel.Event) {
         when (event) {
@@ -58,6 +64,9 @@ class AddingViewModel @Inject constructor(
                     event = event
                 )
             }
+            is IAddingViewModel.Event.TasksEvent -> {
+                onTasksEvent(event)
+            }
         }
     }
 
@@ -73,9 +82,21 @@ class AddingViewModel @Inject constructor(
             is IAddingViewModel.Event.Ordinal.OnDoneClicked -> longRunning {
                 if (!isLoading.value) {
                     isLoading.value = true
-                    val success = addProductUseCase(addingRepository.readyToAddingProducts.first())
-                    isLoading.value = success
-                    successAdded.value = success
+
+                    allTasksRepository.updateData()
+                    val open = allTasksRepository.openTasks.firstOrNull().orEmpty()
+                    val closed = allTasksRepository.closedTasks.firstOrNull().orEmpty()
+
+                    val tasks = (open + closed)
+                        .filter(FamilyTask::hasActiveProductList)
+                        .map(UpdatableTask::fromFamilyTask)
+
+                    isLoading.value = false
+                    if (tasks.isNotEmpty()) {
+                        updatableTasks.value = tasks
+                    } else {
+                        onTasksEvent(IAddingViewModel.Event.TasksEvent.OnContinue)
+                    }
                 }
             }
             is IAddingViewModel.Event.Ordinal.OnItemCollapsed -> {
@@ -157,6 +178,42 @@ class AddingViewModel @Inject constructor(
                 val product = state.value?.createProduct() ?: return
                 state.value = null
                 onAction(product)
+            }
+        }
+    }
+
+    private fun onTasksEvent(
+        event: IAddingViewModel.Event.TasksEvent
+    ) {
+        when (event) {
+            is IAddingViewModel.Event.TasksEvent.Dismiss -> {
+                updatableTasks.value = null
+            }
+            is IAddingViewModel.Event.TasksEvent.OnChecked -> {
+                updatableTasks.value = updatableTasks.value?.map { task ->
+                    if (task.taskId == event.taskId) {
+                        task.copy(checked = event.checked)
+                    } else {
+                        task
+                    }
+                }
+            }
+            is IAddingViewModel.Event.TasksEvent.OnContinue -> longRunning {
+                if (!isLoading.value) {
+                    val argument = AddProductUseCase.Argument(
+                        products = addingRepository.readyToAddingProducts.first(),
+                        tasks = updatableTasks.value
+                            ?.filter(UpdatableTask::checked)
+                            ?.map(UpdatableTask::title).orEmpty()
+                    )
+
+                    isLoading.value = true
+                    updatableTasks.value = null
+                    val success = addProductUseCase(argument)
+
+                    isLoading.value = success
+                    successAdded.value = success
+                }
             }
         }
     }

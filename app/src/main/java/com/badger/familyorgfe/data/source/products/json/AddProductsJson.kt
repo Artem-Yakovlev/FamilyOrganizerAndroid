@@ -6,7 +6,8 @@ class AddProductsJson {
 
     data class Form(
         val familyId: Long,
-        val products: List<Product>
+        val products: List<Product>,
+        val tasks: List<String>
     )
 
     data class Response(

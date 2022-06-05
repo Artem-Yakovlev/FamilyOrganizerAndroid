@@ -92,6 +92,8 @@
     <string name="adding_measure_kg">Кг</string>
     <string name="adding_measure_litter">Литры</string>
     <string name="adding_measure_things">Шт.</string>
+    <string name="adding_update_tasks_product_title">Выберите связанные задачи</string>
+    <string name="adding_update_tasks_product_button">Продолжить</string>
 
     <!-- Profile -->
     <string name="profile_toolbar_title">Профиль</string>

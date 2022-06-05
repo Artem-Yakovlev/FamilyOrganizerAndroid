@@ -11,11 +11,20 @@ import javax.inject.Inject
 class AddProductUseCase @Inject constructor(
     private val dataStoreRepository: IDataStoreRepository,
     private val productsApi: ProductsApi
-) : BaseUseCase<List<Product>, Boolean>() {
+) : BaseUseCase<AddProductUseCase.Argument, Boolean>() {
 
-    override suspend fun invoke(arg: List<Product>): Boolean {
+    data class Argument(
+        val products: List<Product>,
+        val tasks: List<String>
+    )
+
+    override suspend fun invoke(arg: Argument): Boolean {
         val familyId = dataStoreRepository.familyId.firstOrNull() ?: return false
-        val form = AddProductsJson.Form(familyId = familyId, products = arg)
+        val form = AddProductsJson.Form(
+            familyId = familyId,
+            products = arg.products,
+            tasks = arg.tasks
+        )
         return try {
             val response = productsApi.addProducts(form)
             if (response.hasNoErrors()) {

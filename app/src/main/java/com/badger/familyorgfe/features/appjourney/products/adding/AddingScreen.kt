@@ -1,6 +1,9 @@
 package com.badger.familyorgfe.features.appjourney.products.adding
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.Interaction
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -8,28 +11,34 @@ import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.FloatingActionButton
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.badger.familyorgfe.R
+import com.badger.familyorgfe.ext.clickableWithoutIndication
 import com.badger.familyorgfe.features.appjourney.bottomnavigation.ProductsNavigationType
 import com.badger.familyorgfe.features.appjourney.common.ProductBottomSheet
+import com.badger.familyorgfe.features.appjourney.products.adding.model.UpdatableTask
 import com.badger.familyorgfe.features.appjourney.products.fridge.fridgeitem.FridgeListItem
+import com.badger.familyorgfe.ui.elements.BaseActionButton
 import com.badger.familyorgfe.ui.elements.BaseDialog
 import com.badger.familyorgfe.ui.elements.BaseToolbar
+import com.badger.familyorgfe.ui.style.checkBoxColors
 import com.badger.familyorgfe.ui.theme.FamilyOrganizerTheme
 import com.badger.familyorgfe.utils.BackHandler
 import com.badger.familyorgfe.utils.fabNestedScroll
@@ -45,6 +54,7 @@ fun AddingScreen(
 ) {
     val manualAddingState by viewModel.manualAddingState.collectAsState()
     val editingState by viewModel.editingState.collectAsState()
+    val updatableTask by viewModel.updatableTasks.collectAsState()
 
     val onBack: () -> Unit = {
         when {
@@ -54,6 +64,10 @@ fun AddingScreen(
             }
             editingState != null -> {
                 val event = IAddingViewModel.Event.ProductEvent.OnBottomSheetClose().asEditing()
+                viewModel.onEvent(event)
+            }
+            updatableTask != null -> {
+                val event = IAddingViewModel.Event.TasksEvent.Dismiss
                 viewModel.onEvent(event)
             }
             else -> {
@@ -153,6 +167,23 @@ fun AddingScreen(
             viewModel.onEvent(
                 IAddingViewModel.Event.ProductEvent.OnActionClicked().asEditing()
             )
+        }
+    )
+
+    UpdateTasksBottomSheet(
+        modifier = modifier,
+        tasks = updatableTask,
+        onChecked = { taskId, checked ->
+            val event = IAddingViewModel.Event.TasksEvent.OnChecked(taskId, checked)
+            viewModel.onEvent(event)
+        },
+        onContinueClicked = {
+            val event = IAddingViewModel.Event.TasksEvent.OnContinue
+            viewModel.onEvent(event)
+        },
+        onBack = {
+            val event = IAddingViewModel.Event.TasksEvent.Dismiss
+            viewModel.onEvent(event)
         }
     )
 }
@@ -389,3 +420,115 @@ private fun BoxScope.Fab(
     }
 }
 
+
+/**
+ * Tasks
+ * */
+
+@Composable
+private fun UpdateTasksBottomSheet(
+    modifier: Modifier,
+    tasks: List<UpdatableTask>?,
+    onChecked: (Long, Boolean) -> Unit,
+    onContinueClicked: () -> Unit,
+    onBack: () -> Unit
+) {
+    AnimatedVisibility(
+        visible = tasks != null,
+        enter = fadeIn(),
+        exit = fadeOut()
+    ) {
+        Surface(
+            modifier = modifier
+                .fillMaxSize()
+                .clickableWithoutIndication(onBack),
+            color = FamilyOrganizerTheme.colors.blackPrimary.copy(alpha = 0.35f),
+            content = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 0.dp),
+                    contentAlignment = Alignment.Center,
+                    content = {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .wrapContentHeight()
+                                .clip(RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp))
+                                .background(FamilyOrganizerTheme.colors.whitePrimary)
+                                .align(Alignment.BottomCenter)
+                                .padding(horizontal = 32.dp)
+                                .clickableWithoutIndication { }
+                        ) {
+                            tasks?.let { updatableTasks ->
+                                LazyColumn(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp)
+                                ) {
+                                    item {
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                        Text(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(horizontal = 16.dp),
+                                            text = stringResource(id = R.string.adding_update_tasks_product_title),
+                                            style = FamilyOrganizerTheme.textStyle.body.copy(
+                                                fontSize = 18.sp, fontWeight = FontWeight.Medium
+                                            ),
+                                            color = FamilyOrganizerTheme.colors.darkGray
+                                        )
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                    }
+
+                                    items(updatableTasks) { task ->
+                                        UpdatableTaskItem(task = task, onChecked = onChecked)
+                                    }
+                                    item {
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        BaseActionButton(
+                                            onAction = onContinueClicked,
+                                            text = stringResource(id = R.string.adding_update_tasks_product_button),
+                                            enabled = true
+                                        )
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                )
+            }
+        )
+    }
+}
+
+@Composable
+private fun UpdatableTaskItem(
+    task: UpdatableTask,
+    onChecked: (Long, Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+    ) {
+        Checkbox(
+            checked = task.checked,
+            onCheckedChange = { onChecked(task.taskId, !task.checked) },
+            colors = checkBoxColors()
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            modifier = Modifier.align(Alignment.CenterVertically),
+            text = task.title,
+            maxLines = 1,
+            style = FamilyOrganizerTheme.textStyle.body,
+            color = if (task.checked) {
+                FamilyOrganizerTheme.colors.darkClay
+            } else {
+                FamilyOrganizerTheme.colors.darkGray
+            }
+        )
+    }
+}

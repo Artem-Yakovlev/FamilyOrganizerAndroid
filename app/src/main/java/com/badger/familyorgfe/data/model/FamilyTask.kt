@@ -27,6 +27,8 @@ data class FamilyTask(
 
     val hasProducts get() = products.isNotEmpty()
 
+    val hasActiveProductList get() = isActive && products.isNotEmpty()
+
     val previewLocalDateTime = when (category) {
         is TaskCategory.All -> null
         is TaskCategory.OneShot -> null
